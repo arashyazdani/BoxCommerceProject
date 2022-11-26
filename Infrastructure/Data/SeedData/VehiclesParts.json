@@ -1,0 +1,110 @@
+[
+ {
+   "VehicleId": 1,
+   "ProductId": 3
+ },
+ {
+   "VehicleId": 1,
+   "ProductId": 10
+ },
+ {
+   "VehicleId": 1,
+   "ProductId": 12
+ },
+ {
+   "VehicleId": 2,
+   "ProductId": 2
+ },
+ {
+   "VehicleId": 2,
+   "ProductId": 7
+ },
+ {
+   "VehicleId": 2,
+   "ProductId": 11
+ },
+ {
+   "VehicleId": 3,
+   "ProductId": 3
+ },
+ {
+   "VehicleId": 3,
+   "ProductId": 9
+ },
+ {
+   "VehicleId": 3,
+   "ProductId": 12
+ },
+ {
+   "VehicleId": 4,
+   "ProductId": 3
+ },
+ {
+   "VehicleId": 4,
+   "ProductId": 10
+ },
+ {
+   "VehicleId": 4,
+   "ProductId": 12
+ },
+ {
+   "VehicleId": 5,
+   "ProductId": 3
+ },
+ {
+   "VehicleId": 5,
+   "ProductId": 7
+ },
+ {
+   "VehicleId": 5,
+   "ProductId": 12
+ },
+ {
+   "VehicleId": 6,
+   "ProductId": 3
+ },
+ {
+   "VehicleId": 6,
+   "ProductId": 6
+ },
+ {
+   "VehicleId": 6,
+   "ProductId": 11
+ },
+ {
+   "VehicleId": 7,
+   "ProductId": 3
+ },
+ {
+   "VehicleId": 7,
+   "ProductId": 10
+ },
+ {
+   "VehicleId": 7,
+   "ProductId": 12
+ },
+ {
+   "VehicleId": 8,
+   "ProductId": 1
+ },
+ {
+   "VehicleId": 8,
+   "ProductId": 8
+ },
+ {
+   "VehicleId": 8,
+   "ProductId": 11
+ },
+ {
+   "VehicleId": 9,
+   "ProductId": 1
+ },
+ {
+   "VehicleId": 9,
+   "ProductId": 9
+ },
+ {
+   "VehicleId": 9,
+   "ProductId": 11
+ }
+]

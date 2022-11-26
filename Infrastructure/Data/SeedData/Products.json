@@ -1,0 +1,122 @@
+[
+ {
+   "CategoryId": 1,
+   "Priority": 1,
+   "Name": "Ladder Frame Chassis",
+   "Details": "Named after the shape it replicates, the ladder-frame chassis is one of the oldest chassis types. This chassis is characterised by two long heavy beams that are supported by two smaller ones. Its quality of being easily manufactured not only made it contemporarily popular but also eased the way for its mass production. Since ladder frame chassis is significantly heavy it’s usually used for vehicles that transport heavy material.",
+   "Enabled": true,
+   "Price": 1000.00,
+   "Quantity": 10,
+   "IsDiscontinued": false
+ },
+ {
+   "CategoryId": 1,
+   "Priority": 2,
+   "Name": "Backbone Chassis",
+   "Details": "Similar to the ladder frame chassis, the backbone chassis is also named after the shape it reflects. The hollow rectangular cross-section and a cylindrical tube passing through it connecting the front and rear suspension, like a backbone. The cylindrical tube surrounds the driveshaft. You can find backbone chassis in one of the most popular cars, Skoda Rapid.",
+   "Enabled": true,
+   "Price": 700.00,
+   "Quantity": 5,
+   "IsDiscontinued": false
+ },
+ {
+   "CategoryId": 1,
+   "Priority": 3,
+   "Name": "Monocoque Chassis",
+   "Details": "Monocoque is French for ‘single shell’. This unibody frame is named after its structural outlook. The monocoque frames were firstly used in ships, next in aeroplanes, and manufacturers took quite a while to find them pertinent for cars as well. A monocoque is like an endoskeleton of a car crafted by fitting chassis and complete basic frame in a single unit. Monocoque chassis is the most popularly used chassis as of now given its number of advantages over the other two types of chassis.",
+   "Enabled": true,
+   "Price": 1400.00,
+   "Quantity": 3,
+   "IsDiscontinued": false
+ },
+ {
+   "CategoryId": 1,
+   "Priority": 4,
+   "Name": "Tubular Chassis",
+   "Details": "A three-dimensional derivative of ladder chassis, Tubular chassis are mainly used in performance cars given their excellent safety. Rarely seen in passenger cars, tubular chassis is much stronger than ladder chassis and they popularised the utilization of stronger structure underneath the doors to accomplish more consolidated strength",
+   "Enabled": true,
+   "Price": 2500.00,
+   "Quantity": 4,
+   "IsDiscontinued": false
+ },
+ {
+   "CategoryId": 4,
+   "Priority": 1,
+   "Name": "Twin-cylinder engine",
+   "Details": "",
+   "Enabled": true,
+   "Price": 400.00,
+   "Quantity": 2,
+   "IsDiscontinued": true
+ },
+ {
+   "CategoryId": 6,
+   "Priority": 2,
+   "Name": "Three-cylinder engine",
+   "Details": "",
+   "Enabled": true,
+   "Price": 1100.00,
+   "Quantity": 4,
+   "IsDiscontinued": false
+ },
+ {
+   "CategoryId": 5,
+   "Priority": 3,
+   "Name": "Four-cylinder engine",
+   "Details": "",
+   "Enabled": true,
+   "Price": 3500.00,
+   "Quantity": 3,
+   "IsDiscontinued": false
+ },
+ {
+   "CategoryId": 6,
+   "Priority": 4,
+   "Name": "Five-cylinder engine",
+   "Details": "",
+   "Enabled": true,
+   "Price": 3000.00,
+   "Quantity": 1,
+   "IsDiscontinued": false
+ },
+ {
+   "CategoryId": 7,
+   "Priority": 5,
+   "Name": "Six-cylinder engine",
+   "Details": "",
+   "Enabled": true,
+   "Price": 3200.00,
+   "Quantity": 4,
+   "IsDiscontinued": false
+ },
+ {
+   "CategoryId": 5,
+   "Priority": 6,
+   "Name": "Eight-cylinder engine",
+   "Details": "",
+   "Enabled": true,
+   "Price": 4500.00,
+   "Quantity": 2,
+   "IsDiscontinued": false
+ },
+ {
+   "CategoryId": 2,
+   "Priority": 1,
+   "Name": "Standard OptionsPack",
+   "Details": "Adaptive cruise control, High-beam assist, Rain detector, Tyre pressure warning, Heated windscreen, Smart phone integration (Apple Car Play/Android Auto)",
+   "Enabled": true,
+   "Price": 3000.00,
+   "Quantity": 3,
+   "IsDiscontinued": false
+ },
+ {
+   "CategoryId": 2,
+   "Priority": 2,
+   "Name": "Luxurious Options Pack",
+   "Details": "Adaptive cruise control, High-beam assist, Rain detector, Tyre pressure warning, Lane assist, Keyless entry and start, Memory seats, Heated windscreen, Smart phone integration (Apple Car Play/Android Auto), Power tailgate, LED headlights, Reversing camera, Heated Windscreen",
+   "Enabled": true,
+   "Price": 5000.00,
+   "Quantity": 4,
+   "IsDiscontinued": false
+ }
+]

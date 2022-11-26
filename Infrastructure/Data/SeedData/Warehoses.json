@@ -1,0 +1,37 @@
+[
+ {
+   "Priority": 1,
+   "Name": "Chassis Warehouse",
+   "Details": "",
+   "Enabled": true,
+   "Address": "Location1"
+ },
+ {
+   "Priority": 2,
+   "Name": "Engine Warehouse",
+   "Details": "",
+   "Enabled": true,
+   "Address": "Location2"
+ },
+ {
+   "Priority": 3,
+   "Name": "OptionsPack Warehouse",
+   "Details": "",
+   "Enabled": true,
+   "Address": "Location3"
+ },
+ {
+   "Priority": 4,
+   "Name": "Vehicle Warehouse",
+   "Details": "",
+   "Enabled": true,
+   "Address": "Location4"
+ },
+ {
+   "Priority": 5,
+   "Name": "Central Warehouse",
+   "Details": "This warehouse is located in our vehicle factory and all of the things that will be produced have to be brought there.",
+   "Enabled": true,
+   "Address": "Location5"
+ }
+]
