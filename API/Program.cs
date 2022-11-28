@@ -15,7 +15,6 @@ IWebHostEnvironment environment = builder.Environment;
 
 // Add services to the container.
 
-builder.Services.AddAutoMapper(typeof(MappingProfiles));
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -25,24 +24,32 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(c =>
     var configuration = ConfigurationOptions.Parse(redisConnectionString, true);
     return ConnectionMultiplexer.Connect(configuration);
 });
+builder.Services.AddAutoMapper(typeof(MappingProfiles));
 builder.Services.AddApplicationServices();
 
 builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerDocumentation();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
 
 app.UseHttpsRedirection();
+
+app.UseRouting();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseStaticFiles();
+
+app.UseSwaggerDocumentation();
 
 using (var scope = app.Services.CreateScope())
 {

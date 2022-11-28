@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using API.Helpers;
 
 namespace API.Extensions
 {
@@ -16,12 +17,10 @@ namespace API.Extensions
             //services.AddSingleton<IResponseCacheService, ResponseCacheService>();
             //services.AddScoped<ITokenService, TokenService>();
             //services.AddScoped<IUnitOfWork, UnitOfWork>();
-            //services.AddScoped<IUnitOfWorkLong, UnitOfWorkLong>();
-            //services.AddScoped<IUnitOfWorkShort, UnitOfWorkShort>();
             //services.AddScoped<ISmsService, SmsService>();
             //services.AddScoped<IApplicationUserService, ApplicationUserService>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
+            
             //services.Configure<ApiBehaviorOptions>(options =>
             //{
             //    options.InvalidModelStateResponseFactory = actionContext =>

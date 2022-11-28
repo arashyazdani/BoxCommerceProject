@@ -4,6 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <EnableNETAnalyzers>True</EnableNETAnalyzers>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,13 +23,33 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\" />
     <Folder Include="Errors\" />
     <Folder Include="Middleware\" />
+    <Folder Include="wwwroot\Content\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <Content Include="wwwroot\Content\**" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Content\**" />
+    <Content Remove="Content\**" />
+    <EmbeddedResource Remove="Content\**" />
+    <None Remove="Content\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Images\Vehicles\car1.png" />
+    <None Include="wwwroot\Images\Vehicles\car2.png" />
+    <None Include="wwwroot\Images\Vehicles\car3.png" />
+    <None Include="wwwroot\Images\Vehicles\car4.png" />
+    <None Include="wwwroot\Images\Vehicles\car5.png" />
+    <None Include="wwwroot\Images\Vehicles\car6.png" />
+    <None Include="wwwroot\Images\Vehicles\car7.png" />
+    <None Include="wwwroot\Images\Vehicles\car8.png" />
+    <None Include="wwwroot\Images\Vehicles\car9.png" />
   </ItemGroup>
 
 </Project>
