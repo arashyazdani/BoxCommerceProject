@@ -1,5 +1,6 @@
 using API.Extensions;
 using API.Helpers;
+using API.Middleware;
 using Domain.Entities;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
@@ -16,18 +17,23 @@ IWebHostEnvironment environment = builder.Environment;
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddDbContext<FactoryContext>(x => x.UseSqlServer(connectionString));
+
 builder.Services.AddSingleton<IConnectionMultiplexer>(c =>
 {
-    var configuration = ConfigurationOptions.Parse(redisConnectionString, true);
-    return ConnectionMultiplexer.Connect(configuration);
+    var config = ConfigurationOptions.Parse(redisConnectionString, true);
+    return ConnectionMultiplexer.Connect(config);
 });
+
 builder.Services.AddAutoMapper(typeof(MappingProfiles));
+
 builder.Services.AddApplicationServices();
 
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddSwaggerDocumentation();
 
 var app = builder.Build();
@@ -38,6 +44,8 @@ var app = builder.Build();
 //    app.UseSwagger();
 //    app.UseSwaggerUI();
 //}
+
+app.UseMiddleware<ExceptionMiddleWare>();
 
 app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
@@ -53,30 +61,6 @@ app.UseStaticFiles();
 
 app.UseSwaggerDocumentation();
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var loggerFactory = services.GetRequiredService<ILoggerFactory>();
-    try
-    {
-        var context = services.GetRequiredService<FactoryContext>();
-        //var userManager = services.GetRequiredService<UserManager<AppUser>>();
-        //var identityContext = services.GetRequiredService<ArashAppIdentityDbContext>();
-
-        await context.Database.MigrateAsync();
-        //await FactoryContextSeed.SeedAsync(context, loggerFactory);
-        var seedData = new FactoryContextSeed(context, loggerFactory);
-        var logger = loggerFactory.CreateLogger<Program>();
-        if (await seedData.SeedAsync()) logger.LogInformation("Seeding data has been done successfully");
-
-        //await identityContext.Database.MigrateAsync();
-        //await ArashAppIdentityDbContextSeed.SeedUsersAsync(userManager);
-    }
-    catch (Exception ex)
-    {
-        var logger = loggerFactory.CreateLogger<Program>();
-        logger.LogError(ex, "An error occurred during migration");
-    }
-}
+await app.UseApplicationBuilder();
 
 await app.RunAsync();

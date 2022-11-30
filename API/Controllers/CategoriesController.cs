@@ -1,4 +1,5 @@
 ﻿using API.DTOs;
+using API.Errors;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
@@ -21,6 +22,8 @@ namespace API.Controllers
         }
 
         [HttpGet("GetCategoryById/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CategoryToReturnDTO>> GetCategoryById(int id)
         {
             try

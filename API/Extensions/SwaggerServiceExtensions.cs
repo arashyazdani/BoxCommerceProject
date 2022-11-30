@@ -27,8 +27,8 @@ namespace API.Extensions
                 };
 
                 c.AddSecurityDefinition("Bearer", securitySchema);
-                var sercurityRequirement = new OpenApiSecurityRequirement { { securitySchema, new[] { "Bearer" } } };
-                c.AddSecurityRequirement(sercurityRequirement);
+                var securityRequirement = new OpenApiSecurityRequirement { { securitySchema, new[] { "Bearer" } } };
+                c.AddSecurityRequirement(securityRequirement);
             });
 
             return services;
@@ -38,7 +38,7 @@ namespace API.Extensions
         {
             app.UseSwagger();
 
-            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "MaqtaGatewayTest API v1"); c.DefaultModelExpandDepth(-1); });
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "BoxCommerce API v1"); c.DefaultModelExpandDepth(-1); });
 
             return app;
         }
