@@ -9,9 +9,46 @@ namespace Domain.Specifications
 {
     public class GetCategoriesWithParentsSpecification : BaseSpecification<Category>
     {
-        public GetCategoriesWithParentsSpecification()
+        public GetCategoriesWithParentsSpecification(CategorySpecificationParams categoryParams) : base(x =>
+            (string.IsNullOrEmpty(categoryParams.Search) || x.Name.ToLower().Contains(categoryParams.Search)))
         {
             AddInclude(x=>x.Parent);
+            AddOrderBy(x=>x.Name);
+            ApplyPaging(categoryParams.PageSize * (categoryParams.PageIndex - 1), categoryParams.PageSize);
+
+            if (!string.IsNullOrEmpty(categoryParams.Sort))
+            {
+                switch (categoryParams.Sort)
+                {
+                    case "ascname":
+                        AddOrderBy(p => p.Name);
+                        break;
+
+                    case "descname":
+                        AddOrderByDescending(p => p.Name);
+                        break;
+
+                    case "ascpriority":
+                        AddOrderBy(p => p.Priority ?? 0);
+                        break;
+
+                    case "descpriority":
+                        AddOrderByDescending(p => p.Priority ?? 0);
+                        break;
+
+                    case "ascid":
+                        AddOrderBy(p => p.Id);
+                        break;
+
+                    case "descid":
+                        AddOrderByDescending(p => p.Id);
+                        break;
+
+                    default:
+                        AddOrderBy(n => n.Name);
+                        break;
+                }
+            }
         }
 
         public GetCategoriesWithParentsSpecification(int id) : base(x=> x.Id==id)

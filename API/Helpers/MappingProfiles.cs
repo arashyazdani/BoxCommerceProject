@@ -16,6 +16,7 @@ namespace API.Helpers
             CreateMap<Vehicle, VehicleToReturnDTO>()
                 .ForMember(d => d.PictureUrl, o => o.MapFrom<VehicleImageUrlResolver>());
             CreateMap<Warehouse, WarehouseToReturnDTO>();
+            CreateMap<CustomerBasketDto, CustomerBasket>();
         }
     }
 }

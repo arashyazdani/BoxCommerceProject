@@ -23,12 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\Content\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-    <Content Include="wwwroot\Content\**" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="Content\**" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 

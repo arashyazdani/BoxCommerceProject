@@ -3,9 +3,11 @@ using Infrastructure.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using API.Errors;
 using API.Helpers;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -21,24 +23,35 @@ namespace API.Extensions
             //services.AddScoped<IUnitOfWork, UnitOfWork>();
             //services.AddScoped<ISmsService, SmsService>();
             //services.AddScoped<IApplicationUserService, ApplicationUserService>();
+            services.AddScoped<IBasketRepository, BasketRepository>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            
-            //services.Configure<ApiBehaviorOptions>(options =>
-            //{
-            //    options.InvalidModelStateResponseFactory = actionContext =>
-            //    {
-            //        var errors = actionContext.ModelState
-            //            .Where(e => e.Value.Errors.Count > 0)
-            //            .SelectMany(x => x.Value.Errors)
-            //            .Select(x => x.ErrorMessage).ToArray();
-            //        var errorResponse = new ApiValidationErrorResponse
-            //        {
-            //            Errors = errors
-            //        };
-            //        return new BadRequestObjectResult(errorResponse);
-            //    };
-            //});
 
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = actionContext =>
+                {
+                    var errors = actionContext.ModelState
+                        .Where(e => e.Value?.Errors.Count > 0)
+                        .SelectMany(x =>
+                        {
+                            Debug.Assert(x.Value != null, "x.Value != null");
+                            return x.Value.Errors;
+                        })
+                        .Select(x => x.ErrorMessage).ToArray();
+                    var errorResponse = new ApiValidationErrorResponse
+                    {
+                        Errors = errors
+                    };
+                    return new BadRequestObjectResult(errorResponse);
+                };
+            });
+            services.AddCors(opt =>
+            {
+                opt.AddPolicy("CorsPolicy", policy =>
+                {
+                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200");
+                });
+            });
             return services;
         }
 

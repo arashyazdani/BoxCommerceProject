@@ -1,5 +1,6 @@
 ﻿using API.DTOs;
 using API.Errors;
+using API.Helpers;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
@@ -21,9 +22,41 @@ namespace API.Controllers
             _vehicleRepository = vehicleRepository;
         }
 
+        [HttpGet("GetCategories")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Pagination<CategoryToReturnDTO>>> GetCategories([FromQuery] CategorySpecificationParams specParams)
+        {
+            try
+            {
+                var spec = new GetCategoriesWithParentsSpecification(specParams);
+
+                var countSpec = new GetCategoriesForCountWithParentsSpecification(specParams);
+
+                var totalItems = await _categoryRepository.CountAsync(countSpec);
+
+                var categories = await _categoryRepository.ListWithSpecAsync(spec);
+
+                if (categories == null || categories.Count == 0) return NotFound(new ApiResponse(404));
+
+                var data = _mapper.Map<IReadOnlyList<Category>, IReadOnlyList<CategoryToReturnDTO>>(categories);
+
+                var returnCategories =
+                    new Pagination<CategoryToReturnDTO>(specParams.PageIndex, specParams.PageSize, totalItems, data);
+
+                return new ObjectResult(new ApiResponse(200, "Ok", returnCategories));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse(400, ex.Message));
+            }
+        }
+
         [HttpGet("GetCategoryById/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<CategoryToReturnDTO>> GetCategoryById(int id)
         {
             try
@@ -32,27 +65,17 @@ namespace API.Controllers
 
                 var category = await _categoryRepository.GetEntityWithSpec(spec);
 
-                if (category == null) return NotFound();
+                if (category == null) return NotFound(new ApiResponse(404));
 
-                return _mapper.Map<Category, CategoryToReturnDTO>(category);
+                var returnCategories = _mapper.Map<Category, CategoryToReturnDTO>(category);
+
+                return new ObjectResult(new ApiResponse(200, "Ok", returnCategories));
+
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new ApiResponse(400, ex.Message));
             }
-            
-
-        }
-
-        [HttpGet("vehicle/{id}")]
-        public async Task<ActionResult<VehicleToReturnDTO>> Vehicle(int id)
-        {
-            var spec = new GetVehiclesSpecification(id);
-            var vehicle = await _vehicleRepository.GetEntityWithSpec(spec);
-
-            if (vehicle == null) return NotFound("Not Found");
-
-            return _mapper.Map<Vehicle, VehicleToReturnDTO>(vehicle);
         }
 
     }
