@@ -26,7 +26,7 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Pagination<CategoryToReturnDTO>>> GetCategories([FromQuery] CategorySpecificationParams specParams)
+        public async Task<ActionResult<Pagination<CategoryToReturnDto>>> GetCategories([FromQuery] CategorySpecificationParams specParams)
         {
             try
             {
@@ -40,10 +40,10 @@ namespace API.Controllers
 
                 if (categories == null || categories.Count == 0) return NotFound(new ApiResponse(404));
 
-                var data = _mapper.Map<IReadOnlyList<Category>, IReadOnlyList<CategoryToReturnDTO>>(categories);
+                var data = _mapper.Map<IReadOnlyList<Category>, IReadOnlyList<CategoryToReturnDto>>(categories);
 
                 var returnCategories =
-                    new Pagination<CategoryToReturnDTO>(specParams.PageIndex, specParams.PageSize, totalItems, data);
+                    new Pagination<CategoryToReturnDto>(specParams.PageIndex, specParams.PageSize, totalItems, data);
 
                 return new ObjectResult(new ApiResponse(200, "Ok", returnCategories));
             }
@@ -57,7 +57,7 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<CategoryToReturnDTO>> GetCategoryById(int id)
+        public async Task<ActionResult<CategoryToReturnDto>> GetCategoryById(int id)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace API.Controllers
 
                 if (category == null) return NotFound(new ApiResponse(404));
 
-                var returnCategories = _mapper.Map<Category, CategoryToReturnDTO>(category);
+                var returnCategories = _mapper.Map<Category, CategoryToReturnDto>(category);
 
                 return new ObjectResult(new ApiResponse(200, "Ok", returnCategories));
 

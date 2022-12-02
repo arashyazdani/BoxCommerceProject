@@ -25,6 +25,7 @@
                 401 => "You are not authorized.",
                 403 => "You have not permission.",
                 404 => "It was not resource found.",
+                405 => "Method Not Allowed.",
                 500 => "Internal Server Error!",
                 _ => null
             };

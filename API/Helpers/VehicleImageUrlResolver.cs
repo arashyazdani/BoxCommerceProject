@@ -5,7 +5,7 @@ using Domain.Entities;
 
 namespace API.Helpers
 {
-    public class VehicleImageUrlResolver : IValueResolver<Vehicle, VehicleToReturnDTO,string?>
+    public class VehicleImageUrlResolver : IValueResolver<Vehicle, VehicleToReturnDto,string?>
     {
         private readonly IConfiguration _config;
 
@@ -14,7 +14,7 @@ namespace API.Helpers
             _config = config;
         }
 
-        public string? Resolve(Vehicle source, VehicleToReturnDTO destination, string? destMember, ResolutionContext context)
+        public string? Resolve(Vehicle source, VehicleToReturnDto destination, string? destMember, ResolutionContext context)
         {
             if (!string.IsNullOrEmpty(source.PictureUrl))
             {

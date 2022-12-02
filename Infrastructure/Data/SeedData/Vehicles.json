@@ -17,15 +17,15 @@
    "Quantity": 3,
    "PictureUrl": "images/vehicles/car2.png"
  },
- {
-   "Priority": 3,
-   "Name": "Car 3",
-   "Details": "Crook Car",
-   "Enabled": true,
-   "Price": 30000.00,
-   "Quantity": 2,
-   "PictureUrl": "images/vehicles/car3.png"
- },
+  {
+    "Priority": 3,
+    "Name": "Car 3",
+    "Details": "Convertible Car",
+    "Enabled": true,
+    "Price": 30000.00,
+    "Quantity": 2,
+    "PictureUrl": "images/vehicles/car3.png"
+  },
  {
    "Priority": 4,
    "Name": "Car 4",
@@ -38,7 +38,7 @@
  {
    "Priority": 5,
    "Name": "Car 5",
-   "Details": "Coup Car",
+   "Details": "Coupe Car",
    "Enabled": true,
    "Price": 40000.00,
    "Quantity": 3,
@@ -47,21 +47,21 @@
  {
    "Priority": 6,
    "Name": "Car 6",
-   "Details": "Hotchback Car",
+   "Details": "Hatchback Car",
    "Enabled": true,
    "Price": 15000.00,
    "Quantity": 5,
    "PictureUrl": "images/vehicles/car6.png"
  },
- {
-   "Priority": 7,
-   "Name": "Car 7",
-   "Details": "Coup and Crook Car",
-   "Enabled": true,
-   "Price": 50000.00,
-   "Quantity": 4,
-   "PictureUrl": "images/vehicles/car7.png"
- },
+  {
+    "Priority": 7,
+    "Name": "Car 7",
+    "Details": "Coup and Convertible Car",
+    "Enabled": true,
+    "Price": 50000.00,
+    "Quantity": 4,
+    "PictureUrl": "images/vehicles/car7.png"
+  },
  {
    "Priority": 8,
    "Name": "Car 8",

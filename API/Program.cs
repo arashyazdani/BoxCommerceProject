@@ -4,6 +4,7 @@ using API.Helpers;
 using API.Middleware;
 using Domain.Entities;
 using Infrastructure.Data;
+using Infrastructure.Identity;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +32,8 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddDbContext<FactoryContext>(x => x.UseSqlServer(connectionString));
 
+builder.Services.AddDbContext<FactoryIdentityContext>(x => x.UseSqlServer(identityConnectionString));
+
 builder.Services.AddSingleton<IConnectionMultiplexer>(c =>
 {
     var config = ConfigurationOptions.Parse(redisConnectionString, true);
@@ -40,6 +43,8 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(c =>
 builder.Services.AddAutoMapper(typeof(MappingProfiles));
 
 builder.Services.AddApplicationServices();
+
+builder.Services.AddIdentityServices(configuration);
 
 builder.Services.AddSwaggerGen();
 
@@ -66,6 +71,8 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseCors("CorsPolicy");
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

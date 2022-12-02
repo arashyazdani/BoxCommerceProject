@@ -1,6 +1,6 @@
 ﻿namespace API.DTOs
 {
-    public class VehicleToReturnDTO
+    public class VehicleToReturnDto
     {
         public int Id { get; set; }
         public int? Priority { get; set; }

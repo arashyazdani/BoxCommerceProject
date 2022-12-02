@@ -1,5 +1,6 @@
 ﻿using Microsoft.OpenApi.Models;
 using System.ComponentModel;
+using API.DTOs.Examples;
 
 namespace API.Extensions
 {
@@ -10,7 +11,11 @@ namespace API.Extensions
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "BoxCommerce API", Version = "v1" });
+
                 c.CustomSchemaIds(x => x.GetCustomAttributes(false).OfType<DisplayNameAttribute>().FirstOrDefault()?.DisplayName ?? x.Name);
+
+                c.SchemaFilter<RegisterDtoExample>();
+                c.SchemaFilter<LoginDtoExample>();
 
                 var securitySchema = new OpenApiSecurityScheme
                 {

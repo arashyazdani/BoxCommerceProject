@@ -2,7 +2,7 @@
 
 namespace API.DTOs
 {
-    public class CategoryToReturnDTO
+    public class CategoryToReturnDto
     {
         public int Id { get; set; }
         public int? Priority { get; set; }

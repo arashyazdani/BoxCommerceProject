@@ -10,7 +10,6 @@
     <Folder Include="Exceptions\" />
     <Folder Include="Identity\Config\" />
     <Folder Include="Logging\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>

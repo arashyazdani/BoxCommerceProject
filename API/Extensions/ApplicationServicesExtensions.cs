@@ -9,7 +9,11 @@ using System.Text;
 using System.Threading.Tasks;
 using API.Errors;
 using API.Helpers;
+using Domain.Entities.Identity;
 using Infrastructure.Data;
+using Infrastructure.Identity;
+using Infrastructure.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Extensions
@@ -19,7 +23,7 @@ namespace API.Extensions
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
             //services.AddSingleton<IResponseCacheService, ResponseCacheService>();
-            //services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<ITokenService, TokenService>();
             //services.AddScoped<IUnitOfWork, UnitOfWork>();
             //services.AddScoped<ISmsService, SmsService>();
             //services.AddScoped<IApplicationUserService, ApplicationUserService>();
@@ -63,8 +67,8 @@ namespace API.Extensions
             try
             {
                 var context = services.GetRequiredService<FactoryContext>();
-                //var userManager = services.GetRequiredService<UserManager<AppUser>>();
-                //var identityContext = services.GetRequiredService<FactoryApiIdentityDbContext>();
+                var userManager = services.GetRequiredService<UserManager<AppUser>>();
+                var identityContext = services.GetRequiredService<FactoryIdentityContext>();
 
                 await context.Database.MigrateAsync();
                 //await FactoryContextSeed.SeedAsync(context, loggerFactory);
@@ -72,8 +76,8 @@ namespace API.Extensions
                 var logger = loggerFactory.CreateLogger<Program>();
                 if (await seedData.SeedAsync()) logger.LogInformation("Seeding data has been done successfully");
 
-                //await identityContext.Database.MigrateAsync();
-                //await ArashAppIdentityDbContextSeed.SeedUsersAsync(userManager);
+                await identityContext.Database.MigrateAsync();
+                await FactoryIdentityContextSeed.SeedUsersAsync(userManager, loggerFactory);
                 return app;
             }
             catch (Exception ex)
