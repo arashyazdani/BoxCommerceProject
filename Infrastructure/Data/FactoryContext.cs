@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Domain.Entities;
+using Domain.Entities.OrderAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -18,6 +19,9 @@ namespace Infrastructure.Data
         public DbSet<VehiclesPart> VehiclesParts { get; set; }
         public DbSet<ProductsInventory> ProductsInventories { get; set; }
         public DbSet<VehiclesInventory> VehiclesInventories { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<DeliveryMethod> DeliveryMethods { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

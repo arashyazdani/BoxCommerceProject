@@ -42,13 +42,13 @@ namespace Infrastructure.Data.Repositories
             await _context.Set<T>().AddAsync(entity);
         }
 
-        public async Task Update(T entity)
+        public void Update(T entity)
         {
             _context.Set<T>().Attach(entity);
             _context.Entry(entity).State = EntityState.Modified;
         }
 
-        public async Task Delete(T entity)
+        public void Delete(T entity)
         {
              _context.Set<T>().Remove(entity);
         }
@@ -65,7 +65,7 @@ namespace Infrastructure.Data.Repositories
             await _context.Set<T>().AddRangeAsync(entities);
         }
 
-        public async Task RemoveRange(IEnumerable<T> entities)
+        public void RemoveRange(IEnumerable<T> entities)
         {
             _context.Set<T>().RemoveRange(entities);
         }

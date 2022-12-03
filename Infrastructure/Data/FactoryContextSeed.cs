@@ -2,6 +2,7 @@
 using System.Text.Json;
 using Domain.Entities;
 using Domain.Entities.BaseEntities;
+using Domain.Entities.OrderAggregate;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Data;
@@ -27,6 +28,7 @@ public class FactoryContextSeed
             if (await SeedData<Warehouse>(@"/Data/SeedData/Warehouses.json")) logger.LogInformation("Warehouses data has been added successfully.");
             if (await SeedData<Vehicle>(@"/Data/SeedData/Vehicles.json")) logger.LogInformation("Vehicles data has been added successfully.");
             if (await SeedData<VehiclesPart>(@"/Data/SeedData/VehiclesParts.json")) logger.LogInformation("VehiclesParts data has been added successfully.");
+            if (await SeedData<DeliveryMethod>(@"/Data/SeedData/DeliveryMethods.json")) logger.LogInformation("DeliveryMethods data has been added successfully.");
             return true;
         }
         catch (Exception ex)

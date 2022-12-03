@@ -20,15 +20,15 @@ namespace Domain.Interfaces
 
         Task InsertAsync(T entity);
 
-        Task Update(T entity);
+        void Update(T entity);
 
-        Task Delete(T entity);
+        void Delete(T entity);
 
         Task DeleteAsync(object id);
 
         Task AddRangeAsync(IEnumerable<T> entities);
 
-        Task RemoveRange(IEnumerable<T> entities);
+        void RemoveRange(IEnumerable<T> entities);
 
         Task<int> CountAsync(ISpecification<T> spec);
 

@@ -26,6 +26,7 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        [Cached(600)]
         public async Task<ActionResult<Pagination<CategoryToReturnDto>>> GetCategories([FromQuery] CategorySpecificationParams specParams)
         {
             try
@@ -45,7 +46,8 @@ namespace API.Controllers
                 var returnCategories =
                     new Pagination<CategoryToReturnDto>(specParams.PageIndex, specParams.PageSize, totalItems, data);
 
-                return new ObjectResult(new ApiResponse(200, "Ok", returnCategories));
+                //return Ok(returnCategories);
+                return new OkObjectResult(new ApiResponse(200, "Ok", returnCategories));
             }
             catch (Exception ex)
             {
@@ -53,6 +55,7 @@ namespace API.Controllers
             }
         }
 
+        [Cached(600)]
         [HttpGet("GetCategoryById/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
@@ -69,7 +72,7 @@ namespace API.Controllers
 
                 var returnCategories = _mapper.Map<Category, CategoryToReturnDto>(category);
 
-                return new ObjectResult(new ApiResponse(200, "Ok", returnCategories));
+                return new OkObjectResult(new ApiResponse(200, "Ok", returnCategories));
 
             }
             catch (Exception ex)

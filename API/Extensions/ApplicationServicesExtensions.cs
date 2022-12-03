@@ -22,12 +22,12 @@ namespace API.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            //services.AddSingleton<IResponseCacheService, ResponseCacheService>();
+            services.AddSingleton<IResponseCacheService, ResponseCacheService>();
             services.AddScoped<ITokenService, TokenService>();
-            //services.AddScoped<IUnitOfWork, UnitOfWork>();
-            //services.AddScoped<ISmsService, SmsService>();
-            //services.AddScoped<IApplicationUserService, ApplicationUserService>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IBasketRepository, BasketRepository>();
+            services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             services.Configure<ApiBehaviorOptions>(options =>

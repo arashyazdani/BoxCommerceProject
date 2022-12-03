@@ -2,6 +2,7 @@
 using AutoMapper;
 using Domain.Entities;
 using Domain.Entities.Identity;
+using Domain.Entities.OrderAggregate;
 
 namespace API.Helpers
 {
@@ -19,7 +20,16 @@ namespace API.Helpers
             CreateMap<Warehouse, WarehouseToReturnDto>();
             CreateMap<CustomerBasketDto, CustomerBasket>();
             CreateMap<BasketItemDto, BasketItem>();
-            CreateMap<Address, AddressDTO>().ReverseMap();
+            CreateMap<OrderAddress, AddressDTO>().ReverseMap();
+            CreateMap<AddressDTO, OrderAddress>();
+            CreateMap<Order, OrderToReturnDTO>()
+                .ForMember(d => d.DeliveryMethod, o => o.MapFrom(s => s.DeliveryMethod.ShortName))
+                .ForMember(d => d.ShippingPrice, o => o.MapFrom(s => s.DeliveryMethod.Price))
+                .ForMember(d => d.PictureUrl, o => o.MapFrom<OrderUrlResolver>());
+            CreateMap<OrderItem, OrderItemDTO>()
+                .ForMember(d => d.ProductId, o => o.MapFrom(s => s.ItemOrdered.ProductItemId))
+                .ForMember(d => d.ProductName, o => o.MapFrom(s => s.ItemOrdered.ProductName))
+                .ForMember(d => d.Price, o => o.MapFrom(s => s.Price));
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using API.DTOs;
 using API.DTOs.Examples;
 using API.Errors;
-using API.Helpers;
+using API.Extensions;
 using AutoMapper;
 using Domain.Entities.Identity;
 using Domain.Interfaces;

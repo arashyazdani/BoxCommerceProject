@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Helpers
+namespace API.Extensions
 {
     public static class UserManagerExtensions
     {
