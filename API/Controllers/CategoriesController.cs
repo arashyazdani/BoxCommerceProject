@@ -11,22 +11,22 @@ namespace API.Controllers
 {
     public class CategoriesController : BaseApiController
     {
-        private readonly IGenericRepository<Category> _categoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IGenericRepository<Vehicle> _vehicleRepository;
 
-        public CategoriesController(IGenericRepository<Category> categoryRepository, IMapper mapper, IGenericRepository<Vehicle> vehicleRepository)
+        public CategoriesController(IUnitOfWork unitOfWork, IMapper mapper, IGenericRepository<Vehicle> vehicleRepository)
         {
-            _categoryRepository = categoryRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _vehicleRepository = vehicleRepository;
         }
 
+        [Cached(600)]
         [HttpGet("GetCategories")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-        [Cached(600)]
         public async Task<ActionResult<Pagination<CategoryToReturnDto>>> GetCategories([FromQuery] CategorySpecificationParams specParams)
         {
             try
@@ -35,9 +35,9 @@ namespace API.Controllers
 
                 var countSpec = new GetCategoriesForCountWithParentsSpecification(specParams);
 
-                var totalItems = await _categoryRepository.CountAsync(countSpec);
+                var totalItems = await _unitOfWork.Repository<Category>().CountAsync(countSpec);
 
-                var categories = await _categoryRepository.ListWithSpecAsync(spec);
+                var categories = await _unitOfWork.Repository<Category>().ListWithSpecAsync(spec);
 
                 if (categories == null || categories.Count == 0) return NotFound(new ApiResponse(404));
 
@@ -66,7 +66,7 @@ namespace API.Controllers
             {
                 var spec = new GetCategoriesWithParentsSpecification(id);
 
-                var category = await _categoryRepository.GetEntityWithSpec(spec);
+                var category = await _unitOfWork.Repository<Category>().GetEntityWithSpec(spec);
 
                 if (category == null) return NotFound(new ApiResponse(404));
 

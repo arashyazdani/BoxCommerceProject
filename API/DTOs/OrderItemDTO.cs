@@ -1,5 +1,8 @@
-﻿namespace API.DTOs
+﻿using System.ComponentModel;
+
+namespace API.DTOs
 {
+    [DisplayName("Order Item")]
     public class OrderItemDTO
     {
         public int ProductId { get; set; }

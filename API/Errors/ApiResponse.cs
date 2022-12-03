@@ -1,6 +1,9 @@
-﻿namespace API.Errors
+﻿using System.ComponentModel;
+
+namespace API.Errors
 {
     // I made this file to have a standard structure for every responses from my API
+    [DisplayName("Api Response")]
     public class ApiResponse
     {
 

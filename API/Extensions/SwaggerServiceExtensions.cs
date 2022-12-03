@@ -13,7 +13,7 @@ namespace API.Extensions
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "BoxCommerce API", Version = "v1" });
 
                 c.CustomSchemaIds(x => x.GetCustomAttributes(false).OfType<DisplayNameAttribute>().FirstOrDefault()?.DisplayName ?? x.Name);
-
+                    
                 c.SchemaFilter<RegisterDtoExample>();
                 c.SchemaFilter<LoginDtoExample>();
 

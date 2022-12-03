@@ -1,5 +1,8 @@
-﻿namespace Domain.Entities
+﻿using System.ComponentModel;
+
+namespace Domain.Entities
 {
+    [DisplayName("Vehicle Parts Table")]
     public class VehiclesPart
     {
         public Product Product { get; set; }

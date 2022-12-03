@@ -1,5 +1,8 @@
-﻿namespace Domain.Entities
+﻿using System.ComponentModel;
+
+namespace Domain.Entities
 {
+    [DisplayName("Vehicle Inventory Table")]
     public class VehiclesInventory
     {
         // I used GUID for Id because we need a uniq number and unpredictable for using to each vehicle.

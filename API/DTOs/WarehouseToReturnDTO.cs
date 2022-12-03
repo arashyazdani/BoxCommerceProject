@@ -1,5 +1,8 @@
-﻿namespace API.DTOs
+﻿using System.ComponentModel;
+
+namespace API.DTOs
 {
+    [DisplayName("Warehouse")]
     public class WarehouseToReturnDto
     {
         public int Id { get; set; }

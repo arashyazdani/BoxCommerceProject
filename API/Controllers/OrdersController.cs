@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using API.DTOs;
+﻿using API.DTOs;
 using API.Errors;
 using API.Extensions;
 using AutoMapper;
-using Domain.Entities.Identity;
 using Domain.Entities.OrderAggregate;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace API.Helpers
 {
+    [DisplayName("Pagination")]
     public class Pagination<T> where T : class
     {
         public Pagination(int pageIndex, int pageSize, int count, IReadOnlyList<T> data)

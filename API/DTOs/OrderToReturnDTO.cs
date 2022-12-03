@@ -1,7 +1,9 @@
-﻿using Domain.Entities.OrderAggregate;
+﻿using System.ComponentModel;
+using Domain.Entities.OrderAggregate;
 
 namespace API.DTOs
 {
+    [DisplayName("Order Return")]
     public class OrderToReturnDTO
     {
         public int Id { get; set; }

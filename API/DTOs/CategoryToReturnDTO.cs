@@ -1,7 +1,9 @@
-﻿using Domain.Entities;
+﻿using System.ComponentModel;
+using Domain.Entities;
 
 namespace API.DTOs
 {
+    [DisplayName("Return Category")]
     public class CategoryToReturnDto
     {
         public int Id { get; set; }

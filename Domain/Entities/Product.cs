@@ -1,7 +1,9 @@
-﻿using Domain.Entities.BaseEntities;
+﻿using System.ComponentModel;
+using Domain.Entities.BaseEntities;
 
 namespace Domain.Entities
 {
+    [DisplayName("Product Table")]
     public class Product : BaseFields
     {
         public Category Category { get; set; }
