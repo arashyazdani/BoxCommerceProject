@@ -3,6 +3,7 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.Entities.Identity;
 using Domain.Entities.OrderAggregate;
+using Domain.Specifications;
 
 namespace API.Helpers
 {
@@ -24,6 +25,7 @@ namespace API.Helpers
             CreateMap<AddressDTO, Address>().ReverseMap();
             CreateMap<OrderAddress, AddressDTO>().ReverseMap();
             CreateMap<AddressDTO, OrderAddress>();
+            CreateMap<CreateCategoryParams, Category>();
             CreateMap<Order, OrderToReturnDTO>()
                 .ForMember(d => d.DeliveryMethod, o => o.MapFrom(s => s.DeliveryMethod.ShortName))
                 .ForMember(d => d.ShippingPrice, o => o.MapFrom(s => s.DeliveryMethod.Price))

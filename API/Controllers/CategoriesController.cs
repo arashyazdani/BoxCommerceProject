@@ -5,6 +5,7 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
 using Domain.Specifications;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -13,17 +14,15 @@ namespace API.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IGenericRepository<Vehicle> _vehicleRepository;
 
-        public CategoriesController(IUnitOfWork unitOfWork, IMapper mapper, IGenericRepository<Vehicle> vehicleRepository)
+        public CategoriesController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _vehicleRepository = vehicleRepository;
         }
 
         [Cached(600)]
-        [HttpGet("GetCategories")]
+        [HttpGet("getcategories")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
@@ -56,7 +55,7 @@ namespace API.Controllers
         }
 
         [Cached(600)]
-        [HttpGet("GetCategoryById/{id}")]
+        [HttpGet("getcategorybyid/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
@@ -81,5 +80,60 @@ namespace API.Controllers
             }
         }
 
+        [HttpPost("createcategory")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<CategoryToReturnDto>> CreateCategory([FromQuery] CreateCategoryParams createCategoryParams)
+        {
+            try
+            {
+                var categoryEntity = _mapper.Map<CreateCategoryParams, Category>(createCategoryParams);
+
+                await _unitOfWork.Repository<Category>().InsertAsync(categoryEntity);
+
+                var result = await _unitOfWork.Complete();
+
+                if (result <= 0) return BadRequest(new ApiResponse(400));
+
+                var returnDto = _mapper.Map<Category, CategoryToReturnDto>(categoryEntity);
+
+                return new OkObjectResult(new ApiResponse(200, "Ok", returnDto));
+               
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse(400, ex.Message));
+            }
+        }
+
+        [HttpDelete("DeleteCategoryById/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<CategoryToReturnDto>> DeleteCategoryById(int id)
+        {
+            try
+            {
+                var spec = new GetCategoriesWithParentsSpecification(id);
+
+                var category = await _unitOfWork.Repository<Category>().GetEntityWithSpec(spec);
+
+                if (category == null) return NotFound(new ApiResponse(404));
+
+                await _unitOfWork.Repository<Category>().DeleteAsync(id);
+
+                var result = await _unitOfWork.Complete();
+
+                if (result <= 0) return BadRequest(new ApiResponse(400));
+
+
+                return new OkObjectResult(new ApiResponse(200, "Category has been deleted."));
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse(400, ex.Message));
+            }
+        }
     }
 }
