@@ -37,6 +37,10 @@ namespace Infrastructure.Data.Repositories
 
         public async Task<bool> DeleteBasketAsync(string basketId)
         {
+            var data = await _database.StringGetAsync(basketId);
+
+            if(data.IsNullOrEmpty) return false;
+
             return await _database.KeyDeleteAsync(basketId);
         }
     }

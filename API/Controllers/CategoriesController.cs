@@ -97,7 +97,7 @@ namespace API.Controllers
 
                 var returnDto = _mapper.Map<Category, CategoryToReturnDto>(categoryEntity);
 
-                return new OkObjectResult(new ApiResponse(200, "Ok", returnDto));
+                return new OkObjectResult(new ApiResponse(201, "Category has been created successfully.", returnDto));
                
             }
             catch (Exception ex)

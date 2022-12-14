@@ -24,7 +24,7 @@ namespace API.Controllers
             return Ok(basket ?? new CustomerBasket(id));
         }
 
-        [HttpPost]
+        [HttpPut]
         public async Task<ActionResult<CustomerBasket>> UpdateBasket(CustomerBasketDto basket)
         {
             var customerBasket = _mapper.Map<CustomerBasketDto, CustomerBasket>(basket);
