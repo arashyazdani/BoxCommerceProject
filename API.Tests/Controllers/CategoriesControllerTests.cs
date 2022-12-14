@@ -36,7 +36,6 @@ namespace API.Tests.Controllers
 
         }
 
-
         [Fact]
         public async Task Get_OK_ObjectResult_CategoryById()
         {
@@ -44,7 +43,11 @@ namespace API.Tests.Controllers
             Category newCategory = CreateTestCategory();
 
             var spec = new GetCategoriesWithParentsSpecification(1);
-            _unitOfWork.Setup(x => x.Repository<Category>().GetEntityWithSpec(spec)).ReturnsAsync(newCategory)
+            //_unitOfWork.Setup(x => x.Repository<Category>().GetEntityWithSpec(spec)).ReturnsAsync(newCategory)
+            //    .Verifiable();
+            _unitOfWork.Setup(x => x.Repository<Category>()
+                    .GetEntityWithSpec(It.IsAny<ISpecification<Category>>()))
+                .ReturnsAsync(newCategory)
                 .Verifiable();
 
             //Act
@@ -53,6 +56,8 @@ namespace API.Tests.Controllers
 
             var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object);
             
+            // Act
+
             var result = await controller.GetCategoryById(1);
 
             // Assert
