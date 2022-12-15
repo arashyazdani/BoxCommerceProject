@@ -12,7 +12,7 @@ namespace Infrastructure.Data
     public class UnitOfWork : IUnitOfWork
     {
         private readonly FactoryContext _context;
-        private Hashtable _repositories;
+        private Hashtable? _repositories;
 
         public UnitOfWork(FactoryContext context)
         {

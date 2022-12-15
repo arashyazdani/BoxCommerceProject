@@ -2,6 +2,7 @@
 
 namespace API.DTOs
 {
+    // I used DisplayName because I want to display a correct and meaningful name in Swagger Schemas
     [DisplayName("Product Return")]
     public class ProductToReturnDto
     {

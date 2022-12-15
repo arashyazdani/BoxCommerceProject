@@ -12,6 +12,7 @@ namespace API.Extensions
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "BoxCommerce API", Version = "v1" });
 
+                // I used DisplayName because I want to display a correct and meaningful name in Swagger Schemas
                 c.CustomSchemaIds(x => x.GetCustomAttributes(false).OfType<DisplayNameAttribute>().FirstOrDefault()?.DisplayName ?? x.Name);
                     
                 c.SchemaFilter<RegisterDtoExample>();
