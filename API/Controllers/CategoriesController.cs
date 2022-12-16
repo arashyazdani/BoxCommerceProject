@@ -23,117 +23,84 @@ namespace API.Controllers
 
         [Cached(600)]
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+
         public async Task<ActionResult<Pagination<CategoryToReturnDto>>> GetCategories([FromQuery] CategorySpecificationParams specParams)
         {
-            try
-            {
-                var spec = new GetCategoriesWithParentsSpecification(specParams);
 
-                var countSpec = new GetCategoriesForCountWithParentsSpecification(specParams);
+            var spec = new GetCategoriesWithParentsSpecification(specParams);
 
-                var totalItems = await _unitOfWork.Repository<Category>().CountAsync(countSpec);
+            var countSpec = new GetCategoriesForCountWithParentsSpecification(specParams);
 
-                var categories = await _unitOfWork.Repository<Category>().ListWithSpecAsync(spec);
+            var totalItems = await _unitOfWork.Repository<Category>().CountAsync(countSpec);
 
-                if (categories == null || categories.Count == 0) return NotFound(new ApiResponse(404));
+            var categories = await _unitOfWork.Repository<Category>().ListWithSpecAsync(spec);
 
-                var data = _mapper.Map<IReadOnlyList<Category>, IReadOnlyList<CategoryToReturnDto>>(categories);
+            if (categories == null || categories.Count == 0) return NotFound(new ApiResponse(404));
 
-                var returnCategories =
-                    new Pagination<CategoryToReturnDto>(specParams.PageIndex, specParams.PageSize, totalItems, data);
+            var data = _mapper.Map<IReadOnlyList<Category>, IReadOnlyList<CategoryToReturnDto>>(categories);
 
-                //return Ok(returnCategories);
-                return new OkObjectResult(new ApiResponse(200, "Ok", returnCategories));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new ApiResponse(400, ex.Message));
-            }
+            var returnCategories =
+                new Pagination<CategoryToReturnDto>(specParams.PageIndex, specParams.PageSize, totalItems, data);
+
+            //return Ok(returnCategories);
+            return new OkObjectResult(new ApiResponse(200, "Ok", returnCategories));
+
         }
 
         [Cached(600)]
-        [HttpGet("{id:int}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        [HttpGet("{id}")]
         public async Task<ActionResult<CategoryToReturnDto>> GetCategoryById(int id)
         {
-            try
-            {
-                var spec = new GetCategoriesWithParentsSpecification(id);
 
-                var category = await _unitOfWork.Repository<Category>().GetEntityWithSpec(spec);
+            var spec = new GetCategoriesWithParentsSpecification(id);
 
-                if (category == null) return NotFound(new ApiResponse(404));
+            var category = await _unitOfWork.Repository<Category>().GetEntityWithSpec(spec);
 
-                var returnCategories = _mapper.Map<Category, CategoryToReturnDto>(category);
+            if (category == null) return NotFound(new ApiResponse(404));
 
-                return new OkObjectResult(new ApiResponse(200, "Ok", returnCategories));
+            var returnCategories = _mapper.Map<Category, CategoryToReturnDto>(category);
 
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new ApiResponse(400, ex.Message));
-            }
+            return new OkObjectResult(new ApiResponse(200, "Ok", returnCategories));
+
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<CategoryToReturnDto>> CreateCategory([FromQuery] CreateCategoryParams createCategoryParams)
         {
-            try
-            {
-                var categoryEntity = _mapper.Map<CreateCategoryParams, Category>(createCategoryParams);
 
-                await _unitOfWork.Repository<Category>().InsertAsync(categoryEntity);
+            var categoryEntity = _mapper.Map<CreateCategoryParams, Category>(createCategoryParams);
 
-                var result = await _unitOfWork.Complete();
+            await _unitOfWork.Repository<Category>().InsertAsync(categoryEntity);
 
-                if (result <= 0) return BadRequest(new ApiResponse(400));
+            var result = await _unitOfWork.Complete();
 
-                var returnDto = _mapper.Map<Category, CategoryToReturnDto>(categoryEntity);
+            if (result <= 0) return BadRequest(new ApiResponse(400));
 
-                return new OkObjectResult(new ApiResponse(201, "Category has been created successfully.", returnDto));
-               
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new ApiResponse(400, ex.Message));
-            }
+            var returnDto = _mapper.Map<Category, CategoryToReturnDto>(categoryEntity);
+
+            return new OkObjectResult(new ApiResponse(201, "Category has been created successfully.", returnDto));
+
         }
 
-        [HttpDelete("{id:int}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<CategoryToReturnDto>> DeleteCategoryById(int id)
         {
-            try
-            {
-                var spec = new GetCategoriesWithParentsSpecification(id);
 
-                var category = await _unitOfWork.Repository<Category>().GetEntityWithSpec(spec);
+            var spec = new GetCategoriesWithParentsSpecification(id);
 
-                if (category == null) return NotFound(new ApiResponse(404));
+            var category = await _unitOfWork.Repository<Category>().GetEntityWithSpec(spec);
 
-                await _unitOfWork.Repository<Category>().DeleteAsync(id);
+            if (category == null) return NotFound(new ApiResponse(404));
 
-                var result = await _unitOfWork.Complete();
+            await _unitOfWork.Repository<Category>().DeleteAsync(id);
 
-                if (result <= 0) return BadRequest(new ApiResponse(400));
+            var result = await _unitOfWork.Complete();
+
+            if (result <= 0) return BadRequest(new ApiResponse(400));
 
 
-                return new OkObjectResult(new ApiResponse(200, "Category has been deleted."));
+            return new OkObjectResult(new ApiResponse(200, "Category has been deleted."));
 
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new ApiResponse(400, ex.Message));
-            }
         }
     }
 }
