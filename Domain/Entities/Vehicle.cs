@@ -3,7 +3,6 @@ using Domain.Entities.BaseEntities;
 
 namespace Domain.Entities
 {
-    [DisplayName("Vehicle Table")]
     public class Vehicle : BaseFields
     {
         public decimal Price { get; set; }

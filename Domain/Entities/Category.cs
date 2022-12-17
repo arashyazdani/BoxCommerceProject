@@ -3,7 +3,6 @@ using Domain.Entities.BaseEntities;
 
 namespace Domain.Entities
 {
-    [DisplayName("Category Table")]
     public class Category : BaseFields
     {
         public int? ParentCategoryId { get; set; }

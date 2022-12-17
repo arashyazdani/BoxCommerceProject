@@ -2,7 +2,6 @@
 
 namespace Domain.Entities
 {
-    [DisplayName("Product Inventory Table")]
     public class ProductsInventory
     {
         // I used GUID for Id because we need a uniq number and unpredictable for using to each product.
