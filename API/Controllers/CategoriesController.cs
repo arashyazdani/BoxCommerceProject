@@ -72,7 +72,7 @@ namespace API.Controllers
                 var spec = new GetCategoriesWithParentsSpecification((int)createCategoryParams.ParentCategoryId);
 
                 var categoryExists = await _unitOfWork.Repository<Category>().GetEntityWithSpec(spec);
-                //var categoryExists = await GetCategoryById((int)createCategoryParams.ParentCategoryId);
+                
                 if (categoryExists == null) return NotFound(new ApiResponse(404,"The ParentCategoryId is not found."));
             }
 
