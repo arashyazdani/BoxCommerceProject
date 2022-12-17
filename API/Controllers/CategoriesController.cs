@@ -48,7 +48,7 @@ namespace API.Controllers
         }
 
         [Cached(600)]
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetCategory")]
         public async Task<ActionResult<CategoryToReturnDto>> GetCategoryById(int id)
         {
 
@@ -67,6 +67,14 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<CategoryToReturnDto>> CreateCategory([FromQuery] CreateCategoryParams createCategoryParams)
         {
+            if (createCategoryParams.ParentCategoryId != null)
+            {
+                var spec = new GetCategoriesWithParentsSpecification((int)createCategoryParams.ParentCategoryId);
+
+                var categoryExists = await _unitOfWork.Repository<Category>().GetEntityWithSpec(spec);
+                //var categoryExists = await GetCategoryById((int)createCategoryParams.ParentCategoryId);
+                if (categoryExists == null) return NotFound(new ApiResponse(404,"The ParentCategoryId is not found."));
+            }
 
             var categoryEntity = _mapper.Map<CreateCategoryParams, Category>(createCategoryParams);
 
@@ -78,7 +86,7 @@ namespace API.Controllers
 
             var returnDto = _mapper.Map<Category, CategoryToReturnDto>(categoryEntity);
 
-            return new OkObjectResult(new ApiResponse(201, "Category has been created successfully.", returnDto));
+            return new CreatedAtRouteResult("GetCategory", new { id = categoryEntity.Id }, new ApiResponse(201, "Category has been created successfully.", returnDto));
 
         }
 
