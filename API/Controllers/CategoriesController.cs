@@ -14,16 +14,17 @@ namespace API.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IResponseCacheService _responseCache;
 
-        public CategoriesController(IUnitOfWork unitOfWork, IMapper mapper)
+        public CategoriesController(IUnitOfWork unitOfWork, IMapper mapper, IResponseCacheService responseCache)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _responseCache = responseCache;
         }
 
         [Cached(600)]
         [HttpGet]
-
         public async Task<ActionResult<Pagination<CategoryToReturnDto>>> GetCategories([FromQuery] CategorySpecificationParams specParams)
         {
 
@@ -41,7 +42,7 @@ namespace API.Controllers
 
             var returnCategories =
                 new Pagination<CategoryToReturnDto>(specParams.PageIndex, specParams.PageSize, totalItems, data);
-
+            await _responseCache.DeleteRangeOfKeysAsync("Categories");
             //return Ok(returnCategories);
             return new OkObjectResult(new ApiResponse(200, "Ok", returnCategories));
 
@@ -64,6 +65,7 @@ namespace API.Controllers
 
         }
 
+        
         [HttpPost]
         public async Task<ActionResult<CategoryToReturnDto>> CreateCategory([FromQuery] CreateCategoryParams createCategoryParams)
         {
@@ -90,8 +92,38 @@ namespace API.Controllers
 
         }
 
+        [HttpPut]
+        public async Task<ActionResult<CategoryToReturnDto>> UpdateCategory([FromQuery] UpdateCategoryParams updateCategoryParams)
+        {
+            if (updateCategoryParams.ParentCategoryId != null)
+            {
+                var spec = new GetCategoriesWithParentsSpecification((int)updateCategoryParams.ParentCategoryId);
+
+                var categoryExists = await _unitOfWork.Repository<Category>().GetEntityWithSpec(spec);
+
+                if (categoryExists == null) return NotFound(new ApiResponse(404, "The ParentCategoryId is not found."));
+            }
+
+            var specCategory = new GetCategoriesWithParentsSpecification(updateCategoryParams.Id);
+
+            var category = await _unitOfWork.Repository<Category>().GetEntityWithSpec(specCategory);
+
+            if (category == null) return NotFound(new ApiResponse(404, "The category is not found."));
+
+            var categoryEntity = _mapper.Map<UpdateCategoryParams, Category>(updateCategoryParams);
+
+            _unitOfWork.Repository<Category>().Update(categoryEntity);
+
+            var result = await _unitOfWork.Complete();
+
+            if (result <= 0) return BadRequest(new ApiResponse(400));
+
+            return NoContent();
+
+        }
+
         [HttpDelete("{id}")]
-        public async Task<ActionResult<CategoryToReturnDto>> DeleteCategoryById(int id)
+        public async Task<ActionResult> DeleteCategoryById(int id)
         {
 
             var spec = new GetCategoriesWithParentsSpecification(id);
@@ -106,8 +138,9 @@ namespace API.Controllers
 
             if (result <= 0) return BadRequest(new ApiResponse(400));
 
-
-            return new OkObjectResult(new ApiResponse(200, "Category has been deleted."));
+            await _responseCache.DeleteRangeOfKeysAsync("Categories");
+            //return new OkObjectResult(new ApiResponse(200, "Category has been deleted."));
+            return NoContent();
 
         }
     }

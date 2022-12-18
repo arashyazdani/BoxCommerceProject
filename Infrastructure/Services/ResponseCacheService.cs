@@ -40,5 +40,17 @@ namespace Infrastructure.Services
 
             return cachedResponse;
         }
+
+        public async Task DeleteRangeOfKeysAsync(string value)
+        {
+
+            foreach (var ep in _database.Multiplexer.GetEndPoints())
+            {
+                var server = _database.Multiplexer.GetServer(ep);
+                var keys = server.Keys(database: _database.Database, pattern: $"*{value}*").ToArray();
+                await _database.KeyDeleteAsync(keys);
+            }
+
+        }
     }
 }

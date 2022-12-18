@@ -26,6 +26,7 @@ namespace API.Helpers
             CreateMap<OrderAddress, AddressDTO>().ReverseMap();
             CreateMap<AddressDTO, OrderAddress>();
             CreateMap<CreateCategoryParams, Category>();
+            CreateMap<UpdateCategoryParams, Category>();
             CreateMap<Order, OrderToReturnDTO>()
                 .ForMember(d => d.DeliveryMethod, o => o.MapFrom(s => s.DeliveryMethod.ShortName))
                 .ForMember(d => d.ShippingPrice, o => o.MapFrom(s => s.DeliveryMethod.Price))

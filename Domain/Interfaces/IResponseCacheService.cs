@@ -11,5 +11,7 @@ namespace Domain.Interfaces
         Task CacheResponseAsync(string cacheKey, object response, TimeSpan timeToLive);
 
         Task<string> GetCachedResponseAsync(string cacheKey);
+
+        Task DeleteRangeOfKeysAsync(string value);
     }
 }
