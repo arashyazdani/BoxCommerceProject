@@ -139,7 +139,7 @@ namespace API.Controllers
             if (result <= 0) return BadRequest(new ApiResponse(400));
 
             await _responseCache.DeleteRangeOfKeysAsync("Categories");
-            //return new OkObjectResult(new ApiResponse(200, "Category has been deleted."));
+            
             return NoContent();
 
         }
