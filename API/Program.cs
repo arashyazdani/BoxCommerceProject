@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Serialization;
 using StackExchange.Redis;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -26,7 +27,16 @@ IWebHostEnvironment environment = builder.Environment;
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(setupAction =>
+    {
+        setupAction.ReturnHttpNotAcceptable = true;
+
+    }).AddNewtonsoftJson(setupAction =>
+    {
+        setupAction.SerializerSettings.ContractResolver =
+            new CamelCasePropertyNamesContractResolver();
+    })
+    .AddXmlDataContractSerializerFormatters();
 
 builder.Services.AddEndpointsApiExplorer();
 

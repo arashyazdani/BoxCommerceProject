@@ -4,6 +4,7 @@ using Domain.Entities;
 using Domain.Entities.Identity;
 using Domain.Entities.OrderAggregate;
 using Domain.Specifications;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace API.Helpers
 {
@@ -27,6 +28,8 @@ namespace API.Helpers
             CreateMap<AddressDTO, OrderAddress>();
             CreateMap<CreateCategoryParams, Category>();
             CreateMap<UpdateCategoryParams, Category>();
+            CreateMap<JsonPatchDocument<UpdateCategoryParams>, Category>();
+            CreateMap<Category,UpdateCategoryParams>();
             CreateMap<Order, OrderToReturnDTO>()
                 .ForMember(d => d.DeliveryMethod, o => o.MapFrom(s => s.DeliveryMethod.ShortName))
                 .ForMember(d => d.ShippingPrice, o => o.MapFrom(s => s.DeliveryMethod.Price))

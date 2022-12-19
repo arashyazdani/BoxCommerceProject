@@ -27,4 +27,8 @@
 	  <None Include="Data\SeedData\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Data\Repositories\RedisRepository.cs" />
+  </ItemGroup>
+
 </Project>

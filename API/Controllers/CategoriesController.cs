@@ -1,4 +1,6 @@
-﻿using API.DTOs;
+﻿//using System.Text.Json;
+using System.Xml.XPath;
+using API.DTOs;
 using API.Errors;
 using API.Helpers;
 using AutoMapper;
@@ -6,7 +8,13 @@ using Domain.Entities;
 using Domain.Interfaces;
 using Domain.Specifications;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Converters;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace API.Controllers
 {
@@ -42,8 +50,7 @@ namespace API.Controllers
 
             var returnCategories =
                 new Pagination<CategoryToReturnDto>(specParams.PageIndex, specParams.PageSize, totalItems, data);
-            await _responseCache.DeleteRangeOfKeysAsync("Categories");
-            //return Ok(returnCategories);
+            
             return new OkObjectResult(new ApiResponse(200, "Ok", returnCategories));
 
         }
@@ -93,7 +100,7 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<CategoryToReturnDto>> UpdateCategory([FromQuery] UpdateCategoryParams updateCategoryParams)
+        public async Task<ActionResult> UpdateCategory([FromQuery] UpdateCategoryParams updateCategoryParams)
         {
             if (updateCategoryParams.ParentCategoryId != null)
             {
@@ -110,17 +117,47 @@ namespace API.Controllers
 
             if (category == null) return NotFound(new ApiResponse(404, "The category is not found."));
 
-            var categoryEntity = _mapper.Map<UpdateCategoryParams, Category>(updateCategoryParams);
-
-            _unitOfWork.Repository<Category>().Update(categoryEntity);
+            _mapper.Map(updateCategoryParams, category);
 
             var result = await _unitOfWork.Complete();
 
             if (result <= 0) return BadRequest(new ApiResponse(400));
 
+            await _responseCache.DeleteRangeOfKeysAsync("Categories");
+
             return NoContent();
 
         }
+       
+        [HttpPatch("id")]
+        public async Task<ActionResult> PartiallyUpdateCategory(int id, JsonPatchDocument<UpdateCategoryParams> updateCategoryParams)
+        {
+
+            var specCategory = new GetCategoriesWithParentsSpecification(id);
+
+            var category = await _unitOfWork.Repository<Category>().GetEntityWithSpec(specCategory);
+
+            if (category == null) return NotFound(new ApiResponse(404, "The category is not found."));
+
+            var categoryToPatch = _mapper.Map<UpdateCategoryParams>(category);
+
+            updateCategoryParams.ApplyTo(categoryToPatch, ModelState);
+
+            if (!TryValidateModel(categoryToPatch))
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            _mapper.Map(categoryToPatch, category);
+
+            var result = await _unitOfWork.Complete();
+
+            await _responseCache.DeleteRangeOfKeysAsync("Categories");
+
+            return NoContent();
+
+        }
+
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteCategoryById(int id)
@@ -142,6 +179,14 @@ namespace API.Controllers
             
             return NoContent();
 
+        }
+
+        public override ActionResult ValidationProblem(
+            [ActionResultObjectValue] ModelStateDictionary modelStateDictionary)
+        {
+            var options = HttpContext.RequestServices
+                .GetRequiredService<IOptions<ApiBehaviorOptions>>();
+            return (ActionResult)options.Value.InvalidModelStateResponseFactory(ControllerContext);
         }
     }
 }
