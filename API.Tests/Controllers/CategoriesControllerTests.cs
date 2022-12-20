@@ -67,95 +67,39 @@ namespace API.Tests.Controllers
             result.Result.ShouldBeOfType(expectedActionResultType);
         }
 
-        [Fact]
-        public async Task GetCategoryById_Should_Be_OK_ObjectResult()
+        [Theory]
+        [CategoryListTest]
+        public async Task Test_OK_And_NotFound_ObjectResult_GetCategories(List<Category> categoryList, Type expectedActionResultType)
         {
             //Arrange
-            Category newCategory = CreateTestCategory();
+            //var categoryList = FakeData.CreateListOfTestCategory();
 
-            var spec = new GetCategoriesWithParentsSpecification(1);
+            //var spec = new GetCategoriesWithParentsSpecification(1);
 
             _unitOfWork.Setup(x => x.Repository<Category>()
-                    .GetEntityWithSpec(It.IsAny<ISpecification<Category>>()))
-                .ReturnsAsync(newCategory)
+                    .ListWithSpecAsync(It.IsAny<ISpecification<Category>>()))
+                .ReturnsAsync(categoryList)
                 .Verifiable();
 
             var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
             
+            var specParams = new CategorySpecificationParams();
+
             // Act
 
-            var result = await controller.GetCategoryById(1);
+            var result = await controller.GetCategories(specParams);
 
             // Assert
 
-            result.Value?.Id.ShouldBe(newCategory.Id);
-            result.Value?.Name.ShouldBeEquivalentTo(newCategory.Name);
-            result.Value?.Name.ShouldBeEquivalentTo("newCategory.Name");
-            result.Result.ShouldBeOfType<OkObjectResult>();
+            result.Result.ShouldBeOfType(expectedActionResultType);
             
-        }
-
-        [Fact]
-        public async Task GetCategoryById_Should_Be_NotFound_ObjectResult_()
-        {
-            //Arrange
-            Category newCategory = CreateTestCategory();
-
-            var spec = new GetCategoriesWithParentsSpecification(100);
-
-
-            _unitOfWork.Setup(x => x.Repository<Category>()
-                    .GetEntityWithSpec(It.IsAny<ISpecification<Category>>()))
-                .ReturnsAsync(It.IsAny<Category>())
-                .Verifiable();
-
-            var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
-
-            // Act
-
-            var result = await controller.GetCategoryById(100);
-
-            // Assert
-
-
-            result.Result.ShouldBeOfType<NotFoundObjectResult>();
-
-        }
-
-        [Fact]
-        public async Task GetCategoryById_Should_Be_BadRequest_ObjectResult_()
-        {
-            //Arrange
-            Category newCategory = CreateTestCategory();
-            _apiResponse.Setup(x => x.StatusCode == 400 && x.Data == new Category() && x.Message == "Bad request");
-
-            var spec = new GetCategoriesWithParentsSpecification(-100);
-
-            var newError = new BadRequestObjectResult(new ApiResponse(400));
-
-            _unitOfWork.Setup(x => x.Repository<Category>()
-                    .GetEntityWithSpec(It.IsAny<ISpecification<Category>>()))
-                .ReturnsAsync(It.IsAny<Category>())
-                .Verifiable();
-
-            var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
-
-            // Act
-
-            var result = await controller.GetCategoryById(-100);
-
-            // Assert
-
-
-            result.Result.ShouldBeOfType<BadRequestObjectResult>();
-
         }
 
         [Fact]
         public async Task Get_Category_By_Id_Should_Not_Be_Null()
         {
             //Arrange
-            Category newCategory = CreateTestCategory();
+            Category newCategory = FakeData.CreateTestCategory();
 
             var spec = new GetCategoriesWithParentsSpecification(1);
             _unitOfWork.Setup(x => x.Repository<Category>().GetEntityWithSpec(spec)).ReturnsAsync(newCategory)
@@ -174,16 +118,5 @@ namespace API.Tests.Controllers
             result.Name.ShouldBeEquivalentTo(newCategory.Name);
         }
 
-        private Category CreateTestCategory()
-        {
-            return new Category()
-            {
-                Id = 1,
-                Priority = 1,
-                Name = "Test Category",
-                Enabled = true,
-                Details = "Testing category data"
-            };
-        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
 
 
 namespace API.Tests.DataAttribute
@@ -11,17 +12,22 @@ namespace API.Tests.DataAttribute
         {
             yield return new object[]
             {1,
-                new Category()
-                {
-                    Id = 1,
-                    Priority = 1,
-                    Name = "Test Category",
-                    Enabled = true,
-                    Details = "Testing category data"
-                },
+                FakeData.CreateTestCategory(),
                 typeof(OkObjectResult)
             };
-            yield return new object[] {100, new Category(), typeof(OkObjectResult) };
+            yield return new object[] {100, It.IsAny<Category>(), typeof(NotFoundObjectResult) };
+        }
+
+        private Category CreateTestCategory()
+        {
+            return new Category()
+            {
+                Id = 1,
+                Priority = 1,
+                Name = "Test Category",
+                Enabled = true,
+                Details = "Testing category data"
+            };
         }
     }
 }
