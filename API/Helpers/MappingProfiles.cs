@@ -28,7 +28,6 @@ namespace API.Helpers
             CreateMap<AddressDTO, OrderAddress>();
             CreateMap<CreateCategoryParams, Category>();
             CreateMap<UpdateCategoryParams, Category>();
-            CreateMap<JsonPatchDocument<UpdateCategoryParams>, Category>();
             CreateMap<Category,UpdateCategoryParams>();
             CreateMap<Order, OrderToReturnDTO>()
                 .ForMember(d => d.DeliveryMethod, o => o.MapFrom(s => s.DeliveryMethod.ShortName))
