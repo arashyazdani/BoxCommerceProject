@@ -26,14 +26,17 @@ namespace API.Tests.DataAttribute
             var categoryList = new List<Category>();
             for (int i = 0; i < 10; i++)
             {
-                categoryList.Add(new Category()
+                var newCategory = new Category()
                 {
                     Id = i,
                     Priority = i,
                     Name = $"Test Category {i}",
                     Enabled = true,
-                    Details = $"Testing category data {i}"
-                });
+                    Details = $"Testing category data {i}",
+                    
+                };
+                if(i>7) newCategory.ParentCategoryId = 1;
+                categoryList.Add(newCategory);
             }
 
             return categoryList;
