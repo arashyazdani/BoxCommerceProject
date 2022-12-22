@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using API.DTOs;
@@ -35,7 +36,7 @@ namespace API.Tests.DataAttribute
             };
         }
 
-        public static CreateCategoryParams InsertTestCategory()
+        public static CreateCategoryParams InsertTestCategory(int? categoryId)
         {
             return new CreateCategoryParams()
             {
@@ -43,6 +44,7 @@ namespace API.Tests.DataAttribute
                 Name = "Test Category",
                 Enabled = true,
                 Details = "Testing category data",
+                ParentCategoryId = categoryId
             };
         }
 

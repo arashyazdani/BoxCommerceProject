@@ -46,7 +46,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [CategoryTestFields]
-        public async Task Test_OK_And_NotFound_ObjectResult_GetCategoryById(int id, Category newCategory, Type expectedActionResultType)
+        public async Task GetCategoryById_Test_OK_And_NotFound_ObjectResult(int id, Category newCategory, Type expectedActionResultType)
         {
             // Arrange
 
@@ -70,7 +70,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [CategoryListTest]
-        public async Task Test_OK_And_NotFound_ObjectResult_GetCategories(List<Category> categoryList, Type expectedActionResultType)
+        public async Task GetCategories_Test_OK_And_NotFound_ObjectResult(List<Category> categoryList, Type expectedActionResultType)
         {
             //Arrange
             //var categoryList = FakeData.CreateListOfTestCategory();
@@ -120,27 +120,23 @@ namespace API.Tests.Controllers
         }
 
 
-        [Fact]
-        public async Task CreateCategory_Should_Be_201_NoContent()
+        [Theory]
+        [CreateCategoryTest]
+        public async Task CreateCategory_Test_Ok_And_NotFound_And_Nocontent_ObjectResult(CreateCategoryParams newCategory, Category categoryEntity, CategoryToReturnDto categoryToReturnDto, Type expectedActionResultType)
         {
             // Arrange
-            var newCategory = FakeData.InsertTestCategory();
-            var categoryEntity = FakeData.CreateTestCategory();
-            var categoryReturnDto = FakeData.CreateTestCategoryToReturnDto();
 
             _unitOfWork.Setup(x => x.Repository<Category>().InsertAsync(It.IsAny<Category>()))
                 .Returns(Task.FromResult(newCategory)).Verifiable();
-            _unitOfWork.Setup(x=>x.Complete()).ReturnsAsync(1).Verifiable();
 
-            _mapper.Setup(x => x.Map<Category, CategoryToReturnDto>(It.IsAny<Category>())).Returns(categoryReturnDto);
+            if(expectedActionResultType!=typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+
+            _mapper.Setup(x => x.Map<Category, CategoryToReturnDto>(It.IsAny<Category>())).Returns(categoryToReturnDto);
+
             _mapper.Setup(x => x.Map<CreateCategoryParams, Category>(It.IsAny<CreateCategoryParams>())).Returns(categoryEntity);
 
             var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
 
-
-
-            var createdCategory = new CreatedAtRouteResult("GetCategory", new { id = 1 },
-                new ApiResponse(201, "Category has been created successfully.", categoryReturnDto));
 
             // Act
 
@@ -148,68 +144,17 @@ namespace API.Tests.Controllers
 
             // Assert
 
-            result.Result.ShouldBeEquivalentTo(createdCategory);
+            if (expectedActionResultType == typeof(CreatedAtRouteResult))
+            {
+                var createdCategory = new CreatedAtRouteResult("GetCategory", new { id = 1 },
+                    new ApiResponse(201, "Category has been created successfully.", categoryToReturnDto));
+
+                result.Result.ShouldBeEquivalentTo(createdCategory);
+            }
+            
+            result.Result.ShouldBeOfType(expectedActionResultType);
+
         }
 
-        [Fact]
-        public async Task CreateCategory_Should_Be_BadRequest()
-        {
-            // Arrange
-            var newCategory = FakeData.InsertTestCategory();
-            var categoryEntity = FakeData.CreateTestCategory();
-            var categoryReturnDto = FakeData.CreateTestCategoryToReturnDto();
-
-            _unitOfWork.Setup(x => x.Repository<Category>().InsertAsync(It.IsAny<Category>()))
-                .Returns(Task.FromResult(newCategory)).Verifiable();
-
-            _mapper.Setup(x => x.Map<Category, CategoryToReturnDto>(It.IsAny<Category>())).Returns(categoryReturnDto);
-            _mapper.Setup(x => x.Map<CreateCategoryParams, Category>(It.IsAny<CreateCategoryParams>())).Returns(categoryEntity);
-
-            var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
-
-
-
-            var createdCategory = new CreatedAtRouteResult("GetCategory", new { id = 1 },
-                new ApiResponse(201, "Category has been created successfully.", categoryReturnDto));
-
-            // Act
-
-            var result = await controller.CreateCategory(newCategory);
-
-            // Assert
-
-            result.Result.ShouldBeOfType(typeof(BadRequestObjectResult));
-        }
-
-        [Fact]
-        public async Task CreateCategory_Should_Be_NotFound()
-        {
-            // Arrange
-            var newCategory = FakeData.InsertTestCategory();
-            newCategory.ParentCategoryId = 200;
-            var categoryEntity = FakeData.CreateTestCategory();
-            var categoryReturnDto = FakeData.CreateTestCategoryToReturnDto();
-
-            _unitOfWork.Setup(x => x.Repository<Category>().InsertAsync(It.IsAny<Category>()))
-                .Returns(Task.FromResult(newCategory)).Verifiable();
-
-            _mapper.Setup(x => x.Map<Category, CategoryToReturnDto>(It.IsAny<Category>())).Returns(categoryReturnDto);
-            _mapper.Setup(x => x.Map<CreateCategoryParams, Category>(It.IsAny<CreateCategoryParams>())).Returns(categoryEntity);
-
-            var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
-
-
-
-            var createdCategory = new CreatedAtRouteResult("GetCategory", new { id = 1 },
-                new ApiResponse(201, "Category has been created successfully.", categoryReturnDto));
-
-            // Act
-
-            var result = await controller.CreateCategory(newCategory);
-
-            // Assert
-
-            result.Result.ShouldBeOfType(typeof(NotFoundObjectResult));
-        }
     }
 }
