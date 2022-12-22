@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.JavaScript;
 using System.Text;
 using System.Threading.Tasks;
 using API.DTOs;
@@ -10,42 +11,34 @@ using Domain.Specifications;
 
 namespace API.Tests.DataAttribute
 {
-    public static class FakeData
+    public static class FakeData<T> where T : class
     {
-        public static Category CreateTestCategory()
+        public static T CategoryData(int? categoryId)
         {
-            return new Category()
-            {
-                Id = 1,
-                Priority = 1,
-                Name = "Test Category",
-                Enabled = true,
-                Details = "Testing category data"
-            };
-        }
+            dynamic returnData = new Object();
 
-        public static CategoryToReturnDto CreateTestCategoryToReturnDto()
-        {
-            return new CategoryToReturnDto()
+            if (typeof(T) == typeof(Category))
             {
-                Id = 1,
-                Priority = 1,
-                Name = "Test Category",
-                Enabled = true,
-                Details = "Testing category data"
-            };
-        }
+                returnData = new Category();
+            }
+            else if (typeof(T) == typeof(CategoryToReturnDto))
+            {
+                returnData = new CategoryToReturnDto();
+            }
+            else if (typeof(T) == typeof(CreateCategoryParams))
+            {
+                returnData = new CreateCategoryParams();
+            }
 
-        public static CreateCategoryParams InsertTestCategory(int? categoryId)
-        {
-            return new CreateCategoryParams()
-            {
-                Priority = 1,
-                Name = "Test Category",
-                Enabled = true,
-                Details = "Testing category data",
-                ParentCategoryId = categoryId
-            };
+            if (typeof(T) != typeof(CreateCategoryParams)) returnData.Id = 1;
+            returnData.Priority = 1;
+            returnData.Name = "Test Category";
+            returnData.Enabled = true;
+            returnData.Details = "Testing category data";
+            if (categoryId != null) returnData.ParentCategoryId = categoryId;
+
+            return (T)(Object)returnData;
+
         }
 
         public static IReadOnlyList<Category> CreateListOfTestCategory()

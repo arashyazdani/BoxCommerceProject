@@ -2,27 +2,13 @@
 using AutoMapper;
 using Domain.Interfaces;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using API.Controllers;
-using System.Net.Http;
 using API.DTOs;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Shouldly;
 using Domain.Specifications;
-using System.Net.Sockets;
-using Stripe;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Infrastructure.Data;
-using API.Helpers;
 using API.Tests.DataAttribute;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace API.Tests.Controllers
 {
@@ -73,9 +59,6 @@ namespace API.Tests.Controllers
         public async Task GetCategories_Test_OK_And_NotFound_ObjectResult(List<Category> categoryList, Type expectedActionResultType)
         {
             //Arrange
-            //var categoryList = FakeData.CreateListOfTestCategory();
-
-            //var spec = new GetCategoriesWithParentsSpecification(1);
 
             _unitOfWork.Setup(x => x.Repository<Category>()
                     .ListWithSpecAsync(It.IsAny<ISpecification<Category>>()))
@@ -100,7 +83,7 @@ namespace API.Tests.Controllers
         public async Task Get_Category_By_Id_Should_Not_Be_Null()
         {
             //Arrange
-            Category newCategory = FakeData.CreateTestCategory();
+            Category newCategory = FakeData<Category>.CategoryData(null);
 
             var spec = new GetCategoriesWithParentsSpecification(1);
             _unitOfWork.Setup(x => x.Repository<Category>().GetEntityWithSpec(spec)).ReturnsAsync(newCategory)
@@ -133,6 +116,8 @@ namespace API.Tests.Controllers
 
             _mapper.Setup(x => x.Map<Category, CategoryToReturnDto>(It.IsAny<Category>())).Returns(categoryToReturnDto);
 
+            var createdCategory = new CreatedAtRouteResult("GetCategory", new { id = 1 }, new ApiResponse(201, "Category has been created successfully.", categoryToReturnDto));
+
             _mapper.Setup(x => x.Map<CreateCategoryParams, Category>(It.IsAny<CreateCategoryParams>())).Returns(categoryEntity);
 
             var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
@@ -144,17 +129,18 @@ namespace API.Tests.Controllers
 
             // Assert
 
-            if (expectedActionResultType == typeof(CreatedAtRouteResult))
-            {
-                var createdCategory = new CreatedAtRouteResult("GetCategory", new { id = 1 },
-                    new ApiResponse(201, "Category has been created successfully.", categoryToReturnDto));
-
-                result.Result.ShouldBeEquivalentTo(createdCategory);
-            }
+            if (expectedActionResultType == typeof(CreatedAtRouteResult)) result.Result.ShouldBeEquivalentTo(createdCategory);
             
             result.Result.ShouldBeOfType(expectedActionResultType);
 
         }
+
+        //[Fact]
+        //public async Task UpdateCategory_Should_Be_NoContent_Object_Result()
+        //{
+        //    _unitOfWork.Setup(x => x.Repository<Category>().InsertAsync(It.IsAny<Category>()))
+        //        .Returns(Task.FromResult(newCategory)).Verifiable();
+        //}
 
     }
 }

@@ -12,22 +12,11 @@ namespace API.Tests.DataAttribute
         {
             yield return new object[]
             {1,
-                FakeData.CreateTestCategory(),
+                FakeData<Category>.CategoryData(null),
                 typeof(OkObjectResult)
             };
             yield return new object[] {100, It.IsAny<Category>(), typeof(NotFoundObjectResult) };
         }
 
-        private Category CreateTestCategory()
-        {
-            return new Category()
-            {
-                Id = 1,
-                Priority = 1,
-                Name = "Test Category",
-                Enabled = true,
-                Details = "Testing category data"
-            };
-        }
     }
 }

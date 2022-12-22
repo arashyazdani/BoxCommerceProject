@@ -14,7 +14,7 @@ namespace API.Tests.DataAttribute
     {
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
-            yield return new object[] { FakeData.CreateListOfTestCategory(), typeof(OkObjectResult) };
+            yield return new object[] { FakeData<IReadOnlyList<Category>>.CreateListOfTestCategory(), typeof(OkObjectResult) };
             yield return new object[] { It.IsAny<List<Category>>(), typeof(NotFoundObjectResult) };
 
         }
