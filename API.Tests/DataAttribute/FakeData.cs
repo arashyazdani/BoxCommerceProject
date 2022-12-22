@@ -11,7 +11,7 @@ using Domain.Specifications;
 
 namespace API.Tests.DataAttribute
 {
-    public static class FakeData<T> where T : class
+    public class FakeData<T> where T : class
     {
         public static T CategoryData(int? categoryId)
         {
@@ -28,6 +28,10 @@ namespace API.Tests.DataAttribute
             else if (typeof(T) == typeof(CreateCategoryParams))
             {
                 returnData = new CreateCategoryParams();
+            }
+            else if (typeof(T) == typeof(UpdateCategoryParams))
+            {
+                returnData = new UpdateCategoryParams();
             }
 
             if (typeof(T) != typeof(CreateCategoryParams)) returnData.Id = 1;

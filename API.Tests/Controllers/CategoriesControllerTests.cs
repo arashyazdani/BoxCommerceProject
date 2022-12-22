@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using Shouldly;
 using Domain.Specifications;
 using API.Tests.DataAttribute;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace API.Tests.Controllers
 {
@@ -135,12 +137,86 @@ namespace API.Tests.Controllers
 
         }
 
-        //[Fact]
-        //public async Task UpdateCategory_Should_Be_NoContent_Object_Result()
-        //{
-        //    _unitOfWork.Setup(x => x.Repository<Category>().InsertAsync(It.IsAny<Category>()))
-        //        .Returns(Task.FromResult(newCategory)).Verifiable();
-        //}
+        [Theory]
+        [UpdateCategoryTest]
+        public async Task UpdateCategory_Test_Ok_And_NotFound_And_Nocontent_ObjectResult(UpdateCategoryParams updateCategory, Category categoryEntity, Type expectedActionResultType)
+        {
+            // Arrange
+
+            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Category>()
+                    .GetEntityWithSpec(It.IsAny<ISpecification<Category>>()))
+                .ReturnsAsync(categoryEntity)
+                .Verifiable();
+            _unitOfWork.Setup(x => x.Repository<Category>().Update(It.IsAny<Category>())).Verifiable();
+
+            if(expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+
+            var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
+
+            // Act
+            var result = await controller.UpdateCategory(updateCategory);
+
+            // Assert
+            result.ShouldBeOfType(expectedActionResultType);
+
+        }
+
+
+        [Fact]
+        public async Task PartiallyUpdateCategory_Should_Be_NoContent_Object_Result()
+        {
+            // Arrange
+            var jsonUpdateCategory = new JsonPatchDocument<UpdateCategoryParams>();
+
+            jsonUpdateCategory.Replace(x=>x.Details, "Testing replace details");
+
+            var newCategory = FakeData<Category>.CategoryData(null);
+            var updateCategory = FakeData<UpdateCategoryParams>.CategoryData(null);
+
+            _unitOfWork.Setup(x => x.Repository<Category>().GetEntityWithSpec(It.IsAny<ISpecification<Category>>())).ReturnsAsync(newCategory).Verifiable();
+
+            _unitOfWork.Setup(x => x.Repository<Category>().Update(It.IsAny<Category>())).Verifiable();
+
+            _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+
+            _mapper.Setup(x => x.Map<UpdateCategoryParams>(It.IsAny<Category>())).Returns(updateCategory);
+
+            _mapper.Setup(x => x.Map<UpdateCategoryParams, Category>(It.IsAny<UpdateCategoryParams>())).Returns(newCategory);
+
+            var modelState = new ModelStateDictionary();
+
+            jsonUpdateCategory.ApplyTo(updateCategory, modelState);
+
+            var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
+
+            // Act
+            var result = await controller.PartiallyUpdateCategory(1, jsonUpdateCategory);
+
+            // Assert
+            result.ShouldBeOfType(typeof(NoContentResult));
+
+        }
+
+        [Theory]
+        [DeleteCategoryTest]
+        public async Task DeleteCategory_Test_Ok_And_NotFound_And_Nocontent_ObjectResult(int id, Category categoryEntity, Type expectedActionResultType)
+        {
+            // Arrange
+            if(expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Category>().GetEntityWithSpec(It.IsAny<ISpecification<Category>>())).ReturnsAsync(categoryEntity).Verifiable();
+
+            _unitOfWork.Setup(x => x.Repository<Category>().DeleteAsync(It.IsAny<Category>())).Verifiable();
+
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+
+            var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
+
+            // Act
+            var result = await controller.DeleteCategoryById(id);
+
+            // Assert
+            result.ShouldBeOfType(expectedActionResultType);
+
+        }
 
     }
 }
