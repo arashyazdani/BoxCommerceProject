@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using API.DTOs;
 using Domain.Entities;
+using Domain.Specifications;
 
 namespace API.Tests.DataAttribute
 {
@@ -18,6 +20,29 @@ namespace API.Tests.DataAttribute
                 Name = "Test Category",
                 Enabled = true,
                 Details = "Testing category data"
+            };
+        }
+
+        public static CategoryToReturnDto CreateTestCategoryToReturnDto()
+        {
+            return new CategoryToReturnDto()
+            {
+                Id = 1,
+                Priority = 1,
+                Name = "Test Category",
+                Enabled = true,
+                Details = "Testing category data"
+            };
+        }
+
+        public static CreateCategoryParams InsertTestCategory()
+        {
+            return new CreateCategoryParams()
+            {
+                Priority = 1,
+                Name = "Test Category",
+                Enabled = true,
+                Details = "Testing category data",
             };
         }
 
