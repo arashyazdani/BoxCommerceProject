@@ -78,11 +78,9 @@ namespace API.Controllers
         {
             if (createCategoryParams.ParentCategoryId != null)
             {
-                var spec = new GetCategoriesWithParentsSpecification((int)createCategoryParams.ParentCategoryId);
+                var categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)createCategoryParams.ParentCategoryId);
 
-                var categoryExists = await _unitOfWork.Repository<Category>().GetEntityWithSpec(spec);
-                
-                if (categoryExists == null) return NotFound(new ApiResponse(404,"The ParentCategoryId is not found."));
+                if (categoryExists == null) return NotFound(new ApiResponse(404, "The ParentCategoryId is not found."));
             }
 
             var categoryEntity = _mapper.Map<CreateCategoryParams, Category>(createCategoryParams);
@@ -104,9 +102,7 @@ namespace API.Controllers
         {
             if (updateCategoryParams.ParentCategoryId != null)
             {
-                var spec = new GetCategoriesWithParentsSpecification((int)updateCategoryParams.ParentCategoryId);
-
-                var categoryExists = await _unitOfWork.Repository<Category>().GetEntityWithSpec(spec);
+                var categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)updateCategoryParams.ParentCategoryId);
 
                 if (categoryExists == null) return NotFound(new ApiResponse(404, "The ParentCategoryId is not found."));
             }
@@ -137,11 +133,20 @@ namespace API.Controllers
 
             var category = await _unitOfWork.Repository<Category>().GetEntityWithSpec(specCategory);
 
+            
+
             if (category == null) return NotFound(new ApiResponse(404, "The category is not found."));
 
             var categoryToPatch = _mapper.Map<UpdateCategoryParams>(category);
 
             updateCategoryParams.ApplyTo(categoryToPatch, ModelState);
+
+            if (categoryToPatch.ParentCategoryId != null)
+            {
+                var categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)categoryToPatch.ParentCategoryId);
+
+                if (categoryExists == null) return NotFound(new ApiResponse(404, "The ParentCategoryId is not found."));
+            }
 
             if (!TryValidateModel(categoryToPatch))
             {
@@ -151,6 +156,8 @@ namespace API.Controllers
             _mapper.Map(categoryToPatch, category);
 
             var result = await _unitOfWork.Complete();
+
+            if (result <= 0) return BadRequest(new ApiResponse(400));
 
             await _responseCache.DeleteRangeOfKeysAsync("Categories");
 

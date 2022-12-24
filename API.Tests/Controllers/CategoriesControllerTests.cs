@@ -11,6 +11,7 @@ using Domain.Specifications;
 using API.Tests.DataAttribute;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace API.Tests.Controllers
 {
@@ -162,38 +163,41 @@ namespace API.Tests.Controllers
         }
 
 
-        [Fact]
-        public async Task PartiallyUpdateCategory_Should_Be_NoContent_Object_Result()
+        [Theory]
+        [UpdateCategoryTest]
+        public async Task PartiallyUpdateCategory_Test_Ok_And_NotFound_And_Nocontent_ObjectResult(UpdateCategoryParams updateCategory, Category categoryEntity, Type expectedActionResultType)
         {
             // Arrange
             var jsonUpdateCategory = new JsonPatchDocument<UpdateCategoryParams>();
 
-            jsonUpdateCategory.Replace(x=>x.Details, "Testing replace details");
+            jsonUpdateCategory.Replace(x => x.ParentCategoryId, 1);
 
-            var newCategory = FakeData<Category>.CategoryData(null);
-            var updateCategory = FakeData<UpdateCategoryParams>.CategoryData(null);
+            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Category>().GetEntityWithSpec(It.IsAny<ISpecification<Category>>())).ReturnsAsync(categoryEntity).Verifiable();
 
-            _unitOfWork.Setup(x => x.Repository<Category>().GetEntityWithSpec(It.IsAny<ISpecification<Category>>())).ReturnsAsync(newCategory).Verifiable();
+            _unitOfWork.Setup(x => x.Repository<Category>().GetByIdAsync(It.IsAny<int>())).ReturnsAsync(categoryEntity).Verifiable();
 
             _unitOfWork.Setup(x => x.Repository<Category>().Update(It.IsAny<Category>())).Verifiable();
 
-            _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
 
             _mapper.Setup(x => x.Map<UpdateCategoryParams>(It.IsAny<Category>())).Returns(updateCategory);
 
-            _mapper.Setup(x => x.Map<UpdateCategoryParams, Category>(It.IsAny<UpdateCategoryParams>())).Returns(newCategory);
+            _mapper.Setup(x => x.Map<UpdateCategoryParams, Category>(It.IsAny<UpdateCategoryParams>())).Returns(categoryEntity);
 
-            var modelState = new ModelStateDictionary();
-
-            jsonUpdateCategory.ApplyTo(updateCategory, modelState);
 
             var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
 
+            var objectValidator = new Mock<IObjectModelValidator>();
+            objectValidator.Setup(o => o.Validate(It.IsAny<ActionContext>(),
+                It.IsAny<ValidationStateDictionary>(),
+                It.IsAny<string>(),
+                It.IsAny<UpdateCategoryParams>()));
+            controller.ObjectValidator = objectValidator.Object;
             // Act
             var result = await controller.PartiallyUpdateCategory(1, jsonUpdateCategory);
 
             // Assert
-            result.ShouldBeOfType(typeof(NoContentResult));
+            result.ShouldBeOfType(expectedActionResultType);
 
         }
 
