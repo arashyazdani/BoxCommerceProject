@@ -70,7 +70,7 @@ namespace API.Tests.Controllers
 
             var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
             
-            var specParams = new CategorySpecificationParams();
+            var specParams = new BaseSpecificationParams();
 
             // Act
 

@@ -8,6 +8,7 @@ using Domain.Entities.OrderAggregate;
 
 namespace API.Controllers
 {
+    [Route("api/payment")]
     public class PaymentsController : BaseApiController
     {
         private readonly IPaymentService _paymentService;

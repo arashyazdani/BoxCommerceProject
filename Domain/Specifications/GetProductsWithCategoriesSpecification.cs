@@ -7,18 +7,18 @@ using Domain.Entities;
 
 namespace Domain.Specifications
 {
-    public class GetCategoriesWithParentsSpecification : BaseSpecification<Category>
+    public class GetProductsWithCategoriesSpecification : BaseSpecification<Product>
     {
-        public GetCategoriesWithParentsSpecification(BaseSpecificationParams categoryParams) : base(x =>
-            (string.IsNullOrEmpty(categoryParams.Search) || x.Name.ToLower().Contains(categoryParams.Search)))
+        public GetProductsWithCategoriesSpecification(BaseSpecificationParams productParams) : base(x =>
+            (string.IsNullOrEmpty(productParams.Search) || x.Name.ToLower().Contains(productParams.Search)))
         {
-            AddInclude(x=>x.Parent);
-            AddOrderBy(x=>x.Name);
-            ApplyPaging(categoryParams.PageSize * (categoryParams.PageIndex - 1), categoryParams.PageSize);
+            AddInclude(x => x.Category);
+            AddOrderBy(x => x.Name);
+            ApplyPaging(productParams.PageSize * (productParams.PageIndex - 1), productParams.PageSize);
 
-            if (!string.IsNullOrEmpty(categoryParams.Sort))
+            if (!string.IsNullOrEmpty(productParams.Sort))
             {
-                switch (categoryParams.Sort)
+                switch (productParams.Sort)
                 {
                     case "ascname":
                         AddOrderBy(p => p.Name);
@@ -50,10 +50,11 @@ namespace Domain.Specifications
                 }
             }
         }
-
-        public GetCategoriesWithParentsSpecification(int id) : base(x=> x.Id==id)
+        public GetProductsWithCategoriesSpecification(int id) : base(x => x.Id == id)
         {
-            AddInclude(x => x.Parent);
+            AddInclude(x=>x.Category);
         }
+
+        
     }
 }

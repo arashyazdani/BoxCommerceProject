@@ -37,6 +37,11 @@ namespace API.Helpers
                 .ForMember(d => d.ProductId, o => o.MapFrom(s => s.ItemOrdered.ProductItemId))
                 .ForMember(d => d.ProductName, o => o.MapFrom(s => s.ItemOrdered.ProductName))
                 .ForMember(d => d.Price, o => o.MapFrom(s => s.Price));
+            CreateMap<Product, ProductToReturnDto>()
+                .ForMember(d=>d.CategoryId, o=>o.MapFrom(s=>s.Category.Id))
+                .ForMember(d => d.CategoryName, o => o.MapFrom(s => s.Category.Name));
+            CreateMap<ProductToReturnDto, Product>()
+                .ForMember(d => d.CategoryId, o => o.MapFrom(s => s.CategoryId));
         }
     }
 }

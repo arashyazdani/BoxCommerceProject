@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
+[Route("api/account")]
 public class AccountController : BaseApiController
 {
     private readonly IMapper _mapper;

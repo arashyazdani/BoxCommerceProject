@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Serialization;
 using StackExchange.Redis;
 using static System.Net.Mime.MediaTypeNames;
@@ -30,7 +31,7 @@ IWebHostEnvironment environment = builder.Environment;
 builder.Services.AddControllers(setupAction =>
     {
         setupAction.ReturnHttpNotAcceptable = true;
-
+        setupAction.Filters.Add(new ProducesAttribute("application/json", "text/json"));
     }).AddNewtonsoftJson(setupAction =>
     {
         setupAction.SerializerSettings.ContractResolver =

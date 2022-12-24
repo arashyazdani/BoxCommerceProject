@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [Authorize]
+    [Route("api/order")]
     public class OrdersController : BaseApiController
     {
         private readonly IOrderService _orderService;

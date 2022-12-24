@@ -6,6 +6,7 @@ using API.DTOs;
 
 namespace API.Controllers
 {
+    [Route("api/basket")]
     public class BasketController : BaseApiController
     {
         private readonly IBasketRepository _basketRepository;

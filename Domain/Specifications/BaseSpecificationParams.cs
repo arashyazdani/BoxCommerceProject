@@ -7,7 +7,7 @@ using Domain.Entities;
 
 namespace Domain.Specifications
 {
-    public class CategorySpecificationParams
+    public class BaseSpecificationParams
     {
         private const int MazPageSize = 50;
         public int PageIndex { get; set; } = 1;
