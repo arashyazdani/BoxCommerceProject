@@ -18,6 +18,7 @@ using Newtonsoft.Json;
 
 namespace API.Controllers
 {
+    [Route("api/categories")]
     public class CategoriesController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;

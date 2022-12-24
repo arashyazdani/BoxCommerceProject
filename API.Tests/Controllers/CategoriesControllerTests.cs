@@ -86,7 +86,7 @@ namespace API.Tests.Controllers
         public async Task Get_Category_By_Id_Should_Not_Be_Null()
         {
             //Arrange
-            Category newCategory = FakeData<Category>.CategoryData(null);
+            Category newCategory = FakeData<Category>.CategoryData(null, new Category());
 
             var spec = new GetCategoriesWithParentsSpecification(1);
             _unitOfWork.Setup(x => x.Repository<Category>().GetEntityWithSpec(spec)).ReturnsAsync(newCategory)

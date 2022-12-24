@@ -15,9 +15,9 @@ namespace API.Tests.DataAttribute
     {
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
-            yield return new object[] { FakeData<CreateCategoryParams>.CategoryData(null), FakeData<Category>.CategoryData(null), FakeData<CategoryToReturnDto>.CategoryData(null), typeof(CreatedAtRouteResult) };
-            yield return new object[] { FakeData<CreateCategoryParams>.CategoryData(200), FakeData<Category>.CategoryData(null), FakeData<CategoryToReturnDto>.CategoryData(null), typeof(NotFoundObjectResult) };
-            yield return new object[] { FakeData<CreateCategoryParams>.CategoryData(null), FakeData<Category>.CategoryData(null), FakeData<CategoryToReturnDto>.CategoryData(null), typeof(BadRequestObjectResult) };
+            yield return new object[] { FakeData<CreateCategoryParams>.CategoryData(null, new CreateCategoryParams()), FakeData<Category>.CategoryData(null, new Category()), FakeData<CategoryToReturnDto>.CategoryData(null, new CategoryToReturnDto()), typeof(CreatedAtRouteResult) };
+            yield return new object[] { FakeData<CreateCategoryParams>.CategoryData(200, new CreateCategoryParams()), FakeData<Category>.CategoryData(null, new Category()), FakeData<CategoryToReturnDto>.CategoryData(null, new CategoryToReturnDto()), typeof(NotFoundObjectResult) };
+            yield return new object[] { FakeData<CreateCategoryParams>.CategoryData(null, new CreateCategoryParams()), FakeData<Category>.CategoryData(null, new Category()), FakeData<CategoryToReturnDto>.CategoryData(null, new CategoryToReturnDto()), typeof(BadRequestObjectResult) };
         }
     }
 }

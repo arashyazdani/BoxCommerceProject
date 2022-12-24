@@ -13,26 +13,9 @@ namespace API.Tests.DataAttribute
 {
     public class FakeData<T> where T : class
     {
-        public static T CategoryData(int? categoryId)
+        public static T CategoryData(int? categoryId, T obj)
         {
-            dynamic returnData = new Object();
-
-            if (typeof(T) == typeof(Category))
-            {
-                returnData = new Category();
-            }
-            else if (typeof(T) == typeof(CategoryToReturnDto))
-            {
-                returnData = new CategoryToReturnDto();
-            }
-            else if (typeof(T) == typeof(CreateCategoryParams))
-            {
-                returnData = new CreateCategoryParams();
-            }
-            else if (typeof(T) == typeof(UpdateCategoryParams))
-            {
-                returnData = new UpdateCategoryParams();
-            }
+            dynamic returnData = (T)obj;
 
             if (typeof(T) != typeof(CreateCategoryParams)) returnData.Id = 1;
             returnData.Priority = 1;
@@ -41,8 +24,7 @@ namespace API.Tests.DataAttribute
             returnData.Details = "Testing category data";
             if (categoryId != null) returnData.ParentCategoryId = categoryId;
 
-            return (T)(Object)returnData;
-
+            return returnData;
         }
 
         public static IReadOnlyList<Category> CreateListOfTestCategory()

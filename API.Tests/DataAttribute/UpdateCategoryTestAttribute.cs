@@ -15,9 +15,9 @@ namespace API.Tests.DataAttribute
     {
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
-            yield return new object[] { FakeData<UpdateCategoryParams>.CategoryData(null), FakeData<Category>.CategoryData(null),  typeof(NoContentResult) };
-            yield return new object[] { FakeData<UpdateCategoryParams>.CategoryData(null), FakeData<Category>.CategoryData(null), typeof(NotFoundObjectResult) };
-            yield return new object[] { FakeData<UpdateCategoryParams>.CategoryData(null), FakeData<Category>.CategoryData(null),  typeof(BadRequestObjectResult) };
+            yield return new object[] { FakeData<UpdateCategoryParams>.CategoryData(null, new UpdateCategoryParams()), FakeData<Category>.CategoryData(null, new Category()),  typeof(NoContentResult) };
+            yield return new object[] { FakeData<UpdateCategoryParams>.CategoryData(null, new UpdateCategoryParams()), FakeData<Category>.CategoryData(null, new Category()), typeof(NotFoundObjectResult) };
+            yield return new object[] { FakeData<UpdateCategoryParams>.CategoryData(null, new UpdateCategoryParams()), FakeData<Category>.CategoryData(null, new Category()),  typeof(BadRequestObjectResult) };
         }
     }
 }

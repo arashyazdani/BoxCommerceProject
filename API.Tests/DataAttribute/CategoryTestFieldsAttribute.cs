@@ -12,7 +12,7 @@ namespace API.Tests.DataAttribute
         {
             yield return new object[]
             {1,
-                FakeData<Category>.CategoryData(null),
+                FakeData<Category>.CategoryData(null,new Category()),
                 typeof(OkObjectResult)
             };
             yield return new object[] {100, It.IsAny<Category>(), typeof(NotFoundObjectResult) };
