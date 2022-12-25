@@ -10,6 +10,8 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
 using Domain.Specifications;
+using Domain.Specifications.CategorySpecifications;
+using Domain.Specifications.ProductSpecifications;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -28,6 +30,7 @@ namespace API.Controllers
             _responseCache = responseCache;
         }
 
+        [Cached(600)]
         [HttpGet("{id}", Name = "GetProduct")]
         public async Task<ActionResult<ProductToReturnDto>> GetProductById(int id)
         {
@@ -42,8 +45,9 @@ namespace API.Controllers
             return new OkObjectResult(new ApiResponse(200, "Ok", returnProduct));
         }
 
+        [Cached(600)]
         [HttpGet]
-        public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetCategories([FromQuery] GetProductSpecificationParams specParams)
+        public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetProducts([FromQuery] GetProductSpecificationParams specParams)
         {
 
             var spec = new GetProductsWithCategoriesSpecification(specParams);
@@ -63,6 +67,30 @@ namespace API.Controllers
 
             return new OkObjectResult(new ApiResponse(200, "Ok", returnProducts));
 
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<ProductToReturnDto>> CreateProduct([FromQuery] CreateProductParams createProductParams)
+        {
+
+            if (createProductParams.CategoryId != null)
+            {
+                var categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)createProductParams.CategoryId);
+
+                if (categoryExists == null) return NotFound(new ApiResponse(404, "The CategoryId is not found."));
+            }
+
+            var productEntity = _mapper.Map<CreateProductParams, Product>(createProductParams);
+
+            await _unitOfWork.Repository<Product>().InsertAsync(productEntity);
+
+            var result = await _unitOfWork.Complete();
+
+            if (result <= 0) return BadRequest(new ApiResponse(400));
+
+            var returnDto = _mapper.Map<Product, ProductToReturnDto>(productEntity);
+
+            return new CreatedAtRouteResult("GetProduct", new { id = productEntity.Id }, new ApiResponse(201, "Product has been created successfully.", returnDto));
         }
 
     }

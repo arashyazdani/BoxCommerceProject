@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
 
-namespace Domain.Specifications
+namespace Domain.Specifications.CategorySpecifications
 {
     public class GetCategoriesWithParentsSpecification : BaseSpecification<Category>
     {
@@ -13,8 +13,8 @@ namespace Domain.Specifications
             (string.IsNullOrEmpty(categoryParams.Search) || x.Name.ToLower().Contains(categoryParams.Search)) &&
             (!categoryParams.ParentCategoryId.HasValue || x.ParentCategoryId == categoryParams.ParentCategoryId))
         {
-            AddInclude(x=>x.Parent);
-            AddOrderBy(x=>x.Name);
+            AddInclude(x => x.Parent);
+            AddOrderBy(x => x.Name);
             ApplyPaging(categoryParams.PageSize * (categoryParams.PageIndex - 1), categoryParams.PageSize);
 
             if (!string.IsNullOrEmpty(categoryParams.Sort))
@@ -52,7 +52,7 @@ namespace Domain.Specifications
             }
         }
 
-        public GetCategoriesWithParentsSpecification(int id) : base(x=> x.Id==id)
+        public GetCategoriesWithParentsSpecification(int id) : base(x => x.Id == id)
         {
             AddInclude(x => x.Parent);
         }

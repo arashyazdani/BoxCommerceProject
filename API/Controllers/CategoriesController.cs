@@ -6,7 +6,7 @@ using API.Helpers;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
-using Domain.Specifications;
+using Domain.Specifications.CategorySpecifications;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Converters;

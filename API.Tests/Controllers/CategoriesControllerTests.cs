@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using API.Tests.FakeData;
+using Domain.Specifications.CategorySpecifications;
 
 namespace API.Tests.Controllers
 {

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using API.DTOs;
 using Bogus;
 using Domain.Entities;
-using Domain.Specifications;
+using Domain.Specifications.CategorySpecifications;
 
 namespace API.Tests.FakeData
 {

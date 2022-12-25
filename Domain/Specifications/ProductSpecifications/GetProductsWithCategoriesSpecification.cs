@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
 
-namespace Domain.Specifications
+namespace Domain.Specifications.ProductSpecifications
 {
     public class GetProductsWithCategoriesSpecification : BaseSpecification<Product>
     {
@@ -53,9 +53,9 @@ namespace Domain.Specifications
         }
         public GetProductsWithCategoriesSpecification(int id) : base(x => x.Id == id)
         {
-            AddInclude(x=>x.Category);
+            AddInclude(x => x.Category);
         }
 
-        
+
     }
 }

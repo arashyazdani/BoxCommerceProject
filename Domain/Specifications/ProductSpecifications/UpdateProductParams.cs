@@ -5,11 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Specifications
+namespace Domain.Specifications.ProductSpecifications
 {
-    public class UpdateCategoryParams : CreateOrUpdateCategoryParams
+    public class UpdateProductParams : CreateOrUpdateProductParams
     {
-        [Required(ErrorMessage = "Category Id is required")]
+        [Required(ErrorMessage = "Product Id is required")]
+        [Range(1, int.MaxValue)]
         public int Id { get; set; }
     }
 }

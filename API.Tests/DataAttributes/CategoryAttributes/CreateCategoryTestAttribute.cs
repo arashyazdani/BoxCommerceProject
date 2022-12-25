@@ -1,5 +1,4 @@
 ﻿using API.DTOs;
-using Domain.Specifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +9,7 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using API.Tests.FakeData;
 using Xunit.Sdk;
+using Domain.Specifications.CategorySpecifications;
 
 namespace API.Tests.DataAttributes.CategoryAttributes
 {

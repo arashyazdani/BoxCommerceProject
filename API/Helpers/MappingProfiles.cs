@@ -3,7 +3,8 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.Entities.Identity;
 using Domain.Entities.OrderAggregate;
-using Domain.Specifications;
+using Domain.Specifications.CategorySpecifications;
+using Domain.Specifications.ProductSpecifications;
 using Microsoft.AspNetCore.JsonPatch;
 
 namespace API.Helpers
@@ -27,8 +28,11 @@ namespace API.Helpers
             CreateMap<OrderAddress, AddressDTO>().ReverseMap();
             CreateMap<AddressDTO, OrderAddress>();
             CreateMap<CreateCategoryParams, Category>();
+            CreateMap<CreateProductParams, Product>();
             CreateMap<UpdateCategoryParams, Category>();
+            CreateMap<UpdateProductParams, Product>();
             CreateMap<Category,UpdateCategoryParams>();
+            CreateMap<Product, UpdateProductParams>();
             CreateMap<Order, OrderToReturnDTO>()
                 .ForMember(d => d.DeliveryMethod, o => o.MapFrom(s => s.DeliveryMethod.ShortName))
                 .ForMember(d => d.ShippingPrice, o => o.MapFrom(s => s.DeliveryMethod.Price))

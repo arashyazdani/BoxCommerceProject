@@ -9,12 +9,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using API.DTOs;
 using API.Tests.DataAttributes;
 using API.Tests.DataAttributes.ProductAttributes;
 using API.Tests.FakeData;
 using Domain.Entities;
+using Domain.Specifications.ProductSpecifications;
 using Microsoft.AspNetCore.Mvc;
 using Shouldly;
+using Domain.Specifications.CategorySpecifications;
 
 namespace API.Tests.Controllers
 {
@@ -25,7 +28,7 @@ namespace API.Tests.Controllers
         private readonly Mock<IUnitOfWork> _unitOfWork;
 
         //private readonly Mock<ApiResponse> _apiResponse;
-        private readonly ProductsController _categoriesController;
+        private readonly ProductsController _productsController;
         private readonly Mock<IResponseCacheService> _responseCache;
 
         public ProductsControllerTests()
@@ -34,7 +37,7 @@ namespace API.Tests.Controllers
             _mapper = new Mock<IMapper>();
             _unitOfWork = new Mock<IUnitOfWork>();
             _responseCache = new Mock<IResponseCacheService>();
-            _categoriesController = new ProductsController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
+            _productsController = new ProductsController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
         }
 
 
@@ -83,23 +86,48 @@ namespace API.Tests.Controllers
 
             // Act
 
-            var result = await controller.GetCategories(specParams);
+            var result = await controller.GetProducts(specParams);
 
             // Assert
 
             result.Result.ShouldBeOfType(expectedActionResultType);
         }
 
-        [Fact]
-        public async Task CreateProduct_Should_Be_CreatedAtRouteResult()
+        [Theory]
+        [CreateProductTests]
+        public async Task CreateProduct_Test_Ok_And_NotFound_And_Nocontent_ObjectResult(CreateProductParams newProduct, Product productEntity, ProductToReturnDto productToReturnDto, Type expectedActionResultType)
         {
             // Arrange
-            var newProduct = FakeProducts<Product>.FakeProductData(null, new Product());
 
+            _unitOfWork.Setup(x => x.Repository<Product>().InsertAsync(It.IsAny<Product>()))
+                .Returns(Task.FromResult(newProduct)).Verifiable();
+
+            var categoryEntity = typeof(NotFoundObjectResult) != expectedActionResultType ? FakeCategories<Category>.FakeCategoryData(1, new Category()) : It.IsAny<Category>();
+
+
+            _unitOfWork.Setup(x => x.Repository<Category>().GetByIdAsync(It.IsAny<int>())).ReturnsAsync(categoryEntity).Verifiable();
+            
+
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+
+            _mapper.Setup(x => x.Map<Product, ProductToReturnDto>(It.IsAny<Product>())).Returns(productToReturnDto);
+
+            var createdProduct = new CreatedAtRouteResult("GetProduct", new { id = 1 }, new ApiResponse(201, "Product has been created successfully.", productToReturnDto));
+
+            _mapper.Setup(x => x.Map<CreateProductParams, Product>(It.IsAny<CreateProductParams>())).Returns(productEntity);
+
+            var controller = new ProductsController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
 
             // Act
 
+            var result = await controller.CreateProduct(newProduct);
+
             // Assert
+
+            if (expectedActionResultType == typeof(CreatedAtRouteResult)) result.Result.ShouldBeEquivalentTo(createdProduct);
+
+            result.Result.ShouldBeOfType(expectedActionResultType);
+
         }
     }
 }

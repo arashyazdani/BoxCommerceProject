@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Specifications;
+using Domain.Specifications.ProductSpecifications;
 
 namespace API.Tests.FakeData
 {
@@ -13,17 +14,20 @@ namespace API.Tests.FakeData
     {
         private static int _id = 1;
 
-        public static T FakeProductData(int? parentId, T obj)
+        public static T FakeProductData(int parentId, T obj)
         {
             dynamic returnData = obj;
             var faker = new Faker();
 
-            if (typeof(T) != typeof(CreateCategoryParams)) returnData.Id = 1;
+            if (typeof(T) != typeof(CreateProductParams)) returnData.Id = 1;
             returnData.Priority = 1;
             returnData.Name = faker.Commerce.ProductName();
             returnData.Enabled = true;
             returnData.Details = faker.Commerce.ProductDescription();
-            if (parentId != null) returnData.ParentCategoryId = parentId;
+            returnData.CategoryId = parentId;
+            returnData.Quantity = faker.Commerce.Random.Int(0, 200);
+            returnData.Price = decimal.Parse(faker.Commerce.Price(1000, 170000));
+            returnData.IsDiscontinued = false;
 
             return returnData;
         }
