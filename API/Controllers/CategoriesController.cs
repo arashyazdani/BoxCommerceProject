@@ -34,7 +34,7 @@ namespace API.Controllers
 
         [Cached(600)]
         [HttpGet]
-        public async Task<ActionResult<Pagination<CategoryToReturnDto>>> GetCategories([FromQuery] BaseSpecificationParams specParams)
+        public async Task<ActionResult<Pagination<CategoryToReturnDto>>> GetCategories([FromQuery] GetCategorySpecificationParams specParams)
         {
 
             var spec = new GetCategoriesWithParentsSpecification(specParams);

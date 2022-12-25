@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using API.DTOs;
 using API.Errors;
+using API.Helpers;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
@@ -36,9 +37,32 @@ namespace API.Controllers
 
             if (product == null) return NotFound(new ApiResponse(404));
 
-            var returnCategories = _mapper.Map<Product, ProductToReturnDto>(product);
+            var returnProduct = _mapper.Map<Product, ProductToReturnDto>(product);
 
-            return new OkObjectResult(new ApiResponse(200, "Ok", returnCategories));
+            return new OkObjectResult(new ApiResponse(200, "Ok", returnProduct));
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetCategories([FromQuery] GetProductSpecificationParams specParams)
+        {
+
+            var spec = new GetProductsWithCategoriesSpecification(specParams);
+
+            var countSpec = new GetProductsForCountWithCategoriesSpecification(specParams);
+
+            var totalItems = await _unitOfWork.Repository<Product>().CountAsync(countSpec);
+
+            var products = await _unitOfWork.Repository<Product>().ListWithSpecAsync(spec);
+
+            if (products == null || products.Count == 0) return NotFound(new ApiResponse(404));
+
+            var data = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products);
+
+            var returnProducts =
+                new Pagination<ProductToReturnDto>(specParams.PageIndex, specParams.PageSize, totalItems, data);
+
+            return new OkObjectResult(new ApiResponse(200, "Ok", returnProducts));
+
         }
 
     }

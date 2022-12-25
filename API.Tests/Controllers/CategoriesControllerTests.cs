@@ -8,10 +8,11 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Shouldly;
 using Domain.Specifications;
-using API.Tests.DataAttribute;
+using API.Tests.DataAttributes.CategoryAttributes;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using API.Tests.FakeData;
 
 namespace API.Tests.Controllers
 {
@@ -34,7 +35,7 @@ namespace API.Tests.Controllers
         }
 
         [Theory]
-        [CategoryTestFields]
+        [GetCategoryTests]
         public async Task GetCategoryById_Test_OK_And_NotFound_ObjectResult(int id, Category newCategory, Type expectedActionResultType)
         {
             // Arrange
@@ -58,7 +59,7 @@ namespace API.Tests.Controllers
         }
 
         [Theory]
-        [CategoryListTest]
+        [GetCategoryListTests]
         public async Task GetCategories_Test_OK_And_NotFound_ObjectResult(List<Category> categoryList, Type expectedActionResultType)
         {
             //Arrange
@@ -70,7 +71,7 @@ namespace API.Tests.Controllers
 
             var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
             
-            var specParams = new BaseSpecificationParams();
+            var specParams = new GetCategorySpecificationParams();
 
             // Act
 
@@ -86,7 +87,7 @@ namespace API.Tests.Controllers
         public async Task Get_Category_By_Id_Should_Not_Be_Null()
         {
             //Arrange
-            Category newCategory = FakeData<Category>.CategoryData(null, new Category());
+            Category newCategory = FakeCategories<Category>.FakeCategoryData(null, new Category());
 
             var spec = new GetCategoriesWithParentsSpecification(1);
             _unitOfWork.Setup(x => x.Repository<Category>().GetEntityWithSpec(spec)).ReturnsAsync(newCategory)
@@ -146,8 +147,8 @@ namespace API.Tests.Controllers
 
             if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Category>()
                     .GetEntityWithSpec(It.IsAny<ISpecification<Category>>()))
-                .ReturnsAsync(categoryEntity)
-                .Verifiable();
+                    .ReturnsAsync(categoryEntity)
+                    .Verifiable();
             _unitOfWork.Setup(x => x.Repository<Category>().Update(It.IsAny<Category>())).Verifiable();
 
             if(expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
@@ -190,8 +191,8 @@ namespace API.Tests.Controllers
             var objectValidator = new Mock<IObjectModelValidator>();
             objectValidator.Setup(o => o.Validate(It.IsAny<ActionContext>(),
                 It.IsAny<ValidationStateDictionary>(),
-                It.IsAny<string>(),
-                It.IsAny<UpdateCategoryParams>()));
+                        It.IsAny<string>(),
+                        It.IsAny<UpdateCategoryParams>()));
             controller.ObjectValidator = objectValidator.Object;
             // Act
             var result = await controller.PartiallyUpdateCategory(1, jsonUpdateCategory);

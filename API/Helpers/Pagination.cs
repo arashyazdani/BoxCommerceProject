@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace API.Helpers
 {
-    [DisplayName("Pagination")]
+    //[DisplayName("Pagination")]
     public class Pagination<T> where T : class
     {
         public Pagination(int pageIndex, int pageSize, int count, IReadOnlyList<T> data)

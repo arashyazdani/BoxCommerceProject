@@ -9,8 +9,9 @@ namespace Domain.Specifications
 {
     public class GetCategoriesForCountWithParentsSpecification : BaseSpecification<Category>
     {
-        public GetCategoriesForCountWithParentsSpecification(BaseSpecificationParams categoryParams) : base(x =>
-            (string.IsNullOrEmpty(categoryParams.Search) || x.Name.ToLower().Contains(categoryParams.Search)))
+        public GetCategoriesForCountWithParentsSpecification(GetCategorySpecificationParams categoryParams) : base(x =>
+            (string.IsNullOrEmpty(categoryParams.Search) || x.Name.ToLower().Contains(categoryParams.Search)) &&
+            (!categoryParams.ParentCategoryId.HasValue || x.ParentCategoryId == categoryParams.ParentCategoryId))
         {
         }
 

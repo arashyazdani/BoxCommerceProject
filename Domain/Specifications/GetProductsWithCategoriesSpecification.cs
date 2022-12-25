@@ -9,8 +9,9 @@ namespace Domain.Specifications
 {
     public class GetProductsWithCategoriesSpecification : BaseSpecification<Product>
     {
-        public GetProductsWithCategoriesSpecification(BaseSpecificationParams productParams) : base(x =>
-            (string.IsNullOrEmpty(productParams.Search) || x.Name.ToLower().Contains(productParams.Search)))
+        public GetProductsWithCategoriesSpecification(GetProductSpecificationParams productParams) : base(x =>
+            (string.IsNullOrEmpty(productParams.Search) || x.Name.ToLower().Contains(productParams.Search)) &&
+            (!productParams.CategoryId.HasValue || x.CategoryId == productParams.CategoryId))
         {
             AddInclude(x => x.Category);
             AddOrderBy(x => x.Name);

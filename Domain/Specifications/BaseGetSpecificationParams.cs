@@ -7,9 +7,9 @@ using Domain.Entities;
 
 namespace Domain.Specifications
 {
-    public class BaseSpecificationParams
+    public abstract class BaseGetSpecificationParams
     {
-        private const int MazPageSize = 50;
+        private const int MaxPageSize = 50;
         public int PageIndex { get; set; } = 1;
 
         private int _pageSize = 6;
@@ -17,7 +17,7 @@ namespace Domain.Specifications
         public int PageSize
         {
             get => _pageSize;
-            set => _pageSize = (value > MazPageSize) ? MazPageSize : value;
+            set => _pageSize = (value > MaxPageSize) ? MaxPageSize : value;
         }
 
 
