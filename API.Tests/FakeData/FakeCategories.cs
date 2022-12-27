@@ -28,8 +28,9 @@ namespace API.Tests.FakeData
             returnData.Enabled = true;
             returnData.Details = faker.Commerce.ProductDescription();
             if (parentId != null) returnData.ParentCategoryId = parentId;
+            if (parentId==-1) returnData.UpdatedDate = DateTimeOffset.Now;
 
-            return returnData;
+                return returnData;
         }
 
         public static GetObjectFromCategoryService FakeCategoryServiceObject(int statusCode, string message, Category categoryResult)

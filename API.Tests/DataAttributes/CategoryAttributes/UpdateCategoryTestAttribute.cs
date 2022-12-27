@@ -36,17 +36,17 @@ namespace API.Tests.DataAttributes.CategoryAttributes
             yield return new object[]
             {
                 FakeCategories<UpdateCategoryParams>.FakeCategoryData(null, new UpdateCategoryParams()), 
-                FakeCategories<Category>.FakeCategoryData(null, new Category()),  
-                typeof(BadRequestObjectResult),
-                FakeCategories<GetObjectFromCategoryService>.FakeCategoryServiceObject(400, "Bad request.", FakeCategories<Category>.FakeCategoryData(null, new Category()))
+                FakeCategories<Category>.FakeCategoryData(-1, new Category()),  
+                typeof(StatusCodeResult),
+                FakeCategories<GetObjectFromCategoryService>.FakeCategoryServiceObject(304, "Bad request.", FakeCategories<Category>.FakeCategoryData(-1, new Category()))
             };
 
             yield return new object[]
             {
                 FakeCategories<UpdateCategoryParams>.FakeCategoryData(null, new UpdateCategoryParams()),
                 FakeCategories<Category>.FakeCategoryData(null, new Category()),
-                typeof(StatusCodeResult),
-                FakeCategories<GetObjectFromCategoryService>.FakeCategoryServiceObject(304, "Not modified.", FakeCategories<Category>.FakeCategoryData(null, new Category()))
+                typeof(BadRequestObjectResult),
+                FakeCategories<GetObjectFromCategoryService>.FakeCategoryServiceObject(400, "Not modified.", FakeCategories<Category>.FakeCategoryData(null, new Category()))
             };
         }
     }

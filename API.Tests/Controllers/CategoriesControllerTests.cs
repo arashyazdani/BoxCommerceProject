@@ -148,7 +148,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [UpdateCategoryTest]
-        public async Task UpdateCategory_Test_Ok_And_NotFound_And_Nocontent_ObjectResult(UpdateCategoryParams updateCategory, Category categoryEntity, Type expectedActionResultType, GetObjectFromCategoryService updateCategoryObject)
+        public async Task UpdateCategory_Test_Ok_And_NotFound_And_Nocontent_And_NotModified_ObjectResult(UpdateCategoryParams updateCategory, Category categoryEntity, Type expectedActionResultType, GetObjectFromCategoryService updateCategoryObject)
         {
             // Arrange
 
@@ -192,7 +192,7 @@ namespace API.Tests.Controllers
 
             _unitOfWork.Setup(x => x.Repository<Category>().Update(It.IsAny<Category>())).Verifiable();
 
-            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+            if (expectedActionResultType != typeof(StatusCodeResult) && expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
 
             _mapper.Setup(x => x.Map<UpdateCategoryParams>(It.IsAny<Category>())).Returns(updateCategory);
 
@@ -213,6 +213,7 @@ namespace API.Tests.Controllers
             var result = await controller.PartiallyUpdateCategory(1, jsonUpdateCategory);
 
             // Assert
+            if (expectedActionResultType == typeof(StatusCodeResult)) updateCategoryObject.StatusCode.ShouldBe(304);
             result.ShouldBeOfType(expectedActionResultType);
 
         }
