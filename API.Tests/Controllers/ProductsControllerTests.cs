@@ -17,9 +17,9 @@ using Domain.Entities;
 using Domain.Specifications.ProductSpecifications;
 using Microsoft.AspNetCore.Mvc;
 using Shouldly;
-using Domain.Specifications.CategorySpecifications;
 using Infrastructure.Services;
-using API.Tests.DataAttributes.CategoryAttributes;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace API.Tests.Controllers
 {
@@ -51,11 +51,7 @@ namespace API.Tests.Controllers
             Type expectedActionResultType)
         {
             // Arrange
-            //var newProduct = FakeProducts<Product>.FakeProductData(null, new Product());
 
-            var spec = new GetProductsWithCategoriesSpecification(id);
-
-            //var products = FakeData<IReadOnlyList<Product>>.FakeProductList.Generate(5).ToList();
             _unitOfWork.Setup(x => x.Repository<Product>()
                     .GetEntityWithSpec(It.IsAny<ISpecification<Product>>()))
                 .ReturnsAsync(newProduct)
@@ -99,7 +95,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [CreateProductTests]
-        public async Task CreateProduct_Test_Ok_And_NotFound_And_Nocontent_And_Conflict_ObjectResult(CreateProductParams newProduct, Product productEntity, ProductToReturnDto productToReturnDto, Type expectedActionResultType, GetObjectFromProductService createCategoryObject)
+        public async Task CreateProduct_Test_Ok_And_NotFound_And_Nocontent_And_Conflict_ObjectResult(CreateProductParams newProduct, Product productEntity, ProductToReturnDto productToReturnDto, Type expectedActionResultType, GetObjectFromProductService createProductObject)
         {
             // Arrange
 
@@ -122,7 +118,7 @@ namespace API.Tests.Controllers
 
             _productService.Setup(x =>
                     x.CreateProduct(It.IsAny<Product>()))
-                .ReturnsAsync(createCategoryObject)
+                .ReturnsAsync(createProductObject)
                 .Verifiable();
 
             var controller = new ProductsController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _productService.Object);
@@ -166,6 +162,72 @@ namespace API.Tests.Controllers
             // Assert
             if (expectedActionResultType == typeof(StatusCodeResult)) updateProductObject.StatusCode.ShouldBe(304);
             result.ShouldBeOfType(expectedActionResultType);
+        }
+
+        [Theory]
+        [UpdateProductTest]
+        public async Task PartiallyUpdateProduct_Test_Ok_And_NotFound_And_Nocontent_NotModified_ObjectResult(UpdateProductParams updateProduct, Product productEntity, Type expectedActionResultType, GetObjectFromProductService updateProductObject)
+        {
+            // Arrange
+            var jsonUpdateProduct = new JsonPatchDocument<UpdateProductParams>();
+
+            jsonUpdateProduct.Replace(x => x.CategoryId, 1);
+
+            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Product>().GetEntityWithSpec(It.IsAny<ISpecification<Product>>())).ReturnsAsync(productEntity).Verifiable();
+
+            _unitOfWork.Setup(x => x.Repository<Product>().GetByIdAsync(It.IsAny<int>())).ReturnsAsync(productEntity).Verifiable();
+
+            _unitOfWork.Setup(x => x.Repository<Product>().Update(It.IsAny<Product>())).Verifiable();
+
+            if (expectedActionResultType != typeof(StatusCodeResult) && expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+
+            _mapper.Setup(x => x.Map<UpdateProductParams>(It.IsAny<Product>())).Returns(updateProduct);
+
+            _mapper.Setup(x => x.Map<UpdateProductParams, Product>(It.IsAny<UpdateProductParams>())).Returns(productEntity);
+
+            _productService.Setup(x =>
+                    x.UpdateProduct(It.IsAny<Product>()))
+                .ReturnsAsync(updateProductObject)
+                .Verifiable();
+
+            var controller = new ProductsController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _productService.Object);
+
+            var objectValidator = new Mock<IObjectModelValidator>();
+            objectValidator.Setup(o => o.Validate(It.IsAny<ActionContext>(),
+                It.IsAny<ValidationStateDictionary>(),
+                        It.IsAny<string>(),
+                        It.IsAny<UpdateProductParams>()));
+
+            controller.ObjectValidator = objectValidator.Object;
+
+            // Act
+            var result = await controller.PartiallyUpdateProduct(1, jsonUpdateProduct);
+
+            // Assert
+            if (expectedActionResultType == typeof(StatusCodeResult)) updateProductObject.StatusCode.ShouldBe(304);
+            result.ShouldBeOfType(expectedActionResultType);
+
+        }
+
+        [Theory]
+        [DeleteProductTests]
+        public async Task DeleteProduct_Test_Ok_And_NotFound_And_Nocontent_ObjectResult(int id, Product productEntity, Type expectedActionResultType)
+        {
+            // Arrange
+            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Product>().GetEntityWithSpec(It.IsAny<ISpecification<Product>>())).ReturnsAsync(productEntity).Verifiable();
+
+            _unitOfWork.Setup(x => x.Repository<Product>().DeleteAsync(It.IsAny<Product>())).Verifiable();
+
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+
+            var controller = new ProductsController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _productService.Object);
+
+            // Act
+            var result = await controller.DeleteProductById(id);
+
+            // Assert
+            result.ShouldBeOfType(expectedActionResultType);
+
         }
     }
 }

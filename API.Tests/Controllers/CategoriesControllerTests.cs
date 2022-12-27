@@ -179,7 +179,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [UpdateCategoryTest]
-        public async Task PartiallyUpdateCategory_Test_Ok_And_NotFound_And_Nocontent_ObjectResult(UpdateCategoryParams updateCategory, Category categoryEntity, Type expectedActionResultType, GetObjectFromCategoryService updateCategoryObject)
+        public async Task PartiallyUpdateCategory_Test_Ok_And_NotFound_And_Nocontent_NotModified_ObjectResult(UpdateCategoryParams updateCategory, Category categoryEntity, Type expectedActionResultType, GetObjectFromCategoryService updateCategoryObject)
         {
             // Arrange
             var jsonUpdateCategory = new JsonPatchDocument<UpdateCategoryParams>();
