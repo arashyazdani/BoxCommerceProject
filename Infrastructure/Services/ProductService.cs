@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Specifications.ProductSpecifications;
+using Domain.Specifications.CategorySpecifications;
 //using Domain.Specifications.CategorySpecifications;
 
 namespace Infrastructure.Services
@@ -75,7 +76,67 @@ namespace Infrastructure.Services
 
         public async Task<GetObjectFromProductService> UpdateProduct(Product updateProductParams)
         {
-            throw new NotImplementedException();
+            var returnObject = new GetObjectFromProductService();
+
+            var categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)updateProductParams.CategoryId);
+
+            if (categoryExists == null)
+            {
+                returnObject.StatusCode = 404;
+
+                returnObject.Message = "The CategoryId is not found.";
+
+                return returnObject;
+            }
+
+            var specParams = new GetProductSpecificationParams();
+
+            var currentTimestamp = DateTimeOffset.Now;
+
+            if (updateProductParams.UpdatedDate != null) currentTimestamp = (DateTimeOffset)updateProductParams.UpdatedDate;
+
+            specParams.Search = updateProductParams.Name;
+
+            var spec = new GetProductsWithCategoriesSpecification(specParams);
+
+            var productExist = await _unitOfWork.Repository<Product>().GetEntityWithSpec(spec);
+
+            if (productExist != null && productExist.Id != updateProductParams.Id)
+            {
+                returnObject.StatusCode = 409;
+
+                returnObject.Message = "The product name is already exist.";
+
+                return returnObject;
+            }
+
+            var result = await _unitOfWork.Complete();
+
+            if (result <= 0 && updateProductParams.UpdatedDate == currentTimestamp)
+            {
+                returnObject.StatusCode = 304;
+
+                returnObject.Message = "Not Modified.";
+
+                return returnObject;
+            }
+
+            if (result <= 0)
+            {
+                returnObject.StatusCode = 400;
+
+                returnObject.Message = "Bad request.";
+
+                return returnObject;
+            }
+
+            returnObject.StatusCode = 204;
+
+            returnObject.Message = "Product has been updated successfully.";
+
+            returnObject.ProductResult = updateProductParams;
+
+            return returnObject;
         }
     }
 }

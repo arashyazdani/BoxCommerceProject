@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shouldly;
 using Domain.Specifications.CategorySpecifications;
 using Infrastructure.Services;
+using API.Tests.DataAttributes.CategoryAttributes;
 
 namespace API.Tests.Controllers
 {
@@ -136,6 +137,35 @@ namespace API.Tests.Controllers
 
             result.Result.ShouldBeOfType(expectedActionResultType);
 
+        }
+
+        [Theory]
+        [UpdateProductTest]
+        public async Task UpdateProduct_Test_Ok_And_NotFound_And_Nocontent_And_NotModified_ObjectResult(UpdateProductParams updateProduct, Product productEntity, Type expectedActionResultType, GetObjectFromProductService updateProductObject)
+        {
+            // Arrange
+
+            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Product>()
+                    .GetEntityWithSpec(It.IsAny<ISpecification<Product>>()))
+                .ReturnsAsync(productEntity)
+                .Verifiable();
+            _unitOfWork.Setup(x => x.Repository<Product>().Update(It.IsAny<Product>())).Verifiable();
+
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+
+            _productService.Setup(x =>
+                    x.UpdateProduct(It.IsAny<Product>()))
+                .ReturnsAsync(updateProductObject)
+                .Verifiable();
+
+            var controller = new ProductsController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _productService.Object);
+
+            // Act
+            var result = await controller.UpdateProduct(updateProduct);
+
+            // Assert
+            if (expectedActionResultType == typeof(StatusCodeResult)) updateProductObject.StatusCode.ShouldBe(304);
+            result.ShouldBeOfType(expectedActionResultType);
         }
     }
 }

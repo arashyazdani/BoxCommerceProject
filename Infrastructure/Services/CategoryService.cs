@@ -83,10 +83,13 @@ namespace Infrastructure.Services
             if (updateCategoryParams.ParentCategoryId != null)
             {
                 var categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)updateCategoryParams.ParentCategoryId);
+
                 if (categoryExists == null)
                 {
                     returnObject.StatusCode = 404;
+
                     returnObject.Message = "The ParentCategoryId is not found.";
+
                     return returnObject;
                 }
             }
@@ -111,19 +114,24 @@ namespace Infrastructure.Services
 
                 return returnObject;
             }
+
             var result = await _unitOfWork.Complete();
 
             if (result<=0 && updateCategoryParams.UpdatedDate == currentTimestamp)
             {
                 returnObject.StatusCode = 304;
+
                 returnObject.Message = "Not Modified.";
+
                 return returnObject;
             }
 
             if (result <= 0)
             {
                 returnObject.StatusCode = 400;
+
                 returnObject.Message = "Bad request.";
+
                 return returnObject;
             }
 
