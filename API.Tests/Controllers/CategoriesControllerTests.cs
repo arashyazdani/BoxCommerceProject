@@ -112,7 +112,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [CreateCategoryTest]
-        public async Task CreateCategory_Test_Ok_And_NotFound_And_Nocontent_ObjectResult(CreateCategoryParams newCategory, Category categoryEntity, CategoryToReturnDto categoryToReturnDto, Type expectedActionResultType, GetObjectFromCategoryService createCategoryObject)
+        public async Task CreateCategory_Test_Ok_And_NotFound_And_Nocontent_And_Conflict_ObjectResult(CreateCategoryParams newCategory, Category categoryEntity, CategoryToReturnDto categoryToReturnDto, Type expectedActionResultType, GetObjectFromCategoryService createCategoryObject)
         {
             // Arrange
 
@@ -198,6 +198,10 @@ namespace API.Tests.Controllers
 
             _mapper.Setup(x => x.Map<UpdateCategoryParams, Category>(It.IsAny<UpdateCategoryParams>())).Returns(categoryEntity);
 
+            _categoryService.Setup(x =>
+                    x.UpdateCategory(It.IsAny<Category>()))
+                .ReturnsAsync(updateCategoryObject)
+                .Verifiable();
 
             var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _categoryService.Object);
 

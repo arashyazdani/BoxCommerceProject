@@ -93,6 +93,10 @@ namespace Infrastructure.Services
 
             var specParams = new GetCategorySpecificationParams();
 
+            var currentTimestamp = DateTimeOffset.Now;
+
+            if (updateCategoryParams.UpdatedDate != null) currentTimestamp = (DateTimeOffset)updateCategoryParams.UpdatedDate;
+
             specParams.Search = updateCategoryParams.Name;
 
             var spec = new GetCategoriesWithParentsSpecification(specParams);
@@ -109,9 +113,7 @@ namespace Infrastructure.Services
             }
             var result = await _unitOfWork.Complete();
 
-            var currentTimestamp = DateTimeOffset.Now;
-            
-            if (result<=0 && updateCategoryParams.UpdatedDate != currentTimestamp)
+            if (result<=0 && updateCategoryParams.UpdatedDate == currentTimestamp)
             {
                 returnObject.StatusCode = 304;
                 returnObject.Message = "Not Modified.";

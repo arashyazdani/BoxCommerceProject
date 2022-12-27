@@ -18,6 +18,7 @@ using Domain.Specifications.ProductSpecifications;
 using Microsoft.AspNetCore.Mvc;
 using Shouldly;
 using Domain.Specifications.CategorySpecifications;
+using Infrastructure.Services;
 
 namespace API.Tests.Controllers
 {
@@ -30,6 +31,7 @@ namespace API.Tests.Controllers
         //private readonly Mock<ApiResponse> _apiResponse;
         private readonly ProductsController _productsController;
         private readonly Mock<IResponseCacheService> _responseCache;
+        private readonly Mock<IProductService> _productService;
 
         public ProductsControllerTests()
         {
@@ -37,7 +39,8 @@ namespace API.Tests.Controllers
             _mapper = new Mock<IMapper>();
             _unitOfWork = new Mock<IUnitOfWork>();
             _responseCache = new Mock<IResponseCacheService>();
-            _productsController = new ProductsController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
+            _productService = new Mock<IProductService>();
+            //_productsController = new ProductsController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _productService.Object);
         }
 
 
@@ -57,7 +60,7 @@ namespace API.Tests.Controllers
                 .ReturnsAsync(newProduct)
                 .Verifiable();
 
-            var controller = new ProductsController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
+            var controller = new ProductsController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _productService.Object);
 
             // Act
 
@@ -80,7 +83,7 @@ namespace API.Tests.Controllers
                 .ReturnsAsync(productList)
                 .Verifiable();
 
-            var controller = new ProductsController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
+            var controller = new ProductsController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _productService.Object);
 
             var specParams = new GetProductSpecificationParams();
 
@@ -95,7 +98,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [CreateProductTests]
-        public async Task CreateProduct_Test_Ok_And_NotFound_And_Nocontent_ObjectResult(CreateProductParams newProduct, Product productEntity, ProductToReturnDto productToReturnDto, Type expectedActionResultType)
+        public async Task CreateProduct_Test_Ok_And_NotFound_And_Nocontent_And_Conflict_ObjectResult(CreateProductParams newProduct, Product productEntity, ProductToReturnDto productToReturnDto, Type expectedActionResultType, GetObjectFromProductService createCategoryObject)
         {
             // Arrange
 
@@ -116,7 +119,12 @@ namespace API.Tests.Controllers
 
             _mapper.Setup(x => x.Map<CreateProductParams, Product>(It.IsAny<CreateProductParams>())).Returns(productEntity);
 
-            var controller = new ProductsController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
+            _productService.Setup(x =>
+                    x.CreateProduct(It.IsAny<Product>()))
+                .ReturnsAsync(createCategoryObject)
+                .Verifiable();
+
+            var controller = new ProductsController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _productService.Object);
 
             // Act
 

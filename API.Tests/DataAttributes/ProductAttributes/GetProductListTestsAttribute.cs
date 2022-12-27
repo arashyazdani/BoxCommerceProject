@@ -16,8 +16,17 @@ namespace API.Tests.DataAttributes.ProductAttributes
     {
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
-            yield return new object[] { FakeProducts<IReadOnlyList<Product>>.FakeProductList.Generate(10), typeof(OkObjectResult) };
-            yield return new object[] { It.IsAny<List<Product>>(), typeof(NotFoundObjectResult) };
+            yield return new object[]
+            {
+                FakeProducts<IReadOnlyList<Product>>.FakeProductList.Generate(10), 
+                typeof(OkObjectResult)
+            };
+
+            yield return new object[]
+            {
+                It.IsAny<List<Product>>(), 
+                typeof(NotFoundObjectResult)
+            };
         }
     }
 }

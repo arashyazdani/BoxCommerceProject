@@ -12,6 +12,7 @@ using Domain.Interfaces;
 using Domain.Specifications;
 using Domain.Specifications.CategorySpecifications;
 using Domain.Specifications.ProductSpecifications;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -22,12 +23,14 @@ namespace API.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IResponseCacheService _responseCache;
+        private readonly IProductService _productService;
 
-        public ProductsController(IUnitOfWork unitOfWork, IMapper mapper, IResponseCacheService responseCache)
+        public ProductsController(IUnitOfWork unitOfWork, IMapper mapper, IResponseCacheService responseCache, IProductService productService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _responseCache = responseCache;
+            _productService = productService;
         }
 
         [Cached(600)]
@@ -73,22 +76,23 @@ namespace API.Controllers
         public async Task<ActionResult<ProductToReturnDto>> CreateProduct([FromQuery] CreateProductParams createProductParams)
         {
 
-            if (createProductParams.CategoryId != null)
-            {
-                var categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)createProductParams.CategoryId);
-
-                if (categoryExists == null) return NotFound(new ApiResponse(404, "The CategoryId is not found."));
-            }
-
             var productEntity = _mapper.Map<CreateProductParams, Product>(createProductParams);
 
-            await _unitOfWork.Repository<Product>().InsertAsync(productEntity);
+            var insertResult = await _productService.CreateProduct(productEntity);
 
-            var result = await _unitOfWork.Complete();
+            switch (insertResult.StatusCode)
+            {
+                case 404:
+                    return NotFound(new ApiResponse(insertResult.StatusCode, insertResult.Message));
 
-            if (result <= 0) return BadRequest(new ApiResponse(400));
+                case 400:
+                    return BadRequest(new ApiResponse(insertResult.StatusCode));
 
-            var returnDto = _mapper.Map<Product, ProductToReturnDto>(productEntity);
+                case 409:
+                    return Conflict(new ApiResponse(insertResult.StatusCode, insertResult.Message));
+            }
+
+            var returnDto = _mapper.Map<Product, ProductToReturnDto>(insertResult.ProductResult);
 
             return new CreatedAtRouteResult("GetProduct", new { id = productEntity.Id }, new ApiResponse(201, "Product has been created successfully.", returnDto));
         }

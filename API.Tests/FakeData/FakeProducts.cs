@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Specifications;
 using Domain.Specifications.ProductSpecifications;
+using Domain.Specifications.CategorySpecifications;
 
 namespace API.Tests.FakeData
 {
@@ -32,6 +33,19 @@ namespace API.Tests.FakeData
             return returnData;
         }
 
+        public static GetObjectFromProductService FakeProductServiceObject(int statusCode, string message,
+            Product productResult)
+        {
+            var returnObject = new GetObjectFromProductService
+            {
+                StatusCode = statusCode,
+                Message = message,
+                ProductResult = productResult
+            };
+
+            return returnObject;
+        }
+
         public static Faker<Product> FakeProductList { get; } =
             new Faker<Product>()
                 .RuleFor(p => p.Id, f => _id++)
@@ -44,5 +58,6 @@ namespace API.Tests.FakeData
                 .RuleFor(p => p.Enabled, f => true)
                 .RuleFor(p => p.IsDiscontinued, f => f.Commerce.Random.Bool());
 
+        
     }
 }

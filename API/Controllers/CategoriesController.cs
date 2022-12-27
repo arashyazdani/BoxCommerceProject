@@ -150,13 +150,6 @@ namespace API.Controllers
 
             updateCategoryParams.ApplyTo(categoryToPatch, ModelState);
 
-            if (categoryToPatch.ParentCategoryId != null)
-            {
-                var categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)categoryToPatch.ParentCategoryId);
-
-                if (categoryExists == null) return NotFound(new ApiResponse(404, "The ParentCategoryId is not found."));
-            }
-
             if (!TryValidateModel(categoryToPatch))
             {
                 return ValidationProblem(ModelState);
@@ -164,9 +157,22 @@ namespace API.Controllers
 
             _mapper.Map(categoryToPatch, category);
 
-            var result = await _unitOfWork.Complete();
+            var updateResult = await _categoryService.UpdateCategory(category);
 
-            if (result <= 0) return BadRequest(new ApiResponse(400));
+            switch (updateResult.StatusCode)
+            {
+                case 404:
+                    return NotFound(new ApiResponse(updateResult.StatusCode, updateResult.Message));
+
+                case 400:
+                    return BadRequest(new ApiResponse(updateResult.StatusCode));
+
+                case 409:
+                    return Conflict(new ApiResponse(updateResult.StatusCode, updateResult.Message));
+
+                case 304:
+                    return new StatusCodeResult(304);
+            }
 
             await _responseCache.DeleteRangeOfKeysAsync("Categories");
 
@@ -197,8 +203,7 @@ namespace API.Controllers
 
         }
 
-        public override ActionResult ValidationProblem(
-            [ActionResultObjectValue] ModelStateDictionary modelStateDictionary)
+        public override ActionResult ValidationProblem([ActionResultObjectValue] ModelStateDictionary modelStateDictionary)
         {
             var options = HttpContext.RequestServices
                 .GetRequiredService<IOptions<ApiBehaviorOptions>>();
