@@ -32,6 +32,18 @@ namespace API.Tests.FakeData
             return returnData;
         }
 
+        public static GetObjectFromCategoryService FakeCategoryServiceObject(int statusCode, string message, Category categoryResult)
+        {
+            var returnObject = new GetObjectFromCategoryService
+            {
+                StatusCode = statusCode,
+                Message = message,
+                CategoryResult = categoryResult
+            };
+            
+            return returnObject;
+        }
+
         public static Faker<Category> FakeCategoryList { get; } =
             new Faker<Category>()
                 .RuleFor(p => p.Id, f => _id++)

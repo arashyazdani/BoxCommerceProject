@@ -28,17 +28,18 @@ namespace Domain.Specifications.ProductSpecifications
         [Required(ErrorMessage = "Enabled is required")]
         public bool Enabled { get; set; } = true;
 
-        [Display(Name = "Parent Id")]
+        [Display(Name = "Category Id")]
         [Range(1, int.MaxValue)]
+        [Required(ErrorMessage = "CategoryId is required")]
         public int? CategoryId { get; set; }
 
         [Display(Name = "Price")]
         [DisplayFormat(DataFormatString = "{0:0,0}")]
-        [Range(0, double.MaxValue, ErrorMessage = "Price is invalid number")]
+        [Range(0, double.MaxValue)]
         public decimal Price { get; set; }
 
         [Display(Name = "Quantity")]
-        [Range(1, int.MaxValue, ErrorMessage = "Quantity must be between 1 to 999,999,999")]
+        [Range(0, int.MaxValue)]
         public int Quantity { get; set; }
 
         [Display(Name = "IsDiscontinued")]

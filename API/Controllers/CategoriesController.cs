@@ -24,12 +24,14 @@ namespace API.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IResponseCacheService _responseCache;
+        private readonly ICategoryService _categoryService;
 
-        public CategoriesController(IUnitOfWork unitOfWork, IMapper mapper, IResponseCacheService responseCache)
+        public CategoriesController(IUnitOfWork unitOfWork, IMapper mapper, IResponseCacheService responseCache, ICategoryService categoryService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _responseCache = responseCache;
+            _categoryService = categoryService;
         }
 
         [Cached(600)]
@@ -51,7 +53,7 @@ namespace API.Controllers
 
             var returnCategories =
                 new Pagination<CategoryToReturnDto>(specParams.PageIndex, specParams.PageSize, totalItems, data);
-            
+
             return new OkObjectResult(new ApiResponse(200, "Ok", returnCategories));
 
         }
@@ -73,26 +75,28 @@ namespace API.Controllers
 
         }
 
-        
+
         [HttpPost]
         public async Task<ActionResult<CategoryToReturnDto>> CreateCategory([FromQuery] CreateCategoryParams createCategoryParams)
         {
-            if (createCategoryParams.ParentCategoryId != null)
-            {
-                var categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)createCategoryParams.ParentCategoryId);
-
-                if (categoryExists == null) return NotFound(new ApiResponse(404, "The ParentCategoryId is not found."));
-            }
 
             var categoryEntity = _mapper.Map<CreateCategoryParams, Category>(createCategoryParams);
 
-            await _unitOfWork.Repository<Category>().InsertAsync(categoryEntity);
+            var insertResult = await _categoryService.CreateCategory(categoryEntity);
 
-            var result = await _unitOfWork.Complete();
+            switch (insertResult.StatusCode)
+            {
+                case 404:
+                    return NotFound(new ApiResponse(insertResult.StatusCode, insertResult.Message));
 
-            if (result <= 0) return BadRequest(new ApiResponse(400));
+                case 400:
+                    return BadRequest(new ApiResponse(insertResult.StatusCode));
 
-            var returnDto = _mapper.Map<Category, CategoryToReturnDto>(categoryEntity);
+                case 409:
+                    return Conflict(new ApiResponse(insertResult.StatusCode, insertResult.Message));
+            }
+
+            var returnDto = _mapper.Map<Category, CategoryToReturnDto>(insertResult.CategoryResult);
 
             return new CreatedAtRouteResult("GetCategory", new { id = categoryEntity.Id }, new ApiResponse(201, "Category has been created successfully.", returnDto));
 
@@ -101,13 +105,6 @@ namespace API.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdateCategory([FromQuery] UpdateCategoryParams updateCategoryParams)
         {
-            if (updateCategoryParams.ParentCategoryId != null)
-            {
-                var categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)updateCategoryParams.ParentCategoryId);
-
-                if (categoryExists == null) return NotFound(new ApiResponse(404, "The ParentCategoryId is not found."));
-            }
-
             var specCategory = new GetCategoriesWithParentsSpecification(updateCategoryParams.Id);
 
             var category = await _unitOfWork.Repository<Category>().GetEntityWithSpec(specCategory);
@@ -116,16 +113,29 @@ namespace API.Controllers
 
             _mapper.Map(updateCategoryParams, category);
 
-            var result = await _unitOfWork.Complete();
+            var updateResult = await _categoryService.UpdateCategory(category);
 
-            if (result <= 0) return BadRequest(new ApiResponse(400));
+            switch (updateResult.StatusCode)
+            {
+                case 404:
+                    return NotFound(new ApiResponse(updateResult.StatusCode, updateResult.Message));
+
+                case 400:
+                    return BadRequest(new ApiResponse(updateResult.StatusCode));
+
+                case 409:
+                    return Conflict(new ApiResponse(updateResult.StatusCode, updateResult.Message));
+
+                case 304:
+                    return new StatusCodeResult(304);
+            }
 
             await _responseCache.DeleteRangeOfKeysAsync("Categories");
 
             return NoContent();
 
         }
-       
+
         [HttpPatch("id")]
         public async Task<ActionResult> PartiallyUpdateCategory(int id, JsonPatchDocument<UpdateCategoryParams> updateCategoryParams)
         {
@@ -133,8 +143,6 @@ namespace API.Controllers
             var specCategory = new GetCategoriesWithParentsSpecification(id);
 
             var category = await _unitOfWork.Repository<Category>().GetEntityWithSpec(specCategory);
-
-            
 
             if (category == null) return NotFound(new ApiResponse(404, "The category is not found."));
 
@@ -184,7 +192,7 @@ namespace API.Controllers
             if (result <= 0) return BadRequest(new ApiResponse(400));
 
             await _responseCache.DeleteRangeOfKeysAsync("Categories");
-            
+
             return NoContent();
 
         }

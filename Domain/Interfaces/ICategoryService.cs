@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,8 +11,8 @@ namespace Domain.Interfaces
 {
     public interface ICategoryService
     {
-        Task<Category> CreateCategory(CreateCategoryParams createCategoryParams);
-        Task<Category> UpdateCategory(UpdateCategoryParams updateCategoryParams);
+        Task<GetObjectFromCategoryService> CreateCategory(Category createCategoryParams);
+        Task<GetObjectFromCategoryService> UpdateCategory(Category updateCategoryParams);
 
     }
 }

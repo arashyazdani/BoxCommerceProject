@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Interfaces;
@@ -20,6 +21,11 @@ namespace Infrastructure.Data.Repositories
         public async Task<T> GetByIdAsync(object id)
         {
             return await _context.Set<T>().FindAsync(id);
+        }
+
+        public async Task<T> SearchAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _context.Set<T>().FirstOrDefaultAsync(predicate);
         }
 
         public async Task<IReadOnlyList<T>> ListAllAsync()

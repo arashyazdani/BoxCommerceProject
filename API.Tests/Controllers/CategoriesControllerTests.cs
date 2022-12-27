@@ -1,4 +1,5 @@
-﻿using API.Errors;
+﻿using System.Dynamic;
+using API.Errors;
 using AutoMapper;
 using Domain.Interfaces;
 using Moq;
@@ -14,6 +15,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using API.Tests.FakeData;
 using Domain.Specifications.CategorySpecifications;
+using Infrastructure.Services;
 
 namespace API.Tests.Controllers
 {
@@ -21,17 +23,17 @@ namespace API.Tests.Controllers
     {
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<IUnitOfWork> _unitOfWork;
-        private readonly Mock<ApiResponse> _apiResponse;
+        private readonly Mock<ICategoryService> _categoryService;
         private readonly CategoriesController _categoriesController;
         private readonly Mock<IResponseCacheService> _responseCache;
 
         public CategoriesControllerTests()
         {
-            _apiResponse = new Mock<ApiResponse>();
             _mapper = new Mock<IMapper>();
             _unitOfWork = new Mock<IUnitOfWork>();
             _responseCache = new Mock<IResponseCacheService>();
-            _categoriesController = new CategoriesController(_unitOfWork.Object,_mapper.Object, _responseCache.Object);
+            _categoryService = new Mock<ICategoryService>();
+            _categoriesController = new CategoriesController(_unitOfWork.Object,_mapper.Object, _responseCache.Object, _categoryService.Object);
 
         }
 
@@ -48,7 +50,7 @@ namespace API.Tests.Controllers
                 .ReturnsAsync(newCategory)
                 .Verifiable();
 
-            var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
+            var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _categoryService.Object);
 
             // Act
 
@@ -70,7 +72,7 @@ namespace API.Tests.Controllers
                 .ReturnsAsync(categoryList)
                 .Verifiable();
 
-            var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
+            var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _categoryService.Object);
             
             var specParams = new GetCategorySpecificationParams();
 
@@ -110,7 +112,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [CreateCategoryTest]
-        public async Task CreateCategory_Test_Ok_And_NotFound_And_Nocontent_ObjectResult(CreateCategoryParams newCategory, Category categoryEntity, CategoryToReturnDto categoryToReturnDto, Type expectedActionResultType)
+        public async Task CreateCategory_Test_Ok_And_NotFound_And_Nocontent_ObjectResult(CreateCategoryParams newCategory, Category categoryEntity, CategoryToReturnDto categoryToReturnDto, Type expectedActionResultType, GetObjectFromCategoryService createCategoryObject)
         {
             // Arrange
 
@@ -124,9 +126,13 @@ namespace API.Tests.Controllers
             var createdCategory = new CreatedAtRouteResult("GetCategory", new { id = 1 }, new ApiResponse(201, "Category has been created successfully.", categoryToReturnDto));
 
             _mapper.Setup(x => x.Map<CreateCategoryParams, Category>(It.IsAny<CreateCategoryParams>())).Returns(categoryEntity);
+            
+            _categoryService.Setup(x => 
+                    x.CreateCategory(It.IsAny<Category>()))
+                .ReturnsAsync(createCategoryObject)
+                .Verifiable();
 
-            var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
-
+            var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _categoryService.Object);
 
             // Act
 
@@ -142,7 +148,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [UpdateCategoryTest]
-        public async Task UpdateCategory_Test_Ok_And_NotFound_And_Nocontent_ObjectResult(UpdateCategoryParams updateCategory, Category categoryEntity, Type expectedActionResultType)
+        public async Task UpdateCategory_Test_Ok_And_NotFound_And_Nocontent_ObjectResult(UpdateCategoryParams updateCategory, Category categoryEntity, Type expectedActionResultType, GetObjectFromCategoryService updateCategoryObject)
         {
             // Arrange
 
@@ -154,12 +160,18 @@ namespace API.Tests.Controllers
 
             if(expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
 
-            var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
+            _categoryService.Setup(x =>
+                    x.UpdateCategory(It.IsAny<Category>()))
+                .ReturnsAsync(updateCategoryObject)
+                .Verifiable();
+
+            var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _categoryService.Object);
 
             // Act
             var result = await controller.UpdateCategory(updateCategory);
 
             // Assert
+            if(expectedActionResultType == typeof(StatusCodeResult)) updateCategoryObject.StatusCode.ShouldBe(304);
             result.ShouldBeOfType(expectedActionResultType);
 
         }
@@ -167,7 +179,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [UpdateCategoryTest]
-        public async Task PartiallyUpdateCategory_Test_Ok_And_NotFound_And_Nocontent_ObjectResult(UpdateCategoryParams updateCategory, Category categoryEntity, Type expectedActionResultType)
+        public async Task PartiallyUpdateCategory_Test_Ok_And_NotFound_And_Nocontent_ObjectResult(UpdateCategoryParams updateCategory, Category categoryEntity, Type expectedActionResultType, GetObjectFromCategoryService updateCategoryObject)
         {
             // Arrange
             var jsonUpdateCategory = new JsonPatchDocument<UpdateCategoryParams>();
@@ -187,14 +199,16 @@ namespace API.Tests.Controllers
             _mapper.Setup(x => x.Map<UpdateCategoryParams, Category>(It.IsAny<UpdateCategoryParams>())).Returns(categoryEntity);
 
 
-            var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
+            var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _categoryService.Object);
 
             var objectValidator = new Mock<IObjectModelValidator>();
             objectValidator.Setup(o => o.Validate(It.IsAny<ActionContext>(),
                 It.IsAny<ValidationStateDictionary>(),
                         It.IsAny<string>(),
                         It.IsAny<UpdateCategoryParams>()));
+
             controller.ObjectValidator = objectValidator.Object;
+
             // Act
             var result = await controller.PartiallyUpdateCategory(1, jsonUpdateCategory);
 
@@ -214,7 +228,7 @@ namespace API.Tests.Controllers
 
             if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
 
-            var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object);
+            var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _categoryService.Object);
 
             // Act
             var result = await controller.DeleteCategoryById(id);

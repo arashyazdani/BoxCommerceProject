@@ -1,8 +1,9 @@
-﻿using System.ComponentModel;
+﻿using Domain.Entities.BaseEntities;
+using System.ComponentModel;
 
 namespace Domain.Entities
 {
-    public class VehiclesInventory
+    public class VehiclesInventory : Auditable
     {
         // I used GUID for Id because we need a uniq number and unpredictable for using to each vehicle.
         public Guid Id { get; set; }

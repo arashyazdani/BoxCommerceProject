@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities.BaseEntities
 {
-    public abstract class BaseFields
+    public class BaseFields : Auditable
     {
         public int Id { get; set; }
         public int? Priority { get; set; }

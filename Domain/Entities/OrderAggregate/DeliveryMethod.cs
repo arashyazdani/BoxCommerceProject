@@ -9,8 +9,9 @@ using System.Threading.Tasks;
 namespace Domain.Entities.OrderAggregate
 {
     [DisplayName("Delivery Method Table")]
-    public class DeliveryMethod : BaseEntity
+    public class DeliveryMethod : Auditable
     {
+        public int Id { get; set; }
         public string ShortName { get; set; }
         public string DeliveryTime { get; set; }
         public string? Description { get; set; }

@@ -9,7 +9,7 @@ using Domain.Entities.BaseEntities;
 namespace Domain.Entities.OrderAggregate
 {
     [DisplayName("Order Table")]
-    public class Order : BaseEntity
+    public class Order : Auditable
     {
         public Order()
         {
@@ -29,6 +29,7 @@ namespace Domain.Entities.OrderAggregate
             VehicleName = vehicleName;
         }
 
+        public int Id { get; set; }
         public string BuyerEmail { get; set; }
         public int VehicleId { get; set; }
         public string VehicleName { get; set; }

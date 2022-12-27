@@ -12,6 +12,8 @@ namespace Domain.Interfaces
     {
         Task<T> GetByIdAsync(object id);
 
+        Task<T> SearchAsync(Expression<Func<T, bool>> predicate);
+
         Task<IReadOnlyList<T>> ListAllAsync();
 
         Task<T> GetEntityWithSpec(ISpecification<T> spec);
