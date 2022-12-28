@@ -12,28 +12,18 @@ using Xunit.Sdk;
 
 namespace API.Tests.DataAttributes.WarehouseAttributes
 {
-    public class GetWarehouseTestsAttribute : DataAttribute
+    public class GetWarehouseListTests : DataAttribute
     {
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
-            yield return new object[]
-            {
-                1,
-                FakeWarehouses<Warehouse>.FakeWarehouseData(null,new Warehouse()),
+            yield return new object[] { 
+                FakeWarehouses<IReadOnlyList<Warehouse>>.FakeWarehouseList.Generate(10), 
                 typeof(OkObjectResult)
             };
 
             yield return new object[]
             {
-                -1,
-                FakeWarehouses<Warehouse>.FakeWarehouseData(null,new Warehouse()),
-                typeof(FormatException)
-            };
-
-            yield return new object[]
-            {
-                100,
-                It.IsAny<Warehouse>(),
+                It.IsAny<List<Warehouse>>(), 
                 typeof(NotFoundObjectResult)
             };
         }

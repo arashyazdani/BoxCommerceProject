@@ -46,5 +46,29 @@ namespace API.Controllers
             return new OkObjectResult(new ApiResponse(200, "Ok", returnWarehouses));
 
         }
+
+        [Cached(600)]
+        [HttpGet]
+        public async Task<ActionResult<Pagination<WarehouseToReturnDto>>> GetWarehouses([FromQuery] GetWarehouseSpecificationParams specParams)
+        {
+
+            var spec = new GetWarehousesSpecification(specParams);
+
+            var countSpec = new GetWarehousesForCountSpecification(specParams);
+
+            var totalItems = await _unitOfWork.Repository<Warehouse>().CountAsync(countSpec);
+
+            var warehouses = await _unitOfWork.Repository<Warehouse>().ListWithSpecAsync(spec);
+
+            if (warehouses == null || warehouses.Count == 0) return NotFound(new ApiResponse(404));
+
+            var data = _mapper.Map<IReadOnlyList<Warehouse>, IReadOnlyList<WarehouseToReturnDto>>(warehouses);
+
+            var returnWarehouses =
+                new Pagination<WarehouseToReturnDto>(specParams.PageIndex, specParams.PageSize, totalItems, data);
+
+            return new OkObjectResult(new ApiResponse(200, "Ok", returnWarehouses));
+
+        }
     }
 }

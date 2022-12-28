@@ -16,8 +16,17 @@ namespace API.Tests.DataAttributes.CategoryAttributes
     {
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
-            yield return new object[] { FakeCategories<IReadOnlyList<Category>>.FakeCategoryList.Generate(10), typeof(OkObjectResult) };
-            yield return new object[] { It.IsAny<List<Category>>(), typeof(NotFoundObjectResult) };
+            yield return new object[]
+            {
+                FakeCategories<IReadOnlyList<Category>>.FakeCategoryList.Generate(10), 
+                typeof(OkObjectResult)
+            };
+
+            yield return new object[]
+            {
+                It.IsAny<List<Category>>(), 
+                typeof(NotFoundObjectResult)
+            };
 
         }
     }

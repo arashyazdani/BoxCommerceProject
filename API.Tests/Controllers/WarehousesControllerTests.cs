@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using API.Tests.DataAttributes.WarehouseAttributes;
 using Domain.Entities;
 using Shouldly;
+using Domain.Specifications.WarehouseSpecifications;
 
 namespace API.Tests.Controllers
 {
@@ -55,6 +56,31 @@ namespace API.Tests.Controllers
 
                 result.Result.ShouldBeOfType(expectedActionResultType);
             }
+
+        }
+
+        [Theory]
+        [GetWarehouseListTests]
+        public async Task GetWarehoses_Test_OK_And_NotFound_ObjectResult(List<Warehouse> warehouseList, Type expectedActionResultType)
+        {
+            //Arrange
+
+            _unitOfWork.Setup(x => x.Repository<Warehouse>()
+                    .ListWithSpecAsync(It.IsAny<ISpecification<Warehouse>>()))
+                .ReturnsAsync(warehouseList)
+                .Verifiable();
+
+            var controller = new WarehousesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _warehouseService.Object);
+
+            var specParams = new GetWarehouseSpecificationParams();
+
+            // Act
+
+            var result = await controller.GetWarehouses(specParams);
+
+            // Assert
+
+            result.Result.ShouldBeOfType(expectedActionResultType);
 
         }
     }
