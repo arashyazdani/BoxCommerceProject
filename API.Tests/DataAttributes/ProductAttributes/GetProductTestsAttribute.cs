@@ -25,6 +25,13 @@ namespace API.Tests.DataAttributes.ProductAttributes
 
             yield return new object[]
             {
+                -1,
+                FakeCategories<Product>.FakeCategoryData(null, new Product()),
+                typeof(FormatException)
+            };
+
+            yield return new object[]
+            {
                 100, 
                 It.IsAny<Product>(), 
                 typeof(NotFoundObjectResult)

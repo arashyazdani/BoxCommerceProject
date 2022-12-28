@@ -47,7 +47,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [GetProductTests]
-        public async Task GetProductById_Test_OK_And_NotFound_ObjectResult(int id, Product newProduct,
+        public async Task GetProductById_Test_OK_And_NotFound_ObjectResult_And_ExceptionFormat(int id, Product newProduct,
             Type expectedActionResultType)
         {
             // Arrange
@@ -59,13 +59,18 @@ namespace API.Tests.Controllers
 
             var controller = new ProductsController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _productService.Object);
 
-            // Act
+            // Act and Assert
 
-            var result = await controller.GetProductById(id);
+            if (typeof(FormatException) == expectedActionResultType)
+            {
+                await Assert.ThrowsAsync<FormatException>(() => controller.GetProductById(int.Parse("Not Integer")));
+            }
+            else
+            {
+                var result = await controller.GetProductById(id);
 
-            // Assert
-
-            result.Result.ShouldBeOfType(expectedActionResultType);
+                result.Result.ShouldBeOfType(expectedActionResultType);
+            }
         }
 
         [Theory]

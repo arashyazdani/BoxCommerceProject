@@ -54,17 +54,5 @@ namespace API.Tests.FakeData
                 .RuleFor(p => p.ParentCategoryId, f => _id > 1 ? f.Commerce.Random.Int(1, 3) : null)
                 .RuleFor(p => p.Enabled, f => true);
 
-
-        public static Faker<Product> FakeProductList { get; } =
-            new Faker<Product>()
-                .RuleFor(p => p.Id, f => _id++)
-                .RuleFor(p => p.Name, f => f.Commerce.ProductName())
-                .RuleFor(p => p.Details, f => f.Commerce.ProductDescription())
-                .RuleFor(p => p.Priority, f => f.Commerce.Random.Int(1, _id))
-                .RuleFor(p => p.CategoryId, f => f.Commerce.Random.Int(1, 3))
-                .RuleFor(p => p.Price, f => decimal.Parse(f.Commerce.Price(1000, 170000)))
-                .RuleFor(p => p.Quantity, f => f.Commerce.Random.Int(0, 200))
-                .RuleFor(p => p.Enabled, f => true)
-                .RuleFor(p => p.IsDiscontinued, f => f.Commerce.Random.Bool());
     }
 }

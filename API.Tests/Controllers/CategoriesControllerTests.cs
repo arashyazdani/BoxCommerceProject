@@ -24,7 +24,6 @@ namespace API.Tests.Controllers
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<IUnitOfWork> _unitOfWork;
         private readonly Mock<ICategoryService> _categoryService;
-        private readonly CategoriesController _categoriesController;
         private readonly Mock<IResponseCacheService> _responseCache;
 
         public CategoriesControllerTests()
@@ -33,17 +32,14 @@ namespace API.Tests.Controllers
             _unitOfWork = new Mock<IUnitOfWork>();
             _responseCache = new Mock<IResponseCacheService>();
             _categoryService = new Mock<ICategoryService>();
-            _categoriesController = new CategoriesController(_unitOfWork.Object,_mapper.Object, _responseCache.Object, _categoryService.Object);
 
         }
 
         [Theory]
         [GetCategoryTests]
-        public async Task GetCategoryById_Test_OK_And_NotFound_ObjectResult(int id, Category newCategory, Type expectedActionResultType)
+        public async Task GetCategoryById_Test_OK_And_NotFound_ObjectResult_And_ExceptionFormat(int id, Category newCategory, Type expectedActionResultType)
         {
             // Arrange
-
-            var spec = new GetCategoriesWithParentsSpecification(id);
 
             _unitOfWork.Setup(x => x.Repository<Category>()
                     .GetEntityWithSpec(It.IsAny<ISpecification<Category>>()))
@@ -52,13 +48,19 @@ namespace API.Tests.Controllers
 
             var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _categoryService.Object);
 
-            // Act
+            // Act and Assert
 
-            var result = await controller.GetCategoryById(id);
+            if (typeof(FormatException) == expectedActionResultType)
+            {
+                await Assert.ThrowsAsync<FormatException>(() =>  controller.GetCategoryById(int.Parse("Not Integer")));
+            }
+            else
+            {
+                var result = await controller.GetCategoryById(id);
 
-            // Assert
+                result.Result.ShouldBeOfType(expectedActionResultType);
+            }
 
-            result.Result.ShouldBeOfType(expectedActionResultType);
         }
 
         [Theory]
@@ -112,7 +114,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [CreateCategoryTest]
-        public async Task CreateCategory_Test_Ok_And_NotFound_And_Nocontent_And_Conflict_ObjectResult(CreateCategoryParams newCategory, Category categoryEntity, CategoryToReturnDto categoryToReturnDto, Type expectedActionResultType, GetObjectFromCategoryService createCategoryObject)
+        public async Task CreateCategory_Test_Ok_And_NotFound_And_NoContent_And_Conflict_ObjectResult(CreateCategoryParams newCategory, Category categoryEntity, CategoryToReturnDto categoryToReturnDto, Type expectedActionResultType, GetObjectFromCategoryService createCategoryObject)
         {
             // Arrange
 
@@ -148,7 +150,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [UpdateCategoryTest]
-        public async Task UpdateCategory_Test_Ok_And_NotFound_And_Nocontent_And_NotModified_ObjectResult(UpdateCategoryParams updateCategory, Category categoryEntity, Type expectedActionResultType, GetObjectFromCategoryService updateCategoryObject)
+        public async Task UpdateCategory_Test_Ok_And_NotFound_And_NoContent_And_NotModified_ObjectResult(UpdateCategoryParams updateCategory, Category categoryEntity, Type expectedActionResultType, GetObjectFromCategoryService updateCategoryObject)
         {
             // Arrange
 
@@ -179,7 +181,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [UpdateCategoryTest]
-        public async Task PartiallyUpdateCategory_Test_Ok_And_NotFound_And_Nocontent_NotModified_ObjectResult(UpdateCategoryParams updateCategory, Category categoryEntity, Type expectedActionResultType, GetObjectFromCategoryService updateCategoryObject)
+        public async Task PartiallyUpdateCategory_Test_Ok_And_NotFound_And_NoContent_NotModified_ObjectResult(UpdateCategoryParams updateCategory, Category categoryEntity, Type expectedActionResultType, GetObjectFromCategoryService updateCategoryObject)
         {
             // Arrange
             var jsonUpdateCategory = new JsonPatchDocument<UpdateCategoryParams>();
@@ -224,7 +226,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [DeleteCategoryTest]
-        public async Task DeleteCategory_Test_Ok_And_NotFound_And_Nocontent_ObjectResult(int id, Category categoryEntity, Type expectedActionResultType)
+        public async Task DeleteCategory_Test_Ok_And_NotFound_And_NoContent_ObjectResult(int id, Category categoryEntity, Type expectedActionResultType)
         {
             // Arrange
             if(expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Category>().GetEntityWithSpec(It.IsAny<ISpecification<Category>>())).ReturnsAsync(categoryEntity).Verifiable();
