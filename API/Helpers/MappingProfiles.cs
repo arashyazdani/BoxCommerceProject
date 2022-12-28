@@ -5,6 +5,7 @@ using Domain.Entities.Identity;
 using Domain.Entities.OrderAggregate;
 using Domain.Specifications.CategorySpecifications;
 using Domain.Specifications.ProductSpecifications;
+using Domain.Specifications.WarehouseSpecifications;
 using Microsoft.AspNetCore.JsonPatch;
 
 namespace API.Helpers
@@ -29,6 +30,7 @@ namespace API.Helpers
             CreateMap<AddressDTO, OrderAddress>();
             CreateMap<CreateCategoryParams, Category>();
             CreateMap<CreateProductParams, Product>();
+            CreateMap<CreateWarehouseParams, Warehouse>();
             CreateMap<UpdateCategoryParams, Category>();
             CreateMap<UpdateProductParams, Product>();
             CreateMap<Category,UpdateCategoryParams>();

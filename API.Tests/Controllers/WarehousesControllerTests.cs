@@ -15,7 +15,8 @@ using Shouldly;
 using Domain.Specifications.WarehouseSpecifications;
 using Microsoft.AspNetCore.Mvc;
 using API.Tests.FakeData;
-using Domain.Specifications.CategorySpecifications;
+using API.DTOs;
+using API.Errors;
 
 namespace API.Tests.Controllers
 {
@@ -78,7 +79,7 @@ namespace API.Tests.Controllers
             // Act and Assert
             if (typeof(FormatException) == expectedActionResultType)
             {
-                 Assert.Throws<FormatException>(FakeCommonData<GetCategorySpecificationParams>.CreateFormatException);
+                 Assert.Throws<FormatException>(FakeCommonData<GetWarehouseSpecificationParams>.CreateFormatException);
             }
             else
             {
@@ -92,6 +93,42 @@ namespace API.Tests.Controllers
                 result.Result.ShouldBeOfType(expectedActionResultType);
             }
             
+        }
+
+        [Theory]
+        [CreateWarehouseTests]
+        public async Task CreateWarehouse_Test_Ok_And_NotFound_And_NoContent_And_Conflict_ObjectResult(CreateWarehouseParams newWarehouse, Warehouse warehouseEntity, WarehouseToReturnDto warehouseToReturnDto, Type expectedActionResultType, GetObjectFromServicesSpecification createWarehouseObject)
+        {
+            // Arrange
+
+            _unitOfWork.Setup(x => x.Repository<Warehouse>().InsertAsync(It.IsAny<Warehouse>()))
+                .Returns(Task.FromResult(newWarehouse)).Verifiable();
+
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+
+            _mapper.Setup(x => x.Map<Warehouse, WarehouseToReturnDto>(It.IsAny<Warehouse>())).Returns(warehouseToReturnDto);
+
+            var createdWarehouse = new CreatedAtRouteResult("GetWarehouse", new { id = 1 }, new ApiResponse(201, "Warehouse has been created successfully.", warehouseToReturnDto));
+
+            _mapper.Setup(x => x.Map<CreateWarehouseParams, Warehouse>(It.IsAny<CreateWarehouseParams>())).Returns(warehouseEntity);
+
+            _warehouseService.Setup(x =>
+                    x.CreateWarehouse(It.IsAny<Warehouse>()))
+                .ReturnsAsync(createWarehouseObject)
+                .Verifiable();
+
+            var controller = new WarehousesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _warehouseService.Object);
+
+            // Act
+
+            var result = await controller.CreateWarehouse(newWarehouse);
+
+            // Assert
+
+            if (expectedActionResultType == typeof(CreatedAtRouteResult)) result.Result.ShouldBeEquivalentTo(createdWarehouse);
+
+            result.Result.ShouldBeOfType(expectedActionResultType);
+
         }
 
     }

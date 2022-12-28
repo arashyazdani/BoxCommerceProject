@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Domain.Specifications.ProductSpecifications
+namespace Domain.Specifications
 {
-    public abstract class CreateOrUpdateProductParams
+    public abstract class BaseCreateOrUpdateParams
     {
         [Display(Name = "Priority")]
         [Range(1, int.MaxValue, ErrorMessage = "Priority must be between 1 to 999,999,999")]
@@ -27,23 +27,5 @@ namespace Domain.Specifications.ProductSpecifications
         [Display(Name = "Enabled")]
         [Required(ErrorMessage = "Enabled is required")]
         public bool Enabled { get; set; } = true;
-
-        [Display(Name = "Category Id")]
-        [Range(1, int.MaxValue)]
-        [Required(ErrorMessage = "CategoryId is required")]
-        public int? CategoryId { get; set; }
-
-        [Display(Name = "Price")]
-        [DisplayFormat(DataFormatString = "{0:0,0}")]
-        [Range(0, double.MaxValue)]
-        public decimal Price { get; set; }
-
-        [Display(Name = "Quantity")]
-        [Range(0, int.MaxValue)]
-        public int Quantity { get; set; }
-
-        [Display(Name = "IsDiscontinued")]
-        [Required(ErrorMessage = "IsDiscontinued is required")]
-        public bool IsDiscontinued { get; set; } = false;
     }
 }

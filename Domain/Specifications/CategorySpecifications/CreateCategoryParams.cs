@@ -9,8 +9,10 @@ using System.Xml.Linq;
 
 namespace Domain.Specifications.CategorySpecifications
 {
-    public class CreateCategoryParams : CreateOrUpdateCategoryParams
+    public class CreateCategoryParams : BaseCreateOrUpdateParams
     {
-
+        [Display(Name = "Parent Id")]
+        [Range(1, int.MaxValue)]
+        public int? ParentCategoryId { get; set; }
     }
 }

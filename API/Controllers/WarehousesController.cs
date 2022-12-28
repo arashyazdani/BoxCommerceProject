@@ -70,5 +70,31 @@ namespace API.Controllers
             return new OkObjectResult(new ApiResponse(200, "Ok", returnWarehouses));
 
         }
+
+        [HttpPost]
+        public async Task<ActionResult<WarehouseToReturnDto>> CreateWarehouse([FromQuery] CreateWarehouseParams createWarehouseParams)
+        {
+
+            var warehouseEntity = _mapper.Map<CreateWarehouseParams, Warehouse>(createWarehouseParams);
+
+            var insertResult = await _warehouseService.CreateWarehouse(warehouseEntity);
+
+            switch (insertResult.StatusCode)
+            {
+                case 404:
+                    return NotFound(new ApiResponse(insertResult.StatusCode, insertResult.Message));
+
+                case 400:
+                    return BadRequest(new ApiResponse(insertResult.StatusCode));
+
+                case 409:
+                    return Conflict(new ApiResponse(insertResult.StatusCode, insertResult.Message));
+            }
+
+            var returnDto = _mapper.Map<Warehouse, WarehouseToReturnDto>(insertResult.ResultObject);
+
+            return new CreatedAtRouteResult("GetWarehouse", new { id = warehouseEntity.Id }, new ApiResponse(201, "Warehouse has been created successfully.", returnDto));
+
+        }
     }
 }
