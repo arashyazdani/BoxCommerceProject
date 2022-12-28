@@ -32,8 +32,8 @@ namespace API.Tests.DataAttributes.WarehouseAttributes
                 FakeWarehouses<CreateWarehouseParams>.FakeWarehouseData(200, new CreateWarehouseParams()),
                 FakeWarehouses<Warehouse>.FakeWarehouseData(null, new Warehouse()),
                 FakeWarehouses<WarehouseToReturnDto>.FakeWarehouseData(null, new WarehouseToReturnDto()),
-                typeof(NotFoundObjectResult),
-                FakeCommonData<GetObjectFromServicesSpecification>.FakeServiceObject(404, "The warehouse is not found.", FakeWarehouses<Warehouse>.FakeWarehouseData(null, new Warehouse()))
+                typeof(FormatException),
+                FakeCommonData<GetObjectFromServicesSpecification>.FakeServiceObject(400, "Exception.", FakeWarehouses<Warehouse>.FakeWarehouseData(null, new Warehouse()))
             };
 
             yield return new object[]

@@ -110,7 +110,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [CreateProductTests]
-        public async Task CreateProduct_Test_Ok_And_NotFound_And_Nocontent_And_Conflict_ObjectResult(CreateProductParams newProduct, Product productEntity, ProductToReturnDto productToReturnDto, Type expectedActionResultType, GetObjectFromServicesSpecification createProductObject)
+        public async Task CreateProduct_Test_Ok_And_NotFound_And_Nocontent_And_Conflict_ObjectResult_And_ExceptionForma(CreateProductParams newProduct, Product productEntity, ProductToReturnDto productToReturnDto, Type expectedActionResultType, GetObjectFromServicesSpecification createProductObject)
         {
             // Arrange
 
@@ -138,15 +138,25 @@ namespace API.Tests.Controllers
 
             var controller = new ProductsController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _productService.Object);
 
-            // Act
 
-            var result = await controller.CreateProduct(newProduct);
+            // Act and Assert
+            if (typeof(FormatException) == expectedActionResultType)
+            {
+                Assert.Throws<FormatException>(FakeCommonData<CreateProductParams>.CreateFormatExceptionOnCreateOrUpdate);
+            }
+            else
+            {
+                // Act
 
-            // Assert
+                var result = await controller.CreateProduct(newProduct);
 
-            if (expectedActionResultType == typeof(CreatedAtRouteResult)) result.Result.ShouldBeEquivalentTo(createdProduct);
+                // Assert
 
-            result.Result.ShouldBeOfType(expectedActionResultType);
+                if (expectedActionResultType == typeof(CreatedAtRouteResult)) result.Result.ShouldBeEquivalentTo(createdProduct);
+
+                result.Result.ShouldBeOfType(expectedActionResultType);
+            }
+            
 
         }
 

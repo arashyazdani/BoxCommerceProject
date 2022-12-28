@@ -122,7 +122,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [CreateCategoryTest]
-        public async Task CreateCategory_Test_Ok_And_NotFound_And_NoContent_And_Conflict_ObjectResult(CreateCategoryParams newCategory, Category categoryEntity, CategoryToReturnDto categoryToReturnDto, Type expectedActionResultType, GetObjectFromServicesSpecification createCategoryObject)
+        public async Task CreateCategory_Test_Ok_And_NotFound_And_NoContent_And_Conflict_ObjectResult_And_FormatException(CreateCategoryParams newCategory, Category categoryEntity, CategoryToReturnDto categoryToReturnDto, Type expectedActionResultType, GetObjectFromServicesSpecification createCategoryObject)
         {
             // Arrange
 
@@ -144,15 +144,24 @@ namespace API.Tests.Controllers
 
             var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _categoryService.Object);
 
-            // Act
+            // Act and Assert
+            if (typeof(FormatException) == expectedActionResultType)
+            {
+                Assert.Throws<FormatException>(FakeCommonData<CreateCategoryParams>.CreateFormatExceptionOnCreateOrUpdate);
+            }
+            else
+            {
+                // Act
 
-            var result = await controller.CreateCategory(newCategory);
+                var result = await controller.CreateCategory(newCategory);
 
-            // Assert
+                // Assert
 
-            if (expectedActionResultType == typeof(CreatedAtRouteResult)) result.Result.ShouldBeEquivalentTo(createdCategory);
+                if (expectedActionResultType == typeof(CreatedAtRouteResult)) result.Result.ShouldBeEquivalentTo(createdCategory);
+
+                result.Result.ShouldBeOfType(expectedActionResultType);
+            }
             
-            result.Result.ShouldBeOfType(expectedActionResultType);
 
         }
 
@@ -253,16 +262,5 @@ namespace API.Tests.Controllers
 
         }
 
-        private GetCategorySpecificationParams CreateFormatException()
-        {
-
-            var specParams = new GetCategorySpecificationParams
-            {
-                PageIndex = int.Parse("No Integer")
-            };
-
-            return specParams;
-
-        }
     }
 }

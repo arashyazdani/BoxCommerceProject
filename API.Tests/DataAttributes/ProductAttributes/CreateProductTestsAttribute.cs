@@ -50,6 +50,15 @@ namespace API.Tests.DataAttributes.ProductAttributes
                 FakeProducts<CreateProductParams>.FakeProductData(1, new CreateProductParams()),
                 FakeProducts<Product>.FakeProductData(1, new Product()),
                 FakeProducts<ProductToReturnDto>.FakeProductData(1, new ProductToReturnDto()),
+                typeof(FormatException),
+                FakeCommonData<GetObjectFromServicesSpecification>.FakeServiceObject(400, "Bad request.", FakeProducts<Product>.FakeProductData(1, new Product()))
+            };
+
+            yield return new object[]
+            {
+                FakeProducts<CreateProductParams>.FakeProductData(1, new CreateProductParams()),
+                FakeProducts<Product>.FakeProductData(1, new Product()),
+                FakeProducts<ProductToReturnDto>.FakeProductData(1, new ProductToReturnDto()),
                 typeof(ConflictObjectResult),
                 FakeCommonData<GetObjectFromServicesSpecification>.FakeServiceObject(409, "The Product name is already exist.", FakeProducts<Product>.FakeProductData(1, new Product()))
             };

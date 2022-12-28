@@ -49,6 +49,15 @@ namespace API.Tests.DataAttributes.CategoryAttributes
 
             yield return new object[]
             {
+                FakeCategories<CreateCategoryParams>.FakeCategoryData(null, new CreateCategoryParams()),
+                FakeCategories<Category>.FakeCategoryData(null, new Category()),
+                FakeCategories<CategoryToReturnDto>.FakeCategoryData(null, new CategoryToReturnDto()),
+                typeof(FormatException),
+                FakeCommonData<GetObjectFromServicesSpecification>.FakeServiceObject(400, "Bad request.", FakeCategories<Category>.FakeCategoryData(null, new Category()))
+            };
+
+            yield return new object[]
+            {
                 FakeCategories<CreateCategoryParams>.FakeCategoryData(null, new CreateCategoryParams()), 
                 FakeCategories<Category>.FakeCategoryData(null, new Category()), 
                 FakeCategories<CategoryToReturnDto>.FakeCategoryData(null, new CategoryToReturnDto()), 

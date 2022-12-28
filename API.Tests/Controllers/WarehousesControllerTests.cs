@@ -17,6 +17,8 @@ using Microsoft.AspNetCore.Mvc;
 using API.Tests.FakeData;
 using API.DTOs;
 using API.Errors;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace API.Tests.Controllers
 {
@@ -97,7 +99,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [CreateWarehouseTests]
-        public async Task CreateWarehouse_Test_Ok_And_NotFound_And_NoContent_And_Conflict_ObjectResult(CreateWarehouseParams newWarehouse, Warehouse warehouseEntity, WarehouseToReturnDto warehouseToReturnDto, Type expectedActionResultType, GetObjectFromServicesSpecification createWarehouseObject)
+        public async Task CreateWarehouse_Test_Ok_And_NotFound_And_NoContent_And_Conflict_ObjectResult_And_FormatException(CreateWarehouseParams newWarehouse, Warehouse warehouseEntity, WarehouseToReturnDto warehouseToReturnDto, Type expectedActionResultType, GetObjectFromServicesSpecification createWarehouseObject)
         {
             // Arrange
 
@@ -119,15 +121,117 @@ namespace API.Tests.Controllers
 
             var controller = new WarehousesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _warehouseService.Object);
 
-            // Act
+            // Act and Assert
+            if (typeof(FormatException) == expectedActionResultType)
+            {
+                Assert.Throws<FormatException>(FakeCommonData<CreateWarehouseParams>.CreateFormatExceptionOnCreateOrUpdate);
+            }
+            else
+            {
+                // Act
 
-            var result = await controller.CreateWarehouse(newWarehouse);
+                var result = await controller.CreateWarehouse(newWarehouse);
+
+                // Assert
+
+                if (expectedActionResultType == typeof(CreatedAtRouteResult)) result.Result.ShouldBeEquivalentTo(createdWarehouse);
+
+                result.Result.ShouldBeOfType(expectedActionResultType);
+            }
+
+        }
+
+        [Theory]
+        [UpdateWarehouseTests]
+        public async Task UpdateWarehouse_Test_Ok_And_NotFound_And_NoContent_And_NotModified_ObjectResult(UpdateWarehouseParams updateWarehouse, Warehouse warehouseEntity, Type expectedActionResultType, GetObjectFromServicesSpecification updateWarehouseObject)
+        {
+            // Arrange
+
+            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Warehouse>()
+                    .GetEntityWithSpec(It.IsAny<ISpecification<Warehouse>>()))
+                .ReturnsAsync(warehouseEntity)
+                .Verifiable();
+            _unitOfWork.Setup(x => x.Repository<Warehouse>().Update(It.IsAny<Warehouse>())).Verifiable();
+
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+
+            _warehouseService.Setup(x =>
+                    x.UpdateWarehouse(It.IsAny<Warehouse>()))
+                .ReturnsAsync(updateWarehouseObject)
+                .Verifiable();
+
+            var controller = new WarehousesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _warehouseService.Object);
+
+            // Act
+            var result = await controller.UpdateWarehouse(updateWarehouse);
 
             // Assert
+            if (expectedActionResultType == typeof(StatusCodeResult)) updateWarehouseObject.StatusCode.ShouldBe(304);
+            result.ShouldBeOfType(expectedActionResultType);
 
-            if (expectedActionResultType == typeof(CreatedAtRouteResult)) result.Result.ShouldBeEquivalentTo(createdWarehouse);
+        }
 
-            result.Result.ShouldBeOfType(expectedActionResultType);
+        [Theory]
+        [UpdateWarehouseTests]
+        public async Task PartiallyUpdateWarehouse_Test_Ok_And_NotFound_And_NoContent_NotModified_ObjectResult(UpdateWarehouseParams updateWarehouse, Warehouse warehouseEntity, Type expectedActionResultType, GetObjectFromServicesSpecification updateWarehouseObject)
+        {
+            // Arrange
+            var jsonUpdateWarehouse = new JsonPatchDocument<UpdateWarehouseParams>();
+
+            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Warehouse>().GetEntityWithSpec(It.IsAny<ISpecification<Warehouse>>())).ReturnsAsync(warehouseEntity).Verifiable();
+
+            _unitOfWork.Setup(x => x.Repository<Warehouse>().GetByIdAsync(It.IsAny<int>())).ReturnsAsync(warehouseEntity).Verifiable();
+
+            _unitOfWork.Setup(x => x.Repository<Warehouse>().Update(It.IsAny<Warehouse>())).Verifiable();
+
+            if (expectedActionResultType != typeof(StatusCodeResult) && expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+
+            _mapper.Setup(x => x.Map<UpdateWarehouseParams>(It.IsAny<Warehouse>())).Returns(updateWarehouse);
+
+            _mapper.Setup(x => x.Map<UpdateWarehouseParams, Warehouse>(It.IsAny<UpdateWarehouseParams>())).Returns(warehouseEntity);
+
+            _warehouseService.Setup(x =>
+                    x.UpdateWarehouse(It.IsAny<Warehouse>()))
+                .ReturnsAsync(updateWarehouseObject)
+                .Verifiable();
+
+            var controller = new WarehousesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _warehouseService.Object);
+
+            var objectValidator = new Mock<IObjectModelValidator>();
+            objectValidator.Setup(o => o.Validate(It.IsAny<ActionContext>(),
+                It.IsAny<ValidationStateDictionary>(),
+                        It.IsAny<string>(),
+                        It.IsAny<UpdateWarehouseParams>()));
+
+            controller.ObjectValidator = objectValidator.Object;
+
+            // Act
+            var result = await controller.PartiallyUpdateWarehouse(1, jsonUpdateWarehouse);
+
+            // Assert
+            if (expectedActionResultType == typeof(StatusCodeResult)) updateWarehouseObject.StatusCode.ShouldBe(304);
+            result.ShouldBeOfType(expectedActionResultType);
+
+        }
+
+        [Theory]
+        [DeleteWarehouseTests]
+        public async Task DeleteWarehouse_Test_Ok_And_NotFound_And_NoContent_ObjectResult(int id, Warehouse warehouseEntity, Type expectedActionResultType)
+        {
+            // Arrange
+            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Warehouse>().GetEntityWithSpec(It.IsAny<ISpecification<Warehouse>>())).ReturnsAsync(warehouseEntity).Verifiable();
+
+            _unitOfWork.Setup(x => x.Repository<Warehouse>().DeleteAsync(It.IsAny<Warehouse>())).Verifiable();
+
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+
+            var controller = new WarehousesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _warehouseService.Object);
+
+            // Act
+            var result = await controller.DeleteWarehouseById(id);
+
+            // Assert
+            result.ShouldBeOfType(expectedActionResultType);
 
         }
 

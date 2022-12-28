@@ -60,9 +60,54 @@ namespace Infrastructure.Services
             return returnObject;
         }
 
-        public Task<GetObjectFromServicesSpecification> UpdateWarehouse(Warehouse updateWarehouseParams)
+        public async Task<GetObjectFromServicesSpecification> UpdateWarehouse(Warehouse updateWarehouseParams)
         {
-            throw new NotImplementedException();
+            var returnObject = new GetObjectFromServicesSpecification();
+
+            var specParams = new GetWarehouseSpecificationParams();
+            var currentTimestamp = DateTimeOffset.Now;
+            if (updateWarehouseParams.UpdatedDate != null) currentTimestamp = (DateTimeOffset)updateWarehouseParams.UpdatedDate;
+            specParams.Search = updateWarehouseParams.Name;
+
+            var spec = new GetWarehousesSpecification(specParams);
+
+            var warehouseExist = await _unitOfWork.Repository<Warehouse>().GetEntityWithSpec(spec);
+
+            if (warehouseExist != null && warehouseExist.Id != updateWarehouseParams.Id)
+            {
+                returnObject.StatusCode = 409;
+
+                returnObject.Message = "The warehouse name is already exist.";
+
+                return returnObject;
+            }
+            var result = await _unitOfWork.Complete();
+
+            if (result <= 0 && updateWarehouseParams.UpdatedDate == currentTimestamp)
+            {
+                returnObject.StatusCode = 304;
+
+                returnObject.Message = "Not Modified.";
+
+                return returnObject;
+            }
+
+            if (result <= 0)
+            {
+                returnObject.StatusCode = 400;
+
+                returnObject.Message = "Bad request.";
+
+                return returnObject;
+            }
+
+            returnObject.StatusCode = 204;
+
+            returnObject.Message = "Warehouse has been updated successfully.";
+
+            returnObject.ResultObject = updateWarehouseParams;
+
+            return returnObject;
         }
     }
 }

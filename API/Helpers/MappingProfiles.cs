@@ -33,7 +33,9 @@ namespace API.Helpers
             CreateMap<CreateWarehouseParams, Warehouse>();
             CreateMap<UpdateCategoryParams, Category>();
             CreateMap<UpdateProductParams, Product>();
+            CreateMap<UpdateWarehouseParams, Warehouse>();
             CreateMap<Category,UpdateCategoryParams>();
+            CreateMap<Warehouse, UpdateWarehouseParams>();
             CreateMap<Product, UpdateProductParams>();
             CreateMap<Order, OrderToReturnDTO>()
                 .ForMember(d => d.DeliveryMethod, o => o.MapFrom(s => s.DeliveryMethod.ShortName))
