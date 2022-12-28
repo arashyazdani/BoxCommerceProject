@@ -33,19 +33,6 @@ namespace API.Tests.FakeData
             return returnData;
         }
 
-        public static GetObjectFromProductService FakeProductServiceObject(int statusCode, string message,
-            Product productResult)
-        {
-            var returnObject = new GetObjectFromProductService
-            {
-                StatusCode = statusCode,
-                Message = message,
-                ProductResult = productResult
-            };
-
-            return returnObject;
-        }
-
         public static Faker<Product> FakeProductList { get; } =
             new Faker<Product>()
                 .RuleFor(p => p.Id, f => _id++)

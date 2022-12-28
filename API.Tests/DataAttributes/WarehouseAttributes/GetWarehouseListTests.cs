@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
+using Domain.Specifications.WarehouseSpecifications;
 using Xunit.Sdk;
 
 namespace API.Tests.DataAttributes.WarehouseAttributes
@@ -25,6 +26,12 @@ namespace API.Tests.DataAttributes.WarehouseAttributes
             {
                 It.IsAny<List<Warehouse>>(), 
                 typeof(NotFoundObjectResult)
+            };
+
+            yield return new object[]
+            {
+                FakeWarehouses<IReadOnlyList<Warehouse>>.FakeWarehouseList.Generate(10),
+                typeof(FormatException)
             };
         }
     }

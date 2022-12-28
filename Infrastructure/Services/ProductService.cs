@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
+using Domain.Specifications;
 using Domain.Specifications.ProductSpecifications;
 using Domain.Specifications.CategorySpecifications;
 //using Domain.Specifications.CategorySpecifications;
@@ -19,9 +20,9 @@ namespace Infrastructure.Services
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<GetObjectFromProductService> CreateProduct(Product createProductParams)
+        public async Task<GetObjectFromServicesSpecification> CreateProduct(Product createProductParams)
         {
-            var returnObject = new GetObjectFromProductService();
+            var returnObject = new GetObjectFromServicesSpecification();
 
             if (createProductParams.CategoryId != null)
             {
@@ -69,14 +70,14 @@ namespace Infrastructure.Services
 
             returnObject.Message = "Product has been created successfully.";
 
-            returnObject.ProductResult = createProductParams;
+            returnObject.ResultObject = createProductParams;
 
             return returnObject;
         }
 
-        public async Task<GetObjectFromProductService> UpdateProduct(Product updateProductParams)
+        public async Task<GetObjectFromServicesSpecification> UpdateProduct(Product updateProductParams)
         {
-            var returnObject = new GetObjectFromProductService();
+            var returnObject = new GetObjectFromServicesSpecification();
 
             var categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)updateProductParams.CategoryId);
 
@@ -134,7 +135,7 @@ namespace Infrastructure.Services
 
             returnObject.Message = "Product has been updated successfully.";
 
-            returnObject.ProductResult = updateProductParams;
+            returnObject.ResultObject = updateProductParams;
 
             return returnObject;
         }

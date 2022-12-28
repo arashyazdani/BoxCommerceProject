@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using API.Tests.FakeData;
 using Domain.Specifications.CategorySpecifications;
 using Infrastructure.Services;
+using Domain.Specifications.WarehouseSpecifications;
 
 namespace API.Tests.Controllers
 {
@@ -65,7 +66,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [GetCategoryListTests]
-        public async Task GetCategories_Test_OK_And_NotFound_ObjectResult(List<Category> categoryList, Type expectedActionResultType)
+        public async Task GetCategories_Test_OK_And_NotFound_ObjectResult_And_FormatException(List<Category> categoryList, Type expectedActionResultType)
         {
             //Arrange
 
@@ -75,17 +76,24 @@ namespace API.Tests.Controllers
                 .Verifiable();
 
             var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _categoryService.Object);
-            
-            var specParams = new GetCategorySpecificationParams();
 
-            // Act
+            // Act and Assert
+            if (typeof(FormatException) == expectedActionResultType)
+            {
+                Assert.Throws<FormatException>(FakeCommonData<GetCategorySpecificationParams>.CreateFormatException);
+            }
+            else
+            {
+                // Act
+                var specParams = new GetCategorySpecificationParams();
 
-            var result = await controller.GetCategories(specParams);
+                var result = await controller.GetCategories(specParams);
 
-            // Assert
+                // Assert
 
-            result.Result.ShouldBeOfType(expectedActionResultType);
-            
+                result.Result.ShouldBeOfType(expectedActionResultType);
+            }
+
         }
 
         [Fact]
@@ -114,7 +122,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [CreateCategoryTest]
-        public async Task CreateCategory_Test_Ok_And_NotFound_And_NoContent_And_Conflict_ObjectResult(CreateCategoryParams newCategory, Category categoryEntity, CategoryToReturnDto categoryToReturnDto, Type expectedActionResultType, GetObjectFromCategoryService createCategoryObject)
+        public async Task CreateCategory_Test_Ok_And_NotFound_And_NoContent_And_Conflict_ObjectResult(CreateCategoryParams newCategory, Category categoryEntity, CategoryToReturnDto categoryToReturnDto, Type expectedActionResultType, GetObjectFromServicesSpecification createCategoryObject)
         {
             // Arrange
 
@@ -150,7 +158,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [UpdateCategoryTest]
-        public async Task UpdateCategory_Test_Ok_And_NotFound_And_NoContent_And_NotModified_ObjectResult(UpdateCategoryParams updateCategory, Category categoryEntity, Type expectedActionResultType, GetObjectFromCategoryService updateCategoryObject)
+        public async Task UpdateCategory_Test_Ok_And_NotFound_And_NoContent_And_NotModified_ObjectResult(UpdateCategoryParams updateCategory, Category categoryEntity, Type expectedActionResultType, GetObjectFromServicesSpecification updateCategoryObject)
         {
             // Arrange
 
@@ -181,7 +189,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [UpdateCategoryTest]
-        public async Task PartiallyUpdateCategory_Test_Ok_And_NotFound_And_NoContent_NotModified_ObjectResult(UpdateCategoryParams updateCategory, Category categoryEntity, Type expectedActionResultType, GetObjectFromCategoryService updateCategoryObject)
+        public async Task PartiallyUpdateCategory_Test_Ok_And_NotFound_And_NoContent_NotModified_ObjectResult(UpdateCategoryParams updateCategory, Category categoryEntity, Type expectedActionResultType, GetObjectFromServicesSpecification updateCategoryObject)
         {
             // Arrange
             var jsonUpdateCategory = new JsonPatchDocument<UpdateCategoryParams>();
@@ -245,5 +253,16 @@ namespace API.Tests.Controllers
 
         }
 
+        private GetCategorySpecificationParams CreateFormatException()
+        {
+
+            var specParams = new GetCategorySpecificationParams
+            {
+                PageIndex = int.Parse("No Integer")
+            };
+
+            return specParams;
+
+        }
     }
 }

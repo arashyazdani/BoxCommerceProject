@@ -28,6 +28,12 @@ namespace API.Tests.DataAttributes.CategoryAttributes
                 typeof(NotFoundObjectResult)
             };
 
+            yield return new object[]
+            {
+                FakeCategories<IReadOnlyList<Category>>.FakeCategoryList.Generate(10),
+                typeof(FormatException)
+            };
+
         }
     }
 }

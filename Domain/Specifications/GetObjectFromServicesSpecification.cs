@@ -1,16 +1,16 @@
-﻿using System;
+﻿using Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Domain.Entities;
 
-namespace Domain.Specifications.CategorySpecifications
+namespace Domain.Specifications
 {
-    public class GetObjectFromCategoryService
+    public class GetObjectFromServicesSpecification
     {
         public int StatusCode { get; set; }
         public string Message { get; set; }
-        public Category? CategoryResult { get; set; }
+        public dynamic? ResultObject{ get; set; }
     }
 }

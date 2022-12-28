@@ -20,6 +20,8 @@ using Shouldly;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Domain.Specifications.CategorySpecifications;
+using Domain.Specifications.WarehouseSpecifications;
 
 namespace API.Tests.Controllers
 {
@@ -75,7 +77,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [GetProductListTests]
-        public async Task GetProducts_Test_OK_And_NotFound_ObjectResult(List<Product> productList,
+        public async Task GetProducts_Test_OK_And_NotFound_ObjectResult_And_ExceptionFormat(List<Product> productList,
             Type expectedActionResultType)
         {
             // Arrange
@@ -87,20 +89,28 @@ namespace API.Tests.Controllers
 
             var controller = new ProductsController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _productService.Object);
 
-            var specParams = new GetProductSpecificationParams();
+            // Act and Assert
+            if (typeof(FormatException) == expectedActionResultType)
+            {
+                Assert.Throws<FormatException>(FakeCommonData<GetCategorySpecificationParams>.CreateFormatException);
+            }
+            else
+            {
+                // Act
+                var specParams = new GetProductSpecificationParams();
 
-            // Act
+                var result = await controller.GetProducts(specParams);
 
-            var result = await controller.GetProducts(specParams);
+                // Assert
 
-            // Assert
+                result.Result.ShouldBeOfType(expectedActionResultType);
+            }
 
-            result.Result.ShouldBeOfType(expectedActionResultType);
         }
 
         [Theory]
         [CreateProductTests]
-        public async Task CreateProduct_Test_Ok_And_NotFound_And_Nocontent_And_Conflict_ObjectResult(CreateProductParams newProduct, Product productEntity, ProductToReturnDto productToReturnDto, Type expectedActionResultType, GetObjectFromProductService createProductObject)
+        public async Task CreateProduct_Test_Ok_And_NotFound_And_Nocontent_And_Conflict_ObjectResult(CreateProductParams newProduct, Product productEntity, ProductToReturnDto productToReturnDto, Type expectedActionResultType, GetObjectFromServicesSpecification createProductObject)
         {
             // Arrange
 
@@ -142,7 +152,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [UpdateProductTest]
-        public async Task UpdateProduct_Test_Ok_And_NotFound_And_Nocontent_And_NotModified_ObjectResult(UpdateProductParams updateProduct, Product productEntity, Type expectedActionResultType, GetObjectFromProductService updateProductObject)
+        public async Task UpdateProduct_Test_Ok_And_NotFound_And_Nocontent_And_NotModified_ObjectResult(UpdateProductParams updateProduct, Product productEntity, Type expectedActionResultType, GetObjectFromServicesSpecification updateProductObject)
         {
             // Arrange
 
@@ -171,7 +181,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [UpdateProductTest]
-        public async Task PartiallyUpdateProduct_Test_Ok_And_NotFound_And_Nocontent_NotModified_ObjectResult(UpdateProductParams updateProduct, Product productEntity, Type expectedActionResultType, GetObjectFromProductService updateProductObject)
+        public async Task PartiallyUpdateProduct_Test_Ok_And_NotFound_And_Nocontent_NotModified_ObjectResult(UpdateProductParams updateProduct, Product productEntity, Type expectedActionResultType, GetObjectFromServicesSpecification updateProductObject)
         {
             // Arrange
             var jsonUpdateProduct = new JsonPatchDocument<UpdateProductParams>();

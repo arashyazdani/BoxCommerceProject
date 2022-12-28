@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
+using Domain.Specifications;
 using Xunit.Sdk;
 
 namespace API.Tests.DataAttributes.ProductAttributes
@@ -21,7 +22,7 @@ namespace API.Tests.DataAttributes.ProductAttributes
                 FakeProducts<UpdateProductParams>.FakeProductData(1, new UpdateProductParams()),
                 FakeProducts<Product>.FakeProductData(1, new Product()),
                 typeof(NoContentResult),
-                FakeProducts<GetObjectFromProductService>.FakeProductServiceObject(204, "Product has been updated successfully.", FakeProducts<Product>.FakeProductData(1, new Product()))
+                FakeCommonData<GetObjectFromServicesSpecification>.FakeServiceObject(204, "Product has been updated successfully.", FakeProducts<Product>.FakeProductData(1, new Product()))
             };
 
             yield return new object[]
@@ -29,7 +30,7 @@ namespace API.Tests.DataAttributes.ProductAttributes
                 FakeProducts<UpdateProductParams>.FakeProductData(1, new UpdateProductParams()),
                 FakeProducts<Product>.FakeProductData(1, new Product()),
                 typeof(NotFoundObjectResult),
-                FakeProducts<GetObjectFromProductService>.FakeProductServiceObject(404, "The ProductId is not found.", FakeProducts<Product>.FakeProductData(1, new Product()))
+                FakeCommonData<GetObjectFromServicesSpecification>.FakeServiceObject(404, "The ProductId is not found.", FakeProducts<Product>.FakeProductData(1, new Product()))
             };
 
             yield return new object[]
@@ -37,7 +38,7 @@ namespace API.Tests.DataAttributes.ProductAttributes
                 FakeProducts<UpdateProductParams>.FakeProductData(1, new UpdateProductParams()),
                 FakeProducts<Product>.FakeProductData(-1, new Product()),
                 typeof(StatusCodeResult),
-                FakeProducts<GetObjectFromProductService>.FakeProductServiceObject(304, "Bad request.", FakeProducts<Product>.FakeProductData(-1, new Product()))
+                FakeCommonData<GetObjectFromServicesSpecification>.FakeServiceObject(304, "Bad request.", FakeProducts<Product>.FakeProductData(-1, new Product()))
             };
 
             yield return new object[]
@@ -45,7 +46,7 @@ namespace API.Tests.DataAttributes.ProductAttributes
                 FakeProducts<UpdateProductParams>.FakeProductData(1, new UpdateProductParams()),
                 FakeProducts<Product>.FakeProductData(1, new Product()),
                 typeof(BadRequestObjectResult),
-                FakeProducts<GetObjectFromProductService>.FakeProductServiceObject(400, "Not modified.", FakeProducts<Product>.FakeProductData(1, new Product()))
+                FakeCommonData<GetObjectFromServicesSpecification>.FakeServiceObject(400, "Not modified.", FakeProducts<Product>.FakeProductData(1, new Product()))
             };
         }
     }

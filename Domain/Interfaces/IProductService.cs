@@ -5,12 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Domain.Specifications;
 
 namespace Domain.Interfaces
 {
     public interface IProductService
     {
-        Task<GetObjectFromProductService> CreateProduct(Product createProductParams);
-        Task<GetObjectFromProductService> UpdateProduct(Product updateProductParams);
+        Task<GetObjectFromServicesSpecification> CreateProduct(Product createProductParams);
+        Task<GetObjectFromServicesSpecification> UpdateProduct(Product updateProductParams);
     }
 }

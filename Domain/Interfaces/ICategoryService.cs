@@ -5,14 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
+using Domain.Specifications;
 using Domain.Specifications.CategorySpecifications;
 
 namespace Domain.Interfaces
 {
     public interface ICategoryService
     {
-        Task<GetObjectFromCategoryService> CreateCategory(Category createCategoryParams);
-        Task<GetObjectFromCategoryService> UpdateCategory(Category updateCategoryParams);
+        Task<GetObjectFromServicesSpecification> CreateCategory(Category createCategoryParams);
+        Task<GetObjectFromServicesSpecification> UpdateCategory(Category updateCategoryParams);
 
     }
 }

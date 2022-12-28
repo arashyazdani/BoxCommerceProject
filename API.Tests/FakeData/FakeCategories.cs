@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using API.DTOs;
 using Bogus;
 using Domain.Entities;
+using Domain.Specifications;
 using Domain.Specifications.CategorySpecifications;
 
 namespace API.Tests.FakeData
@@ -33,18 +34,6 @@ namespace API.Tests.FakeData
                 return returnData;
         }
 
-        public static GetObjectFromCategoryService FakeCategoryServiceObject(int statusCode, string message, Category categoryResult)
-        {
-            var returnObject = new GetObjectFromCategoryService
-            {
-                StatusCode = statusCode,
-                Message = message,
-                CategoryResult = categoryResult
-            };
-            
-            return returnObject;
-        }
-
         public static Faker<Category> FakeCategoryList { get; } =
             new Faker<Category>()
                 .RuleFor(p => p.Id, f => _id++)
@@ -53,6 +42,8 @@ namespace API.Tests.FakeData
                 .RuleFor(p => p.Priority, f => f.Commerce.Random.Int(1, _id))
                 .RuleFor(p => p.ParentCategoryId, f => _id > 1 ? f.Commerce.Random.Int(1, 3) : null)
                 .RuleFor(p => p.Enabled, f => true);
+
+        
 
     }
 }

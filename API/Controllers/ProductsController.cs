@@ -96,7 +96,7 @@ namespace API.Controllers
                     return Conflict(new ApiResponse(insertResult.StatusCode, insertResult.Message));
             }
 
-            var returnDto = _mapper.Map<Product, ProductToReturnDto>(insertResult.ProductResult);
+            var returnDto = _mapper.Map<Product, ProductToReturnDto>(insertResult.ResultObject);
 
             return new CreatedAtRouteResult("GetProduct", new { id = productEntity.Id }, new ApiResponse(201, "Product has been created successfully.", returnDto));
         }

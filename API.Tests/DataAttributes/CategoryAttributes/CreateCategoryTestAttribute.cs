@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using API.Tests.FakeData;
 using Xunit.Sdk;
 using Domain.Specifications.CategorySpecifications;
+using Domain.Specifications;
 
 namespace API.Tests.DataAttributes.CategoryAttributes
 {
@@ -25,7 +26,7 @@ namespace API.Tests.DataAttributes.CategoryAttributes
                 FakeCategories<Category>.FakeCategoryData(null, new Category()), 
                 FakeCategories<CategoryToReturnDto>.FakeCategoryData(null, new CategoryToReturnDto()), 
                 typeof(CreatedAtRouteResult), 
-                FakeCategories<GetObjectFromCategoryService>.FakeCategoryServiceObject(201, "Category has been created successfully.", FakeCategories<Category>.FakeCategoryData(null, new Category()))
+                FakeCommonData<GetObjectFromServicesSpecification>.FakeServiceObject(201, "Category has been created successfully.", FakeCategories<Category>.FakeCategoryData(null, new Category()))
             };
 
             yield return new object[]
@@ -33,8 +34,8 @@ namespace API.Tests.DataAttributes.CategoryAttributes
                 FakeCategories<CreateCategoryParams>.FakeCategoryData(200, new CreateCategoryParams()), 
                 FakeCategories<Category>.FakeCategoryData(null, new Category()), 
                 FakeCategories<CategoryToReturnDto>.FakeCategoryData(null, new CategoryToReturnDto()), 
-                typeof(NotFoundObjectResult), 
-                FakeCategories<GetObjectFromCategoryService>.FakeCategoryServiceObject(404, "The ParentCategoryId is not found.", FakeCategories<Category>.FakeCategoryData(null, new Category()))
+                typeof(NotFoundObjectResult),
+                FakeCommonData<GetObjectFromServicesSpecification>.FakeServiceObject(404, "The ParentCategoryId is not found.", FakeCategories<Category>.FakeCategoryData(null, new Category()))
             };
 
             yield return new object[]
@@ -42,8 +43,8 @@ namespace API.Tests.DataAttributes.CategoryAttributes
                 FakeCategories<CreateCategoryParams>.FakeCategoryData(null, new CreateCategoryParams()), 
                 FakeCategories<Category>.FakeCategoryData(null, new Category()), 
                 FakeCategories<CategoryToReturnDto>.FakeCategoryData(null, new CategoryToReturnDto()), 
-                typeof(BadRequestObjectResult), 
-                FakeCategories<GetObjectFromCategoryService>.FakeCategoryServiceObject(400, "Bad request.", FakeCategories<Category>.FakeCategoryData(null, new Category()))
+                typeof(BadRequestObjectResult),
+                FakeCommonData<GetObjectFromServicesSpecification>.FakeServiceObject(400, "Bad request.", FakeCategories<Category>.FakeCategoryData(null, new Category()))
             };
 
             yield return new object[]
@@ -51,8 +52,8 @@ namespace API.Tests.DataAttributes.CategoryAttributes
                 FakeCategories<CreateCategoryParams>.FakeCategoryData(null, new CreateCategoryParams()), 
                 FakeCategories<Category>.FakeCategoryData(null, new Category()), 
                 FakeCategories<CategoryToReturnDto>.FakeCategoryData(null, new CategoryToReturnDto()), 
-                typeof(ConflictObjectResult), 
-                FakeCategories<GetObjectFromCategoryService>.FakeCategoryServiceObject(409, "The category name is already exist.", FakeCategories<Category>.FakeCategoryData(null, new Category()))
+                typeof(ConflictObjectResult),
+                FakeCommonData<GetObjectFromServicesSpecification>.FakeServiceObject(409, "The category name is already exist.", FakeCategories<Category>.FakeCategoryData(null, new Category()))
             };
 
         }

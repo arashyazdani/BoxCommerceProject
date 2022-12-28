@@ -27,6 +27,12 @@ namespace API.Tests.DataAttributes.ProductAttributes
                 It.IsAny<List<Product>>(), 
                 typeof(NotFoundObjectResult)
             };
+
+            yield return new object[]
+            {
+                FakeProducts<IReadOnlyList<Product>>.FakeProductList.Generate(10),
+                typeof(FormatException)
+            };
         }
     }
 }

@@ -10,6 +10,7 @@ using Domain.Specifications.CategorySpecifications;
 using System.Dynamic;
 using Infrastructure.Data;
 using System.Xml;
+using Domain.Specifications;
 
 namespace Infrastructure.Services
 {
@@ -22,9 +23,9 @@ namespace Infrastructure.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<GetObjectFromCategoryService> CreateCategory(Category createCategoryParams)
+        public async Task<GetObjectFromServicesSpecification> CreateCategory(Category createCategoryParams)
         {
-            var returnObject = new GetObjectFromCategoryService();
+            var returnObject = new GetObjectFromServicesSpecification();
 
             if (createCategoryParams.ParentCategoryId != null)
             {
@@ -71,14 +72,14 @@ namespace Infrastructure.Services
 
             returnObject.Message = "Category has been created successfully.";
 
-            returnObject.CategoryResult = createCategoryParams;
+            returnObject.ResultObject = createCategoryParams;
 
             return returnObject;
         }
 
-        public async Task<GetObjectFromCategoryService> UpdateCategory(Category updateCategoryParams)
+        public async Task<GetObjectFromServicesSpecification> UpdateCategory(Category updateCategoryParams)
         {
-            var returnObject = new GetObjectFromCategoryService();
+            var returnObject = new GetObjectFromServicesSpecification();
 
             if (updateCategoryParams.ParentCategoryId != null)
             {
@@ -139,7 +140,7 @@ namespace Infrastructure.Services
 
             returnObject.Message = "Category has been updated successfully.";
 
-            returnObject.CategoryResult = updateCategoryParams;
+            returnObject.ResultObject = updateCategoryParams;
 
             return returnObject;
         }

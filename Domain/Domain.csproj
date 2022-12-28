@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <Compile Remove="Interfaces\IRedisRepository.cs" />
+    <Compile Remove="Specifications\CategorySpecifications\GetObjectFromCategoryService.cs" />
+    <Compile Remove="Specifications\ProductSpecifications\GetObjectFromProductService.cs" />
   </ItemGroup>
 
   <ItemGroup>

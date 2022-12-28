@@ -13,6 +13,9 @@ using API.Tests.DataAttributes.WarehouseAttributes;
 using Domain.Entities;
 using Shouldly;
 using Domain.Specifications.WarehouseSpecifications;
+using Microsoft.AspNetCore.Mvc;
+using API.Tests.FakeData;
+using Domain.Specifications.CategorySpecifications;
 
 namespace API.Tests.Controllers
 {
@@ -61,7 +64,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [GetWarehouseListTests]
-        public async Task GetWarehoses_Test_OK_And_NotFound_ObjectResult(List<Warehouse> warehouseList, Type expectedActionResultType)
+        public async Task GetWarehouses_Test_OK_And_NotFound_ObjectResult_And_FormatException(List<Warehouse> warehouseList, Type expectedActionResultType)
         {
             //Arrange
 
@@ -72,16 +75,24 @@ namespace API.Tests.Controllers
 
             var controller = new WarehousesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _warehouseService.Object);
 
-            var specParams = new GetWarehouseSpecificationParams();
+            // Act and Assert
+            if (typeof(FormatException) == expectedActionResultType)
+            {
+                 Assert.Throws<FormatException>(FakeCommonData<GetCategorySpecificationParams>.CreateFormatException);
+            }
+            else
+            {
+                // Act
+                var specParams = new GetWarehouseSpecificationParams();
 
-            // Act
+                var result = await controller.GetWarehouses(specParams);
 
-            var result = await controller.GetWarehouses(specParams);
+                // Assert
 
-            // Assert
-
-            result.Result.ShouldBeOfType(expectedActionResultType);
-
+                result.Result.ShouldBeOfType(expectedActionResultType);
+            }
+            
         }
+
     }
 }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
 using Bogus.DataSets;
+using Domain.Specifications.WarehouseSpecifications;
 
 namespace API.Tests.FakeData
 {
@@ -37,5 +38,7 @@ namespace API.Tests.FakeData
                 .RuleFor(p => p.Priority, f => f.Commerce.Random.Int(1, _id))
                 .RuleFor(p => p.Address, f => f.Address.FullAddress())
                 .RuleFor(p => p.Enabled, f => true);
+
+
     }
 }
