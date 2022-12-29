@@ -32,6 +32,7 @@ namespace API.Extensions
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IWarehouseService, WarehouseService>();
+            services.AddScoped<IVehicleService, VehicleService>();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {

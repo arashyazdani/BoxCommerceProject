@@ -1,4 +1,5 @@
 ﻿using API.Tests.FakeData;
+using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
@@ -7,30 +8,28 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Domain.Entities;
-using Domain.Specifications.WarehouseSpecifications;
 using Xunit.Sdk;
 
-namespace API.Tests.DataAttributes.WarehouseAttributes
+namespace API.Tests.DataAttributes.VehicleAttributes
 {
-    public class GetWarehouseListTests : DataAttribute
+    public class GetVehicleListTestsAttribute : DataAttribute
     {
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
-            yield return new object[] { 
-                FakeWarehouses<IReadOnlyList<Warehouse>>.FakeWarehouseList.Generate(10), 
+            yield return new object[] {
+                FakeVehicles<IReadOnlyList<Vehicle>>.FakeVehicleList.Generate(10),
                 typeof(OkObjectResult)
             };
 
             yield return new object[]
             {
-                It.IsAny<List<Warehouse>>(), 
+                It.IsAny<List<Vehicle>>(),
                 typeof(NotFoundObjectResult)
             };
 
             yield return new object[]
             {
-                FakeWarehouses<IReadOnlyList<Warehouse>>.FakeWarehouseList.Generate(10),
+                FakeVehicles<IReadOnlyList<Vehicle>>.FakeVehicleList.Generate(10),
                 typeof(FormatException)
             };
         }

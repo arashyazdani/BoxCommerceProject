@@ -33,5 +33,16 @@ namespace API.Tests.FakeData
             return specParams;
 
         }
+
+        public static ExpandoObject CreateFormatExceptionOnCreateOrUpdate()
+        {
+
+            dynamic specParams = new ExpandoObject();
+
+            specParams.Priority = int.Parse("No Integer");
+
+            return specParams;
+
+        }
     }
 }
