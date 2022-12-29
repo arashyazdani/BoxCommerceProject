@@ -1,0 +1,1137 @@
+{
+	"info": {
+		"_postman_id": "7347a338-ad22-4774-9c6f-036d567fd316",
+		"name": "BoxCommerce",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4922357"
+	},
+	"item": [
+		{
+			"name": "Basket",
+			"item": [
+				{
+					"name": "Update Basket",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"basket2\",\n  \"VehicleId\": 1,\n  \"VehicleName\": \"Car1\",\n  \"VehiclePrice\": 179000.00,\n  \"PictureUrl\": \"https://localhost:5001/images/products/Car1.png\",\n  \"PaymentIntentId\": \"asdf\",\n  \"ClientSecret\": \"ertyty\",\n  \"items\": [\n    {\n      \"id\": 4,\n      \"productName\": \"Chassis 1\",\n      \"price\": 999.33,\n      \"CategoryName\": \"Chassis\"\n    },\n    {\n      \"id\": 5,\n      \"productName\": \"Engine 1\",\n      \"price\": 777.33,\n      \"CategoryName\": \"Engine\"\n    },\n    {\n      \"id\": 7,\n      \"productName\": \"OptionsPackage 1\",\n      \"price\": 666.33,\n      \"CategoryName\": \"OptionsPackage\"\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/basket",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"basket"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Basket",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/basket?id=basket1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"basket"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "basket1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Basket",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/basket?id=basket1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"basket"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "basket1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Identity",
+			"item": [
+				{
+					"name": "Login as Arash and save token to env",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const user = pm.response.json();",
+									"",
+									"pm.test(\"Has properties\", function () {",
+									"    pm.expect(user.data).to.have.property('displayName');",
+									"    pm.expect(user.data).to.have.property('email');",
+									"    pm.expect(user.data).to.have.property('token');",
+									"});",
+									"",
+									"if (pm.test(\"Has properties\")) {",
+									"    pm.globals.set('arash_token', user.data.token);",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"arash.yazdani.b@gmail.com\",\n\t\"password\": \"Pa$$w0rd\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/account/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"account",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register as Tom and save token to env",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const user = pm.response.json();",
+									"",
+									"pm.test(\"Has properties\", function () {",
+									"    pm.expect(user.data).to.have.property('displayName');",
+									"    pm.expect(user.data).to.have.property('email');",
+									"    pm.expect(user.data).to.have.property('token');",
+									"});",
+									"",
+									"if (pm.test(\"Has properties\")) {",
+									"    pm.globals.set('arash_token', user.data.token);",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"displayName\": \"Tom\",\n\t\"email\": \"tom@test.com\",\n\t\"password\": \"Pa$$w0rd\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/account/register",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"account",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User (Arash)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{arash_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/account/getcurrentuser",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"account",
+								"getcurrentuser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check if email exists",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{bob_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/account/emailExists?email=test@test.com",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"account",
+								"emailExists"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "test@test.com"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Address (Arash)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{arash_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/account/address",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"account",
+								"address"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User Address (Arash)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{arash_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Arash\",\n  \"lastName\": \"Yazdani\",\n  \"street\": \"10 The Updated Street\",\n  \"city\": \"Yerevan\",\n  \"state\": \"Yerevan\",\n  \"zipCode\": \"90250\",\n  \"country\": \"Armenia\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/account/address",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"account",
+								"address"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add User Address (Arash)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{arash_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Arash\",\n  \"lastName\": \"Yazdani\",\n  \"street\": \"100 Park Lane\",\n  \"city\": \"Yerevan\",\n  \"state\": \"Yerevan\",\n  \"zipCode\": \"SW1 1B\",\n  \"country\": \"Armenia\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/account/address",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"account",
+								"address"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login with unacceptable data input",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"arash.yazdani.bgmail.com\",\n\t\"password\": \"Pa$$w0rd\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/account/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"account",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "Get Category by ID",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/categories/9",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"categories",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Categories by search",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/categories?PageSize=12&Sort=ascid&PageIndex=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"categories"
+							],
+							"query": [
+								{
+									"key": "PageSize",
+									"value": "12"
+								},
+								{
+									"key": "Sort",
+									"value": "ascid"
+								},
+								{
+									"key": "Search",
+									"value": "mpfi",
+									"disabled": true
+								},
+								{
+									"key": "PageIndex",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create category",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/categories?Priority=10&Name=NewTest9&Enabled=true",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"categories"
+							],
+							"query": [
+								{
+									"key": "Priority",
+									"value": "10"
+								},
+								{
+									"key": "Name",
+									"value": "NewTest9"
+								},
+								{
+									"key": "Enabled",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update category",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/categories?Priority=10&Name=NewTest8&Enabled=true&parentCategoryId=1&Id=8",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"categories"
+							],
+							"query": [
+								{
+									"key": "Priority",
+									"value": "10"
+								},
+								{
+									"key": "Name",
+									"value": "NewTest8"
+								},
+								{
+									"key": "Enabled",
+									"value": "true"
+								},
+								{
+									"key": "parentCategoryId",
+									"value": "1"
+								},
+								{
+									"key": "Id",
+									"value": "8"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Partially Update Category",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true,
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json-patch+json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n    \"op\": \"replace\",\r\n    \"path\": \"/ParentCategoryId\",\r\n    \"value\": 1\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/categories/id?id=8",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"categories",
+								"id"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "8"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/categories/8",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"categories",
+								"8"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Get Products By ID",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/xml",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/products/14",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"14"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Products By Search",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/products",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Product",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/xml",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/products?Priority=111&Name=New product14&Enabled=true&CategoryId=1&Price=1000000&Quantity=1&IsDiscontinued=false",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"products"
+							],
+							"query": [
+								{
+									"key": "Priority",
+									"value": "111"
+								},
+								{
+									"key": "Name",
+									"value": "New product14"
+								},
+								{
+									"key": "Enabled",
+									"value": "true"
+								},
+								{
+									"key": "CategoryId",
+									"value": "1"
+								},
+								{
+									"key": "Price",
+									"value": "1000000"
+								},
+								{
+									"key": "Quantity",
+									"value": "1"
+								},
+								{
+									"key": "IsDiscontinued",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/products?Priority=10&Name=New Product 7&Enabled=true&CategoryId=1&Id=14&Price=1000000&Quantity=10",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"products"
+							],
+							"query": [
+								{
+									"key": "Priority",
+									"value": "10"
+								},
+								{
+									"key": "Name",
+									"value": "New Product 7"
+								},
+								{
+									"key": "Enabled",
+									"value": "true"
+								},
+								{
+									"key": "CategoryId",
+									"value": "1"
+								},
+								{
+									"key": "Id",
+									"value": "14"
+								},
+								{
+									"key": "Price",
+									"value": "1000000"
+								},
+								{
+									"key": "Quantity",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Partially Update Product",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true,
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json-patch+json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n    \"op\": \"replace\",\r\n    \"path\": \"/CategoryId\",\r\n    \"value\": 1\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/products/id?id=14",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"id"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "14"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/products/14",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"14"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Warehouses",
+			"item": [
+				{
+					"name": "Get Warehouse by ID",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/warehouses/6",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"warehouses",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Warehouses by search",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/warehouses?Sort=ascid&PageIndex=1&PageSize=9",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"warehouses"
+							],
+							"query": [
+								{
+									"key": "Sort",
+									"value": "ascid"
+								},
+								{
+									"key": "Search",
+									"value": "mpfi",
+									"disabled": true
+								},
+								{
+									"key": "PageIndex",
+									"value": "1"
+								},
+								{
+									"key": "PageSize",
+									"value": "9"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Warehouse",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/warehouses?Priority=11&Name=New Test 1&Enabled=true&Address=Czech address",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"warehouses"
+							],
+							"query": [
+								{
+									"key": "Priority",
+									"value": "11"
+								},
+								{
+									"key": "Name",
+									"value": "New Test 1"
+								},
+								{
+									"key": "Enabled",
+									"value": "true"
+								},
+								{
+									"key": "Address",
+									"value": "Czech address"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Warehouse",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/warehouses?Priority=10&Name=NewTest 1&Enabled=true&parentCategoryId=1&Id=6&Address=New address",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"warehouses"
+							],
+							"query": [
+								{
+									"key": "Priority",
+									"value": "10"
+								},
+								{
+									"key": "Name",
+									"value": "NewTest 1"
+								},
+								{
+									"key": "Enabled",
+									"value": "true"
+								},
+								{
+									"key": "parentCategoryId",
+									"value": "1"
+								},
+								{
+									"key": "Id",
+									"value": "6"
+								},
+								{
+									"key": "Address",
+									"value": "New address"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Partially Update Warehouse",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true,
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json-patch+json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n    \"op\": \"replace\",\r\n    \"path\": \"/Name\",\r\n    \"value\": \"Pach Update Name\"\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/warehouses/id?id=6",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"warehouses",
+								"id"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "6"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Warehouse",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/warehouses/6",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"warehouses",
+								"6"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "https://localhost:5001"
+		}
+	]
+}
