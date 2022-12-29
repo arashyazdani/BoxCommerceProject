@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using API.Controllers;
+using API.DTOs;
+using API.Errors;
 using API.Tests.DataAttributes.VehicleAttributes;
 using Domain.Entities;
 using Domain.Specifications;
@@ -14,6 +16,7 @@ using Shouldly;
 using API.Tests.FakeData;
 using Domain.Specifications.VehicleSpecifications;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.Tests.Controllers
 {
@@ -86,6 +89,50 @@ namespace API.Tests.Controllers
                 var result = await controller.GetVehicles(specParams);
 
                 // Assert
+
+                result.Result.ShouldBeOfType(expectedActionResultType);
+            }
+
+        }
+
+        [Theory]
+        [CreateVehicleTests]
+        public async Task CreateVehicle_Test_Ok_And_NotFound_And_NoContent_And_Conflict_ObjectResult_And_FormatException(CreateVehicleParams newVehicle, Vehicle vehicleEntity, VehicleToReturnDto vehicleToReturnDto, Type expectedActionResultType, GetObjectFromServicesSpecification createVehicleObject)
+        {
+            // Arrange
+
+            _unitOfWork.Setup(x => x.Repository<Vehicle>().InsertAsync(It.IsAny<Vehicle>()))
+                .Returns(Task.FromResult(newVehicle)).Verifiable();
+
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+
+            _mapper.Setup(x => x.Map<Vehicle, VehicleToReturnDto>(It.IsAny<Vehicle>())).Returns(vehicleToReturnDto);
+
+            var createdVehicle = new CreatedAtRouteResult("GetVehicle", new { id = 1 }, new ApiResponse(201, "Vehicle has been created successfully.", vehicleToReturnDto));
+
+            _mapper.Setup(x => x.Map<CreateVehicleParams, Vehicle>(It.IsAny<CreateVehicleParams>())).Returns(vehicleEntity);
+
+            _vehicleService.Setup(x =>
+                    x.CreateVehicle(It.IsAny<Vehicle>()))
+                .ReturnsAsync(createVehicleObject)
+                .Verifiable();
+
+            var controller = new VehiclesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _vehicleService.Object);
+
+            // Act and Assert
+            if (typeof(FormatException) == expectedActionResultType)
+            {
+                Assert.Throws<FormatException>(FakeCommonData<CreateVehicleParams>.CreateFormatExceptionOnCreateOrUpdate);
+            }
+            else
+            {
+                // Act
+
+                var result = await controller.CreateVehicle(newVehicle);
+
+                // Assert
+
+                if (expectedActionResultType == typeof(CreatedAtRouteResult)) result.Result.ShouldBeEquivalentTo(createdVehicle);
 
                 result.Result.ShouldBeOfType(expectedActionResultType);
             }

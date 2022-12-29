@@ -18,7 +18,7 @@ namespace API.Tests.FakeData
             dynamic returnData = obj;
             var faker = new Faker();
 
-            //if (typeof(T) != typeof(CreateVehicleParams)) returnData.Id = 1;
+            if (typeof(T) != typeof(CreateVehicleParams)) returnData.Id = 1;
             returnData.Priority = 1;
             returnData.Name = faker.Company.CompanyName();
             returnData.Enabled = true;

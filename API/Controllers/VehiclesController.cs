@@ -63,5 +63,59 @@ namespace API.Controllers
             return new OkObjectResult(new ApiResponse(200, "Ok", returnVehicles));
 
         }
+
+        [HttpPost]
+        public async Task<ActionResult<VehicleToReturnDto>> CreateVehicle([FromQuery] CreateVehicleParams createVehicleParams)
+        {
+
+            var vehicleEntity = _mapper.Map<CreateVehicleParams, Vehicle>(createVehicleParams);
+
+            var insertResult = await _vehicleService.CreateVehicle(vehicleEntity);
+
+            switch (insertResult.StatusCode)
+            {
+                case 400:
+                    return BadRequest(new ApiResponse(insertResult.StatusCode));
+
+                case 409:
+                    return Conflict(new ApiResponse(insertResult.StatusCode, insertResult.Message));
+            }
+
+            var returnDto = _mapper.Map<Vehicle, VehicleToReturnDto>(insertResult.ResultObject);
+
+            return new CreatedAtRouteResult("GetVehicle", new { id = vehicleEntity.Id }, new ApiResponse(201, "Vehicle has been created successfully.", returnDto));
+
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateVehicle([FromQuery] UpdateVehicleParams updateVehicleParams)
+        {
+            var specVehicle = new GetVehiclesSpecification(updateVehicleParams.Id);
+
+            var vehicle = await _unitOfWork.Repository<Vehicle>().GetEntityWithSpec(specVehicle);
+
+            if (vehicle == null) return NotFound(new ApiResponse(404, "The vehicle is not found."));
+
+            _mapper.Map(updateVehicleParams, vehicle);
+
+            var updateResult = await _vehicleService.UpdateVehicle(vehicle);
+
+            switch (updateResult.StatusCode)
+            {
+                case 400:
+                    return BadRequest(new ApiResponse(updateResult.StatusCode));
+
+                case 409:
+                    return Conflict(new ApiResponse(updateResult.StatusCode, updateResult.Message));
+
+                case 304:
+                    return new StatusCodeResult(304);
+            }
+
+            await _responseCache.DeleteRangeOfKeysAsync("vehicles");
+
+            return NoContent();
+
+        }
     }
 }

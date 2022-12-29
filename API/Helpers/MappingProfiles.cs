@@ -5,6 +5,7 @@ using Domain.Entities.Identity;
 using Domain.Entities.OrderAggregate;
 using Domain.Specifications.CategorySpecifications;
 using Domain.Specifications.ProductSpecifications;
+using Domain.Specifications.VehicleSpecifications;
 using Domain.Specifications.WarehouseSpecifications;
 using Microsoft.AspNetCore.JsonPatch;
 
@@ -33,12 +34,15 @@ namespace API.Helpers
             CreateMap<CreateCategoryParams, Category>();
             CreateMap<CreateProductParams, Product>();
             CreateMap<CreateWarehouseParams, Warehouse>();
+            CreateMap<CreateVehicleParams, Vehicle>();
             CreateMap<UpdateCategoryParams, Category>();
             CreateMap<UpdateProductParams, Product>();
             CreateMap<UpdateWarehouseParams, Warehouse>();
+            CreateMap<UpdateVehicleParams, Vehicle>();
             CreateMap<Category,UpdateCategoryParams>();
-            CreateMap<Warehouse, UpdateWarehouseParams>();
             CreateMap<Product, UpdateProductParams>();
+            CreateMap<Warehouse, UpdateWarehouseParams>();
+            CreateMap<Vehicle, UpdateVehicleParams>();
             CreateMap<Order, OrderToReturnDTO>()
                 .ForMember(d => d.DeliveryMethod, o => o.MapFrom(s => s.DeliveryMethod.ShortName))
                 .ForMember(d => d.ShippingPrice, o => o.MapFrom(s => s.DeliveryMethod.Price))

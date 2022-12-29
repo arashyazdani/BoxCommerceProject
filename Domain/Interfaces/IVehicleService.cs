@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Domain.Entities;
+using Domain.Specifications;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +10,7 @@ namespace Domain.Interfaces
 {
     public interface IVehicleService
     {
+        Task<GetObjectFromServicesSpecification> CreateVehicle(Vehicle createVehicleParams);
+        Task<GetObjectFromServicesSpecification> UpdateVehicle(Vehicle updateVehicleParams);
     }
 }
