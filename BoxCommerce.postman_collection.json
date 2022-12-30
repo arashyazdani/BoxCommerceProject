@@ -1017,7 +1017,7 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/warehouses?Priority=10&Name=NewTest 1&Enabled=true&parentCategoryId=1&Id=6&Address=New address",
+							"raw": "{{url}}/api/warehouses?Priority=10&Name=NewTest 1&Enabled=true&Id=7&Address=New address",
 							"host": [
 								"{{url}}"
 							],
@@ -1039,12 +1039,8 @@
 									"value": "true"
 								},
 								{
-									"key": "parentCategoryId",
-									"value": "1"
-								},
-								{
 									"key": "Id",
-									"value": "6"
+									"value": "7"
 								},
 								{
 									"key": "Address",
@@ -1120,6 +1116,231 @@
 								"api",
 								"warehouses",
 								"6"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Vehicles",
+			"item": [
+				{
+					"name": "Get Vehicle by ID",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/vehicles/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"vehicles",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Vehicles by search",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/vehicles?Sort=ascid&PageSize=20&PageIndex=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"vehicles"
+							],
+							"query": [
+								{
+									"key": "Sort",
+									"value": "ascid"
+								},
+								{
+									"key": "Search",
+									"value": "mpfi",
+									"disabled": true
+								},
+								{
+									"key": "PageSize",
+									"value": "20"
+								},
+								{
+									"key": "PageIndex",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Vehicle",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/vehicles?Priority=99&Name=New Test 4&Enabled=true&Details=Test Details&PictureUrl=images/aaa.jpg",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"vehicles"
+							],
+							"query": [
+								{
+									"key": "Priority",
+									"value": "99"
+								},
+								{
+									"key": "Name",
+									"value": "New Test 4"
+								},
+								{
+									"key": "Enabled",
+									"value": "true"
+								},
+								{
+									"key": "Details",
+									"value": "Test Details"
+								},
+								{
+									"key": "PictureUrl",
+									"value": "images/aaa.jpg"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Vehicle",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/vehicles?Priority=10&Name=New Test 1&Enabled=true&Id=10&PictureUrl=images/aaa.jpg&Price=1000000&Quantity=10",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"vehicles"
+							],
+							"query": [
+								{
+									"key": "Priority",
+									"value": "10"
+								},
+								{
+									"key": "Name",
+									"value": "New Test 1"
+								},
+								{
+									"key": "Enabled",
+									"value": "true"
+								},
+								{
+									"key": "Id",
+									"value": "10"
+								},
+								{
+									"key": "PictureUrl",
+									"value": "images/aaa.jpg"
+								},
+								{
+									"key": "Price",
+									"value": "1000000"
+								},
+								{
+									"key": "Quantity",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Partially Update Vehicle",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true,
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json-patch+json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n    \"op\": \"replace\",\r\n    \"path\": \"/Name\",\r\n    \"value\": \"Pach Update Name\"\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/vehicles/id?id=13",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"vehicles",
+								"id"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "13"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Vehicle",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/vehicles/13",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"vehicles",
+								"13"
 							]
 						}
 					},
