@@ -17,6 +17,8 @@ using API.Tests.FakeData;
 using Domain.Specifications.VehicleSpecifications;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace API.Tests.Controllers
 {
@@ -136,6 +138,100 @@ namespace API.Tests.Controllers
 
                 result.Result.ShouldBeOfType(expectedActionResultType);
             }
+
+        }
+
+        [Theory]
+        [UpdateVehicleTests]
+        public async Task UpdateVehicle_Test_Ok_And_NotFound_And_NoContent_And_NotModified_ObjectResult(UpdateVehicleParams updateVehicle, Vehicle vehicleEntity, Type expectedActionResultType, GetObjectFromServicesSpecification updateVehicleObject)
+        {
+            // Arrange
+
+            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Vehicle>()
+                    .GetEntityWithSpec(It.IsAny<ISpecification<Vehicle>>()))
+                .ReturnsAsync(vehicleEntity)
+                .Verifiable();
+            _unitOfWork.Setup(x => x.Repository<Vehicle>().Update(It.IsAny<Vehicle>())).Verifiable();
+
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+
+            _vehicleService.Setup(x =>
+                    x.UpdateVehicle(It.IsAny<Vehicle>()))
+                .ReturnsAsync(updateVehicleObject)
+                .Verifiable();
+
+            var controller = new VehiclesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _vehicleService.Object);
+
+            // Act
+            var result = await controller.UpdateVehicle(updateVehicle);
+
+            // Assert
+            if (expectedActionResultType == typeof(StatusCodeResult)) updateVehicleObject.StatusCode.ShouldBe(304);
+            result.ShouldBeOfType(expectedActionResultType);
+
+        }
+
+        [Theory]
+        [UpdateVehicleTests]
+        public async Task PartiallyUpdateVehicle_Test_Ok_And_NotFound_And_NoContent_NotModified_ObjectResult(UpdateVehicleParams updateVehicle, Vehicle vehicleEntity, Type expectedActionResultType, GetObjectFromServicesSpecification updateVehicleObject)
+        {
+            // Arrange
+            var jsonUpdateVehicle = new JsonPatchDocument<UpdateVehicleParams>();
+
+            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Vehicle>().GetEntityWithSpec(It.IsAny<ISpecification<Vehicle>>())).ReturnsAsync(vehicleEntity).Verifiable();
+
+            _unitOfWork.Setup(x => x.Repository<Vehicle>().GetByIdAsync(It.IsAny<int>())).ReturnsAsync(vehicleEntity).Verifiable();
+
+            _unitOfWork.Setup(x => x.Repository<Vehicle>().Update(It.IsAny<Vehicle>())).Verifiable();
+
+            if (expectedActionResultType != typeof(StatusCodeResult) && expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+
+            _mapper.Setup(x => x.Map<UpdateVehicleParams>(It.IsAny<Vehicle>())).Returns(updateVehicle);
+
+            _mapper.Setup(x => x.Map<UpdateVehicleParams, Vehicle>(It.IsAny<UpdateVehicleParams>())).Returns(vehicleEntity);
+
+            _vehicleService.Setup(x =>
+                    x.UpdateVehicle(It.IsAny<Vehicle>()))
+                .ReturnsAsync(updateVehicleObject)
+                .Verifiable();
+
+            var controller = new VehiclesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _vehicleService.Object);
+
+            var objectValidator = new Mock<IObjectModelValidator>();
+            objectValidator.Setup(o => o.Validate(It.IsAny<ActionContext>(),
+                It.IsAny<ValidationStateDictionary>(),
+                        It.IsAny<string>(),
+                        It.IsAny<UpdateVehicleParams>()));
+
+            controller.ObjectValidator = objectValidator.Object;
+
+            // Act
+            var result = await controller.PartiallyUpdateVehicle(1, jsonUpdateVehicle);
+
+            // Assert
+            if (expectedActionResultType == typeof(StatusCodeResult)) updateVehicleObject.StatusCode.ShouldBe(304);
+            result.ShouldBeOfType(expectedActionResultType);
+
+        }
+
+        [Theory]
+        [DeleteVehicleTests]
+        public async Task DeleteVehicle_Test_Ok_And_NotFound_And_NoContent_ObjectResult(int id, Vehicle vehicleEntity, Type expectedActionResultType)
+        {
+            // Arrange
+            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Vehicle>().GetEntityWithSpec(It.IsAny<ISpecification<Vehicle>>())).ReturnsAsync(vehicleEntity).Verifiable();
+
+            _unitOfWork.Setup(x => x.Repository<Vehicle>().DeleteAsync(It.IsAny<Vehicle>())).Verifiable();
+
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+
+            var controller = new VehiclesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _vehicleService.Object);
+
+            // Act
+            var result = await controller.DeleteVehicleById(id);
+
+            // Assert
+            result.ShouldBeOfType(expectedActionResultType);
 
         }
     }

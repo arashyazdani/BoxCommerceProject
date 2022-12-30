@@ -6,7 +6,11 @@ using Domain.Entities;
 using Domain.Interfaces;
 using Domain.Specifications;
 using Domain.Specifications.VehicleSpecifications;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Options;
 
 namespace API.Controllers
 {
@@ -116,6 +120,79 @@ namespace API.Controllers
 
             return NoContent();
 
+        }
+
+        [HttpPatch("id")]
+        public async Task<ActionResult> PartiallyUpdateVehicle(int id, JsonPatchDocument<UpdateVehicleParams> updateVehicleParams)
+        {
+
+            var specVehicle = new GetVehiclesSpecification(id);
+
+            var vehicle = await _unitOfWork.Repository<Vehicle>().GetEntityWithSpec(specVehicle);
+
+            if (vehicle == null) return NotFound(new ApiResponse(404, "The vehicle is not found."));
+
+            var vehicleToPatch = _mapper.Map<UpdateVehicleParams>(vehicle);
+
+            updateVehicleParams.ApplyTo(vehicleToPatch, ModelState);
+
+            if (!TryValidateModel(vehicleToPatch))
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            _mapper.Map(vehicleToPatch, vehicle);
+
+            var updateResult = await _vehicleService.UpdateVehicle(vehicle);
+
+            switch (updateResult.StatusCode)
+            {
+                case 404:
+                    return NotFound(new ApiResponse(updateResult.StatusCode, updateResult.Message));
+
+                case 400:
+                    return BadRequest(new ApiResponse(updateResult.StatusCode));
+
+                case 409:
+                    return Conflict(new ApiResponse(updateResult.StatusCode, updateResult.Message));
+
+                case 304:
+                    return new StatusCodeResult(304);
+            }
+
+            await _responseCache.DeleteRangeOfKeysAsync("vehicles");
+
+            return NoContent();
+
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteVehicleById(int id)
+        {
+
+            var spec = new GetVehiclesSpecification(id);
+
+            var vehicle = await _unitOfWork.Repository<Vehicle>().GetEntityWithSpec(spec);
+
+            if (vehicle == null) return NotFound(new ApiResponse(404));
+
+            await _unitOfWork.Repository<Vehicle>().DeleteAsync(id);
+
+            var result = await _unitOfWork.Complete();
+
+            if (result <= 0) return BadRequest(new ApiResponse(400));
+
+            await _responseCache.DeleteRangeOfKeysAsync("vehicles");
+
+            return NoContent();
+
+        }
+
+        public override ActionResult ValidationProblem([ActionResultObjectValue] ModelStateDictionary modelStateDictionary)
+        {
+            var options = HttpContext.RequestServices
+                .GetRequiredService<IOptions<ApiBehaviorOptions>>();
+            return (ActionResult)options.Value.InvalidModelStateResponseFactory(ControllerContext);
         }
     }
 }
