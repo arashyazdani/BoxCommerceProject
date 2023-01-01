@@ -12,8 +12,8 @@ namespace Domain.Interfaces
 {
     public interface ICategoryService
     {
-        Task<GetObjectFromServicesSpecification> CreateCategory(Category createCategoryParams);
-        Task<GetObjectFromServicesSpecification> UpdateCategory(Category updateCategoryParams);
+        Task<GetObjectFromServicesSpecification> CreateCategory(Category createCategoryParams, CancellationToken cancellationToken = default(CancellationToken));
+        Task<GetObjectFromServicesSpecification> UpdateCategory(Category updateCategoryParams, CancellationToken cancellationToken = default(CancellationToken));
 
     }
 }

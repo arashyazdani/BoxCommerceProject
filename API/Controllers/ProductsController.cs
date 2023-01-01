@@ -39,11 +39,11 @@ namespace API.Controllers
 
         [Cached(600)]
         [HttpGet("{id}", Name = "GetProduct")]
-        public async Task<ActionResult<ProductToReturnDto>> GetProductById(int id)
+        public async Task<ActionResult<ProductToReturnDto>> GetProductById(int id, CancellationToken cancellationToken = default(CancellationToken))
         {
             var spec = new GetProductsWithCategoriesSpecification(id);
 
-            var product = await _unitOfWork.Repository<Product>().GetEntityWithSpec(spec);
+            var product = await _unitOfWork.Repository<Product>().GetEntityWithSpec(spec, cancellationToken);
 
             if (product == null) return NotFound(new ApiResponse(404));
 
@@ -54,16 +54,16 @@ namespace API.Controllers
 
         [Cached(600)]
         [HttpGet]
-        public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetProducts([FromQuery] GetProductSpecificationParams specParams)
+        public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetProducts([FromQuery] GetProductSpecificationParams specParams, CancellationToken cancellationToken = default(CancellationToken))
         {
 
             var spec = new GetProductsWithCategoriesSpecification(specParams);
 
             var countSpec = new GetProductsForCountWithCategoriesSpecification(specParams);
 
-            var totalItems = await _unitOfWork.Repository<Product>().CountAsync(countSpec);
+            var totalItems = await _unitOfWork.Repository<Product>().CountAsync(countSpec, cancellationToken);
 
-            var products = await _unitOfWork.Repository<Product>().ListWithSpecAsync(spec);
+            var products = await _unitOfWork.Repository<Product>().ListWithSpecAsync(spec, cancellationToken);
 
             if (products == null || products.Count == 0) return NotFound(new ApiResponse(404));
 
@@ -77,12 +77,12 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ProductToReturnDto>> CreateProduct([FromQuery] CreateProductParams createProductParams)
+        public async Task<ActionResult<ProductToReturnDto>> CreateProduct([FromQuery] CreateProductParams createProductParams, CancellationToken cancellationToken = default(CancellationToken))
         {
 
             var productEntity = _mapper.Map<CreateProductParams, Product>(createProductParams);
 
-            var insertResult = await _productService.CreateProduct(productEntity);
+            var insertResult = await _productService.CreateProduct(productEntity, cancellationToken);
 
             switch (insertResult.StatusCode)
             {
@@ -102,17 +102,17 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateProduct([FromQuery] UpdateProductParams updateProductParams)
+        public async Task<ActionResult> UpdateProduct([FromQuery] UpdateProductParams updateProductParams, CancellationToken cancellationToken = default(CancellationToken))
         {
             var specProduct = new GetProductsWithCategoriesSpecification(updateProductParams.Id);
 
-            var product = await _unitOfWork.Repository<Product>().GetEntityWithSpec(specProduct);
+            var product = await _unitOfWork.Repository<Product>().GetEntityWithSpec(specProduct, cancellationToken);
 
             if (product == null) return NotFound(new ApiResponse(404, "The product is not found."));
 
             _mapper.Map(updateProductParams, product);
 
-            var updateResult = await _productService.UpdateProduct(product);
+            var updateResult = await _productService.UpdateProduct(product, cancellationToken);
 
             switch (updateResult.StatusCode)
             {
@@ -136,12 +136,12 @@ namespace API.Controllers
         }
 
         [HttpPatch("id")]
-        public async Task<ActionResult> PartiallyUpdateProduct(int id, JsonPatchDocument<UpdateProductParams> updateProductParams)
+        public async Task<ActionResult> PartiallyUpdateProduct(int id, JsonPatchDocument<UpdateProductParams> updateProductParams, CancellationToken cancellationToken = default(CancellationToken))
         {
 
             var specProduct = new GetProductsWithCategoriesSpecification(id);
 
-            var product = await _unitOfWork.Repository<Product>().GetEntityWithSpec(specProduct);
+            var product = await _unitOfWork.Repository<Product>().GetEntityWithSpec(specProduct, cancellationToken);
 
             if (product == null) return NotFound(new ApiResponse(404, "The product is not found."));
 
@@ -156,7 +156,7 @@ namespace API.Controllers
 
             _mapper.Map(productToPatch, product);
 
-            var updateResult = await _productService.UpdateProduct(product);
+            var updateResult = await _productService.UpdateProduct(product, cancellationToken);
 
             switch (updateResult.StatusCode)
             {
@@ -180,18 +180,18 @@ namespace API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteProductById(int id)
+        public async Task<ActionResult> DeleteProductById(int id, CancellationToken cancellationToken = default(CancellationToken))
         {
 
             var spec = new GetProductsWithCategoriesSpecification(id);
 
-            var product = await _unitOfWork.Repository<Product>().GetEntityWithSpec(spec);
+            var product = await _unitOfWork.Repository<Product>().GetEntityWithSpec(spec, cancellationToken);
 
             if (product == null) return NotFound(new ApiResponse(404));
 
             await _unitOfWork.Repository<Product>().DeleteAsync(id);
 
-            var result = await _unitOfWork.Complete();
+            var result = await _unitOfWork.Complete(cancellationToken);
 
             if (result <= 0) return BadRequest(new ApiResponse(400));
 

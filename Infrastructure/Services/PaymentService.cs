@@ -26,7 +26,7 @@ namespace Infrastructure.Services
             _config = config;
         }
 
-        public async Task<CustomerBasket> CreateOrUpdatePaymentIntent(string basketId)
+        public async Task<CustomerBasket> CreateOrUpdatePaymentIntent(string basketId, CancellationToken cancellationToken)
         {
             StripeConfiguration.ApiKey = _config["StripeSettings:SecretKey"];
 
@@ -81,30 +81,30 @@ namespace Infrastructure.Services
             return basket;
         }
 
-        public async Task<Order> UpdateOrderPaymentFailed(string paymentIntentId)
+        public async Task<Order> UpdateOrderPaymentFailed(string paymentIntentId, CancellationToken cancellationToken)
         {
             var spec = new OrderByPaymentIntentIdSpecification(paymentIntentId);
-            var order = await _unitOfWork.Repository<Order>().GetEntityWithSpec(spec);
+            var order = await _unitOfWork.Repository<Order>().GetEntityWithSpec(spec, cancellationToken);
 
             if (order == null) return null;
 
             order.Status = OrderStatus.PaymentFailed;
-            await _unitOfWork.Complete();
+            await _unitOfWork.Complete(cancellationToken);
 
             return order;
         }
 
-        public async Task<Order> UpdateOrderPaymentSucceeded(string paymentIntentId)
+        public async Task<Order> UpdateOrderPaymentSucceeded(string paymentIntentId, CancellationToken cancellationToken)
         {
             var spec = new OrderByPaymentIntentIdSpecification(paymentIntentId);
-            var order = await _unitOfWork.Repository<Order>().GetEntityWithSpec(spec);
+            var order = await _unitOfWork.Repository<Order>().GetEntityWithSpec(spec, cancellationToken);
 
             if (order == null) return null;
 
             order.Status = OrderStatus.PaymentReceived;
             _unitOfWork.Repository<Order>().Update(order);
 
-            await _unitOfWork.Complete();
+            await _unitOfWork.Complete(cancellationToken);
 
             return order;
         }

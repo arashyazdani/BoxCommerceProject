@@ -9,8 +9,9 @@ namespace Domain.Specifications.VehicleSpecifications
 {
     public class GetVehiclesWithPartsSpecification : BaseSpecification<Vehicle>
     {
-        public GetVehiclesWithPartsSpecification(GetVehicleSpecificationParams vehicleParams) : base(x =>
-            (string.IsNullOrEmpty(vehicleParams.Search) || x.Name.ToLower().Contains(vehicleParams.Search)))
+        public GetVehiclesWithPartsSpecification(GetVehicleSpecificationWithPartsParams vehicleParams) : 
+            base(x =>
+            (string.IsNullOrEmpty(vehicleParams.Search) || x.Name.ToLower().Contains(vehicleParams.Search))) //&& (vehicleParams.ProductId == x.VehiclesParts.Where(c=>c.Product.Id == vehicleParams.ProductId)))
         {
             AddInclude($"{nameof(Vehicle.VehiclesParts)}");
             AddInclude($"{nameof(Vehicle.VehiclesParts)}.{nameof(VehiclesPart.Product)}");

@@ -36,16 +36,16 @@ namespace API.Controllers
 
         [Cached(600)]
         [HttpGet]
-        public async Task<ActionResult<Pagination<CategoryToReturnDto>>> GetCategories([FromQuery] GetCategorySpecificationParams specParams)
+        public async Task<ActionResult<Pagination<CategoryToReturnDto>>> GetCategories([FromQuery] GetCategorySpecificationParams specParams, CancellationToken cancellationToken = default(CancellationToken))
         {
 
             var spec = new GetCategoriesWithParentsSpecification(specParams);
 
             var countSpec = new GetCategoriesForCountWithParentsSpecification(specParams);
 
-            var totalItems = await _unitOfWork.Repository<Category>().CountAsync(countSpec);
+            var totalItems = await _unitOfWork.Repository<Category>().CountAsync(countSpec, cancellationToken);
 
-            var categories = await _unitOfWork.Repository<Category>().ListWithSpecAsync(spec);
+            var categories = await _unitOfWork.Repository<Category>().ListWithSpecAsync(spec, cancellationToken);
 
             if (categories == null || categories.Count == 0) return NotFound(new ApiResponse(404));
 
@@ -60,12 +60,12 @@ namespace API.Controllers
 
         [Cached(600)]
         [HttpGet("{id}", Name = "GetCategory")]
-        public async Task<ActionResult<CategoryToReturnDto>> GetCategoryById(int id)
+        public async Task<ActionResult<CategoryToReturnDto>> GetCategoryById(int id, CancellationToken cancellationToken = default(CancellationToken))
         {
 
             var spec = new GetCategoriesWithParentsSpecification(id);
 
-            var category = await _unitOfWork.Repository<Category>().GetEntityWithSpec(spec);
+            var category = await _unitOfWork.Repository<Category>().GetEntityWithSpec(spec, cancellationToken);
 
             if (category == null) return NotFound(new ApiResponse(404));
 
@@ -77,12 +77,12 @@ namespace API.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<CategoryToReturnDto>> CreateCategory([FromQuery] CreateCategoryParams createCategoryParams)
+        public async Task<ActionResult<CategoryToReturnDto>> CreateCategory([FromQuery] CreateCategoryParams createCategoryParams, CancellationToken cancellationToken = default(CancellationToken))
         {
 
             var categoryEntity = _mapper.Map<CreateCategoryParams, Category>(createCategoryParams);
 
-            var insertResult = await _categoryService.CreateCategory(categoryEntity);
+            var insertResult = await _categoryService.CreateCategory(categoryEntity, cancellationToken);
 
             switch (insertResult.StatusCode)
             {
@@ -103,17 +103,17 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateCategory([FromQuery] UpdateCategoryParams updateCategoryParams)
+        public async Task<ActionResult> UpdateCategory([FromQuery] UpdateCategoryParams updateCategoryParams, CancellationToken cancellationToken = default(CancellationToken))
         {
             var specCategory = new GetCategoriesWithParentsSpecification(updateCategoryParams.Id);
 
-            var category = await _unitOfWork.Repository<Category>().GetEntityWithSpec(specCategory);
+            var category = await _unitOfWork.Repository<Category>().GetEntityWithSpec(specCategory, cancellationToken);
 
             if (category == null) return NotFound(new ApiResponse(404, "The category is not found."));
 
             _mapper.Map(updateCategoryParams, category);
 
-            var updateResult = await _categoryService.UpdateCategory(category);
+            var updateResult = await _categoryService.UpdateCategory(category, cancellationToken);
 
             switch (updateResult.StatusCode)
             {
@@ -137,12 +137,12 @@ namespace API.Controllers
         }
 
         [HttpPatch("id")]
-        public async Task<ActionResult> PartiallyUpdateCategory(int id, JsonPatchDocument<UpdateCategoryParams> updateCategoryParams)
+        public async Task<ActionResult> PartiallyUpdateCategory(int id, JsonPatchDocument<UpdateCategoryParams> updateCategoryParams, CancellationToken cancellationToken = default(CancellationToken))
         {
 
             var specCategory = new GetCategoriesWithParentsSpecification(id);
 
-            var category = await _unitOfWork.Repository<Category>().GetEntityWithSpec(specCategory);
+            var category = await _unitOfWork.Repository<Category>().GetEntityWithSpec(specCategory, cancellationToken);
 
             if (category == null) return NotFound(new ApiResponse(404, "The category is not found."));
 
@@ -157,7 +157,7 @@ namespace API.Controllers
 
             _mapper.Map(categoryToPatch, category);
 
-            var updateResult = await _categoryService.UpdateCategory(category);
+            var updateResult = await _categoryService.UpdateCategory(category, cancellationToken);
 
             switch (updateResult.StatusCode)
             {
@@ -182,18 +182,18 @@ namespace API.Controllers
 
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteCategoryById(int id)
+        public async Task<ActionResult> DeleteCategoryById(int id, CancellationToken cancellationToken = default(CancellationToken))
         {
 
             var spec = new GetCategoriesWithParentsSpecification(id);
 
-            var category = await _unitOfWork.Repository<Category>().GetEntityWithSpec(spec);
+            var category = await _unitOfWork.Repository<Category>().GetEntityWithSpec(spec, cancellationToken);
 
             if (category == null) return NotFound(new ApiResponse(404));
 
             await _unitOfWork.Repository<Category>().DeleteAsync(id);
 
-            var result = await _unitOfWork.Complete();
+            var result = await _unitOfWork.Complete(cancellationToken);
 
             if (result <= 0) return BadRequest(new ApiResponse(400));
 

@@ -20,13 +20,13 @@ namespace Infrastructure.Services
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<GetObjectFromServicesSpecification> CreateProduct(Product createProductParams)
+        public async Task<GetObjectFromServicesSpecification> CreateProduct(Product createProductParams, CancellationToken cancellationToken)
         {
             var returnObject = new GetObjectFromServicesSpecification();
 
             if (createProductParams.CategoryId != null)
             {
-                var categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)createProductParams.CategoryId);
+                var categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)createProductParams.CategoryId, cancellationToken);
 
                 if (categoryExists == null)
                 {
@@ -42,7 +42,7 @@ namespace Infrastructure.Services
 
             var spec = new GetProductsWithCategoriesSpecification(specParams);
 
-            var productExist = await _unitOfWork.Repository<Product>().GetEntityWithSpec(spec);
+            var productExist = await _unitOfWork.Repository<Product>().GetEntityWithSpec(spec, cancellationToken);
 
             if (productExist != null)
             {
@@ -53,9 +53,9 @@ namespace Infrastructure.Services
                 return returnObject;
             }
 
-            await _unitOfWork.Repository<Product>().InsertAsync(createProductParams);
+            await _unitOfWork.Repository<Product>().InsertAsync(createProductParams, cancellationToken);
 
-            var result = await _unitOfWork.Complete();
+            var result = await _unitOfWork.Complete(cancellationToken);
 
             if (result <= 0)
             {
@@ -75,11 +75,11 @@ namespace Infrastructure.Services
             return returnObject;
         }
 
-        public async Task<GetObjectFromServicesSpecification> UpdateProduct(Product updateProductParams)
+        public async Task<GetObjectFromServicesSpecification> UpdateProduct(Product updateProductParams, CancellationToken cancellationToken)
         {
             var returnObject = new GetObjectFromServicesSpecification();
 
-            var categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)updateProductParams.CategoryId);
+            var categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)updateProductParams.CategoryId, cancellationToken);
 
             if (categoryExists == null)
             {
@@ -100,7 +100,7 @@ namespace Infrastructure.Services
 
             var spec = new GetProductsWithCategoriesSpecification(specParams);
 
-            var productExist = await _unitOfWork.Repository<Product>().GetEntityWithSpec(spec);
+            var productExist = await _unitOfWork.Repository<Product>().GetEntityWithSpec(spec, cancellationToken);
 
             if (productExist != null && productExist.Id != updateProductParams.Id)
             {
@@ -111,7 +111,7 @@ namespace Infrastructure.Services
                 return returnObject;
             }
 
-            var result = await _unitOfWork.Complete();
+            var result = await _unitOfWork.Complete(cancellationToken);
 
             if (result <= 0 && updateProductParams.UpdatedDate == currentTimestamp)
             {

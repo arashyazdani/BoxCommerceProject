@@ -23,13 +23,13 @@ namespace Infrastructure.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<GetObjectFromServicesSpecification> CreateCategory(Category createCategoryParams)
+        public async Task<GetObjectFromServicesSpecification> CreateCategory(Category createCategoryParams, CancellationToken cancellationToken)
         {
             var returnObject = new GetObjectFromServicesSpecification();
 
             if (createCategoryParams.ParentCategoryId != null)
             {
-                var categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)createCategoryParams.ParentCategoryId);
+                var categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)createCategoryParams.ParentCategoryId, cancellationToken);
                 if (categoryExists == null)
                 {
                     returnObject.StatusCode = 404;
@@ -44,7 +44,7 @@ namespace Infrastructure.Services
 
             var spec = new GetCategoriesWithParentsSpecification(specParams);
 
-            var categoryExist = await _unitOfWork.Repository<Category>().GetEntityWithSpec(spec);
+            var categoryExist = await _unitOfWork.Repository<Category>().GetEntityWithSpec(spec, cancellationToken);
 
             if (categoryExist != null)
             {
@@ -55,9 +55,9 @@ namespace Infrastructure.Services
                 return returnObject;
             }
 
-            await _unitOfWork.Repository<Category>().InsertAsync(createCategoryParams);
+            await _unitOfWork.Repository<Category>().InsertAsync(createCategoryParams, cancellationToken);
 
-            var result = await _unitOfWork.Complete();
+            var result = await _unitOfWork.Complete(cancellationToken);
 
             if (result <= 0)
             {
@@ -77,13 +77,13 @@ namespace Infrastructure.Services
             return returnObject;
         }
 
-        public async Task<GetObjectFromServicesSpecification> UpdateCategory(Category updateCategoryParams)
+        public async Task<GetObjectFromServicesSpecification> UpdateCategory(Category updateCategoryParams, CancellationToken cancellationToken)
         {
             var returnObject = new GetObjectFromServicesSpecification();
 
             if (updateCategoryParams.ParentCategoryId != null)
             {
-                var categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)updateCategoryParams.ParentCategoryId);
+                var categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)updateCategoryParams.ParentCategoryId, cancellationToken);
 
                 if (categoryExists == null)
                 {
@@ -105,7 +105,7 @@ namespace Infrastructure.Services
 
             var spec = new GetCategoriesWithParentsSpecification(specParams);
 
-            var categoryExist = await _unitOfWork.Repository<Category>().GetEntityWithSpec(spec);
+            var categoryExist = await _unitOfWork.Repository<Category>().GetEntityWithSpec(spec, cancellationToken);
 
             if (categoryExist != null && categoryExist.Id != updateCategoryParams.Id)
             {
@@ -116,7 +116,7 @@ namespace Infrastructure.Services
                 return returnObject;
             }
 
-            var result = await _unitOfWork.Complete();
+            var result = await _unitOfWork.Complete(cancellationToken);
 
             if (result<=0 && updateCategoryParams.UpdatedDate == currentTimestamp)
             {

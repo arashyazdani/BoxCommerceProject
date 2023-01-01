@@ -33,11 +33,11 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}", Name = "GetVehicle")]
-        public async Task<ActionResult<VehicleToReturnDto>> GetVehicleById(int id)
+        public async Task<ActionResult<VehicleToReturnDto>> GetVehicleById(int id, CancellationToken cancellationToken = default(CancellationToken))
         {
             var spec = new GetVehiclesSpecification(id);
 
-            var vehicle = await _unitOfWork.Repository<Vehicle>().GetEntityWithSpec(spec);
+            var vehicle = await _unitOfWork.Repository<Vehicle>().GetEntityWithSpec(spec, cancellationToken);
 
             if (vehicle == null) return NotFound(new ApiResponse(404));
 
@@ -48,16 +48,16 @@ namespace API.Controllers
 
         [Cached(600)]
         [HttpGet]
-        public async Task<ActionResult<Pagination<VehicleToReturnDto>>> GetVehicles([FromQuery] GetVehicleSpecificationParams specParams)
+        public async Task<ActionResult<Pagination<VehicleToReturnDto>>> GetVehicles([FromQuery] GetVehicleSpecificationParams specParams, CancellationToken cancellationToken = default(CancellationToken))
         {
 
             var spec = new GetVehiclesSpecification(specParams);
 
             var countSpec = new GetVehiclesForCountSpecification(specParams);
 
-            var totalItems = await _unitOfWork.Repository<Vehicle>().CountAsync(countSpec);
+            var totalItems = await _unitOfWork.Repository<Vehicle>().CountAsync(countSpec, cancellationToken);
 
-            var vehicles = await _unitOfWork.Repository<Vehicle>().ListWithSpecAsync(spec);
+            var vehicles = await _unitOfWork.Repository<Vehicle>().ListWithSpecAsync(spec, cancellationToken);
 
             if (vehicles == null || vehicles.Count == 0) return NotFound(new ApiResponse(404));
 
@@ -72,12 +72,12 @@ namespace API.Controllers
 
         [Cached(600)]
         [HttpGet("{id}/vehicleparts", Name = "GetVehicleWithVehiclePartsByID")]
-        public async Task<ActionResult<VehicleWithVehiclePartsToReturnDto>> GetVehicleWithVehiclePartsById(int id)
+        public async Task<ActionResult<VehicleWithVehiclePartsToReturnDto>> GetVehicleWithVehiclePartsById(int id, CancellationToken cancellationToken = default(CancellationToken))
         {
 
             var spec = new GetVehiclesWithPartsSpecification(id);
 
-            var vehicle = await _unitOfWork.Repository<Vehicle>().GetEntityWithSpec(spec);
+            var vehicle = await _unitOfWork.Repository<Vehicle>().GetEntityWithSpec(spec, cancellationToken);
 
             if (vehicle == null) return NotFound(new ApiResponse(404));
 
@@ -88,16 +88,16 @@ namespace API.Controllers
 
         [Cached(600)]
         [HttpGet("vehicleparts", Name = "GetVehicleWithVehicleParts")]
-        public async Task<ActionResult<Pagination<VehicleWithVehiclePartsToReturnDto>>> GetVehicleWithVehicleParts([FromQuery] GetVehicleSpecificationParams specParams)
+        public async Task<ActionResult<Pagination<VehicleWithVehiclePartsToReturnDto>>> GetVehicleWithVehicleParts([FromQuery] GetVehicleSpecificationWithPartsParams specParams, CancellationToken cancellationToken = default(CancellationToken))
         {
-
+            
             var spec = new GetVehiclesWithPartsSpecification(specParams);
 
-            var countSpec = new GetVehiclesWithPartsSpecification(specParams);
+            var countSpec = new GetVehiclesWithPartsForCountSpecification(specParams);
 
-            var totalItems = await _unitOfWork.Repository<Vehicle>().CountAsync(countSpec);
+            var totalItems = await _unitOfWork.Repository<Vehicle>().CountAsync(countSpec, cancellationToken);
 
-            var vehicles = await _unitOfWork.Repository<Vehicle>().ListWithSpecAsync(spec);
+            var vehicles = await _unitOfWork.Repository<Vehicle>().ListWithSpecAsync(spec, cancellationToken);
 
             if (vehicles == null || vehicles.Count == 0) return NotFound(new ApiResponse(404));
 
@@ -111,12 +111,12 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<VehicleToReturnDto>> CreateVehicle([FromQuery] CreateVehicleParams createVehicleParams)
+        public async Task<ActionResult<VehicleToReturnDto>> CreateVehicle([FromQuery] CreateVehicleParams createVehicleParams, CancellationToken cancellationToken = default(CancellationToken))
         {
 
             var vehicleEntity = _mapper.Map<CreateVehicleParams, Vehicle>(createVehicleParams);
 
-            var insertResult = await _vehicleService.CreateVehicle(vehicleEntity);
+            var insertResult = await _vehicleService.CreateVehicle(vehicleEntity, cancellationToken);
 
             switch (insertResult.StatusCode)
             {
@@ -134,17 +134,17 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateVehicle([FromQuery] UpdateVehicleParams updateVehicleParams)
+        public async Task<ActionResult> UpdateVehicle([FromQuery] UpdateVehicleParams updateVehicleParams, CancellationToken cancellationToken = default(CancellationToken))
         {
             var specVehicle = new GetVehiclesSpecification(updateVehicleParams.Id);
 
-            var vehicle = await _unitOfWork.Repository<Vehicle>().GetEntityWithSpec(specVehicle);
+            var vehicle = await _unitOfWork.Repository<Vehicle>().GetEntityWithSpec(specVehicle, cancellationToken);
 
             if (vehicle == null) return NotFound(new ApiResponse(404, "The vehicle is not found."));
 
             _mapper.Map(updateVehicleParams, vehicle);
 
-            var updateResult = await _vehicleService.UpdateVehicle(vehicle);
+            var updateResult = await _vehicleService.UpdateVehicle(vehicle, cancellationToken);
 
             switch (updateResult.StatusCode)
             {
@@ -165,12 +165,12 @@ namespace API.Controllers
         }
 
         [HttpPatch("id")]
-        public async Task<ActionResult> PartiallyUpdateVehicle(int id, JsonPatchDocument<UpdateVehicleParams> updateVehicleParams)
+        public async Task<ActionResult> PartiallyUpdateVehicle(int id, JsonPatchDocument<UpdateVehicleParams> updateVehicleParams, CancellationToken cancellationToken = default(CancellationToken))
         {
 
             var specVehicle = new GetVehiclesSpecification(id);
 
-            var vehicle = await _unitOfWork.Repository<Vehicle>().GetEntityWithSpec(specVehicle);
+            var vehicle = await _unitOfWork.Repository<Vehicle>().GetEntityWithSpec(specVehicle, cancellationToken);
 
             if (vehicle == null) return NotFound(new ApiResponse(404, "The vehicle is not found."));
 
@@ -185,7 +185,7 @@ namespace API.Controllers
 
             _mapper.Map(vehicleToPatch, vehicle);
 
-            var updateResult = await _vehicleService.UpdateVehicle(vehicle);
+            var updateResult = await _vehicleService.UpdateVehicle(vehicle, cancellationToken);
 
             switch (updateResult.StatusCode)
             {
@@ -209,18 +209,18 @@ namespace API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteVehicleById(int id)
+        public async Task<ActionResult> DeleteVehicleById(int id, CancellationToken cancellationToken = default(CancellationToken))
         {
 
             var spec = new GetVehiclesSpecification(id);
 
-            var vehicle = await _unitOfWork.Repository<Vehicle>().GetEntityWithSpec(spec);
+            var vehicle = await _unitOfWork.Repository<Vehicle>().GetEntityWithSpec(spec, cancellationToken);
 
             if (vehicle == null) return NotFound(new ApiResponse(404));
 
             await _unitOfWork.Repository<Vehicle>().DeleteAsync(id);
 
-            var result = await _unitOfWork.Complete();
+            var result = await _unitOfWork.Complete(cancellationToken);
 
             if (result <= 0) return BadRequest(new ApiResponse(400));
 

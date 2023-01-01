@@ -10,10 +10,10 @@ namespace Domain.Interfaces
 {
     public interface IPaymentService
     {
-        Task<CustomerBasket> CreateOrUpdatePaymentIntent(string basketId);
+        Task<CustomerBasket> CreateOrUpdatePaymentIntent(string basketId, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task<Order> UpdateOrderPaymentSucceeded(string paymentIntentId);
+        Task<Order> UpdateOrderPaymentSucceeded(string paymentIntentId, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task<Order> UpdateOrderPaymentFailed(string paymentIntentId);
+        Task<Order> UpdateOrderPaymentFailed(string paymentIntentId, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

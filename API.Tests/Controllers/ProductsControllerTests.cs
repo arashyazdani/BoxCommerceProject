@@ -55,7 +55,7 @@ namespace API.Tests.Controllers
             // Arrange
 
             _unitOfWork.Setup(x => x.Repository<Product>()
-                    .GetEntityWithSpec(It.IsAny<ISpecification<Product>>()))
+                    .GetEntityWithSpec(It.IsAny<ISpecification<Product>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(newProduct)
                 .Verifiable();
 
@@ -83,7 +83,7 @@ namespace API.Tests.Controllers
             // Arrange
 
             _unitOfWork.Setup(x => x.Repository<Product>()
-                    .ListWithSpecAsync(It.IsAny<ISpecification<Product>>()))
+                    .ListWithSpecAsync(It.IsAny<ISpecification<Product>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(productList)
                 .Verifiable();
 
@@ -114,16 +114,16 @@ namespace API.Tests.Controllers
         {
             // Arrange
 
-            _unitOfWork.Setup(x => x.Repository<Product>().InsertAsync(It.IsAny<Product>()))
+            _unitOfWork.Setup(x => x.Repository<Product>().InsertAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(newProduct)).Verifiable();
 
             var categoryEntity = typeof(NotFoundObjectResult) != expectedActionResultType ? FakeCategories<Category>.FakeCategoryData(1, new Category()) : It.IsAny<Category>();
 
 
-            _unitOfWork.Setup(x => x.Repository<Category>().GetByIdAsync(It.IsAny<int>())).ReturnsAsync(categoryEntity).Verifiable();
+            _unitOfWork.Setup(x => x.Repository<Category>().GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(categoryEntity).Verifiable();
             
 
-            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
             _mapper.Setup(x => x.Map<Product, ProductToReturnDto>(It.IsAny<Product>())).Returns(productToReturnDto);
 
@@ -132,7 +132,7 @@ namespace API.Tests.Controllers
             _mapper.Setup(x => x.Map<CreateProductParams, Product>(It.IsAny<CreateProductParams>())).Returns(productEntity);
 
             _productService.Setup(x =>
-                    x.CreateProduct(It.IsAny<Product>()))
+                    x.CreateProduct(It.IsAny<Product>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(createProductObject)
                 .Verifiable();
 
@@ -167,15 +167,15 @@ namespace API.Tests.Controllers
             // Arrange
 
             if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Product>()
-                    .GetEntityWithSpec(It.IsAny<ISpecification<Product>>()))
+                    .GetEntityWithSpec(It.IsAny<ISpecification<Product>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(productEntity)
                 .Verifiable();
             _unitOfWork.Setup(x => x.Repository<Product>().Update(It.IsAny<Product>())).Verifiable();
 
-            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
             _productService.Setup(x =>
-                    x.UpdateProduct(It.IsAny<Product>()))
+                    x.UpdateProduct(It.IsAny<Product>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(updateProductObject)
                 .Verifiable();
 
@@ -198,20 +198,20 @@ namespace API.Tests.Controllers
 
             jsonUpdateProduct.Replace(x => x.CategoryId, 1);
 
-            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Product>().GetEntityWithSpec(It.IsAny<ISpecification<Product>>())).ReturnsAsync(productEntity).Verifiable();
+            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Product>().GetEntityWithSpec(It.IsAny<ISpecification<Product>>(), It.IsAny<CancellationToken>())).ReturnsAsync(productEntity).Verifiable();
 
-            _unitOfWork.Setup(x => x.Repository<Product>().GetByIdAsync(It.IsAny<int>())).ReturnsAsync(productEntity).Verifiable();
+            _unitOfWork.Setup(x => x.Repository<Product>().GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(productEntity).Verifiable();
 
             _unitOfWork.Setup(x => x.Repository<Product>().Update(It.IsAny<Product>())).Verifiable();
 
-            if (expectedActionResultType != typeof(StatusCodeResult) && expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+            if (expectedActionResultType != typeof(StatusCodeResult) && expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
             _mapper.Setup(x => x.Map<UpdateProductParams>(It.IsAny<Product>())).Returns(updateProduct);
 
             _mapper.Setup(x => x.Map<UpdateProductParams, Product>(It.IsAny<UpdateProductParams>())).Returns(productEntity);
 
             _productService.Setup(x =>
-                    x.UpdateProduct(It.IsAny<Product>()))
+                    x.UpdateProduct(It.IsAny<Product>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(updateProductObject)
                 .Verifiable();
 
@@ -239,11 +239,11 @@ namespace API.Tests.Controllers
         public async Task DeleteProduct_Test_Ok_And_NotFound_And_Nocontent_ObjectResult(int id, Product productEntity, Type expectedActionResultType)
         {
             // Arrange
-            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Product>().GetEntityWithSpec(It.IsAny<ISpecification<Product>>())).ReturnsAsync(productEntity).Verifiable();
+            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Product>().GetEntityWithSpec(It.IsAny<ISpecification<Product>>(), It.IsAny<CancellationToken>())).ReturnsAsync(productEntity).Verifiable();
 
             _unitOfWork.Setup(x => x.Repository<Product>().DeleteAsync(It.IsAny<Product>())).Verifiable();
 
-            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
             var controller = new ProductsController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _productService.Object);
 

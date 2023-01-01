@@ -19,7 +19,7 @@ namespace Infrastructure.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<GetObjectFromServicesSpecification> CreateVehicle(Vehicle createVehicleParams)
+        public async Task<GetObjectFromServicesSpecification> CreateVehicle(Vehicle createVehicleParams, CancellationToken cancellationToken)
         {
             var returnObject = new GetObjectFromServicesSpecification();
 
@@ -29,7 +29,7 @@ namespace Infrastructure.Services
 
             var spec = new GetVehiclesSpecification(specParams);
 
-            var vehicleExist = await _unitOfWork.Repository<Vehicle>().GetEntityWithSpec(spec);
+            var vehicleExist = await _unitOfWork.Repository<Vehicle>().GetEntityWithSpec(spec, cancellationToken);
 
             if (vehicleExist != null)
             {
@@ -39,9 +39,9 @@ namespace Infrastructure.Services
                 return returnObject;
             }
 
-            await _unitOfWork.Repository<Vehicle>().InsertAsync(createVehicleParams);
+            await _unitOfWork.Repository<Vehicle>().InsertAsync(createVehicleParams, cancellationToken);
 
-            var result = await _unitOfWork.Complete();
+            var result = await _unitOfWork.Complete(cancellationToken);
 
             if (result <= 0)
             {
@@ -61,7 +61,7 @@ namespace Infrastructure.Services
             return returnObject;
         }
 
-        public async Task<GetObjectFromServicesSpecification> UpdateVehicle(Vehicle updateVehicleParams)
+        public async Task<GetObjectFromServicesSpecification> UpdateVehicle(Vehicle updateVehicleParams, CancellationToken cancellationToken)
         {
             var returnObject = new GetObjectFromServicesSpecification();
 
@@ -72,7 +72,7 @@ namespace Infrastructure.Services
 
             var spec = new GetVehiclesSpecification(specParams);
 
-            var vehicleExist = await _unitOfWork.Repository<Vehicle>().GetEntityWithSpec(spec);
+            var vehicleExist = await _unitOfWork.Repository<Vehicle>().GetEntityWithSpec(spec, cancellationToken);
 
             if (vehicleExist != null && vehicleExist.Id != updateVehicleParams.Id)
             {
@@ -82,7 +82,7 @@ namespace Infrastructure.Services
 
                 return returnObject;
             }
-            var result = await _unitOfWork.Complete();
+            var result = await _unitOfWork.Complete(cancellationToken);
 
             if (result <= 0 && updateVehicleParams.UpdatedDate == currentTimestamp)
             {

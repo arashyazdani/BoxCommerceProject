@@ -37,12 +37,12 @@ namespace API.Controllers
 
         [Cached(600)]
         [HttpGet("{id}", Name = "GetWarehouse")]
-        public async Task<ActionResult<WarehouseToReturnDto>> GetWarehouseById(int id)
+        public async Task<ActionResult<WarehouseToReturnDto>> GetWarehouseById(int id, CancellationToken cancellationToken = default(CancellationToken))
         {
 
             var spec = new GetWarehousesSpecification(id);
 
-            var warehouse = await _unitOfWork.Repository<Warehouse>().GetEntityWithSpec(spec);
+            var warehouse = await _unitOfWork.Repository<Warehouse>().GetEntityWithSpec(spec, cancellationToken);
 
             if (warehouse == null) return NotFound(new ApiResponse(404));
 
@@ -54,16 +54,16 @@ namespace API.Controllers
 
         [Cached(600)]
         [HttpGet]
-        public async Task<ActionResult<Pagination<WarehouseToReturnDto>>> GetWarehouses([FromQuery] GetWarehouseSpecificationParams specParams)
+        public async Task<ActionResult<Pagination<WarehouseToReturnDto>>> GetWarehouses([FromQuery] GetWarehouseSpecificationParams specParams, CancellationToken cancellationToken = default(CancellationToken))
         {
 
             var spec = new GetWarehousesSpecification(specParams);
 
             var countSpec = new GetWarehousesForCountSpecification(specParams);
 
-            var totalItems = await _unitOfWork.Repository<Warehouse>().CountAsync(countSpec);
+            var totalItems = await _unitOfWork.Repository<Warehouse>().CountAsync(countSpec, cancellationToken);
 
-            var warehouses = await _unitOfWork.Repository<Warehouse>().ListWithSpecAsync(spec);
+            var warehouses = await _unitOfWork.Repository<Warehouse>().ListWithSpecAsync(spec, cancellationToken);
 
             if (warehouses == null || warehouses.Count == 0) return NotFound(new ApiResponse(404));
 
@@ -77,12 +77,12 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<WarehouseToReturnDto>> CreateWarehouse([FromQuery] CreateWarehouseParams createWarehouseParams)
+        public async Task<ActionResult<WarehouseToReturnDto>> CreateWarehouse([FromQuery] CreateWarehouseParams createWarehouseParams, CancellationToken cancellationToken = default(CancellationToken))
         {
 
             var warehouseEntity = _mapper.Map<CreateWarehouseParams, Warehouse>(createWarehouseParams);
 
-            var insertResult = await _warehouseService.CreateWarehouse(warehouseEntity);
+            var insertResult = await _warehouseService.CreateWarehouse(warehouseEntity, cancellationToken);
 
             switch (insertResult.StatusCode)
             {
@@ -100,17 +100,17 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateWarehouse([FromQuery] UpdateWarehouseParams updateWarehouseParams)
+        public async Task<ActionResult> UpdateWarehouse([FromQuery] UpdateWarehouseParams updateWarehouseParams, CancellationToken cancellationToken = default(CancellationToken))
         {
             var specWarehouse = new GetWarehousesSpecification(updateWarehouseParams.Id);
 
-            var warehouse = await _unitOfWork.Repository<Warehouse>().GetEntityWithSpec(specWarehouse);
+            var warehouse = await _unitOfWork.Repository<Warehouse>().GetEntityWithSpec(specWarehouse, cancellationToken);
 
             if (warehouse == null) return NotFound(new ApiResponse(404, "The warehouse is not found."));
 
             _mapper.Map(updateWarehouseParams, warehouse);
 
-            var updateResult = await _warehouseService.UpdateWarehouse(warehouse);
+            var updateResult = await _warehouseService.UpdateWarehouse(warehouse, cancellationToken);
 
             switch (updateResult.StatusCode)
             {
@@ -131,12 +131,12 @@ namespace API.Controllers
         }
 
         [HttpPatch("id")]
-        public async Task<ActionResult> PartiallyUpdateWarehouse(int id, JsonPatchDocument<UpdateWarehouseParams> updateWarehouseParams)
+        public async Task<ActionResult> PartiallyUpdateWarehouse(int id, JsonPatchDocument<UpdateWarehouseParams> updateWarehouseParams, CancellationToken cancellationToken = default(CancellationToken))
         {
 
             var specWarehouse = new GetWarehousesSpecification(id);
 
-            var warehouse = await _unitOfWork.Repository<Warehouse>().GetEntityWithSpec(specWarehouse);
+            var warehouse = await _unitOfWork.Repository<Warehouse>().GetEntityWithSpec(specWarehouse, cancellationToken);
 
             if (warehouse == null) return NotFound(new ApiResponse(404, "The warehouse is not found."));
 
@@ -151,7 +151,7 @@ namespace API.Controllers
 
             _mapper.Map(warehouseToPatch, warehouse);
 
-            var updateResult = await _warehouseService.UpdateWarehouse(warehouse);
+            var updateResult = await _warehouseService.UpdateWarehouse(warehouse, cancellationToken);
 
             switch (updateResult.StatusCode)
             {
@@ -176,18 +176,18 @@ namespace API.Controllers
 
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteWarehouseById(int id)
+        public async Task<ActionResult> DeleteWarehouseById(int id, CancellationToken cancellationToken = default(CancellationToken))
         {
 
             var spec = new GetWarehousesSpecification(id);
 
-            var warehouse = await _unitOfWork.Repository<Warehouse>().GetEntityWithSpec(spec);
+            var warehouse = await _unitOfWork.Repository<Warehouse>().GetEntityWithSpec(spec, cancellationToken);
 
             if (warehouse == null) return NotFound(new ApiResponse(404));
 
             await _unitOfWork.Repository<Warehouse>().DeleteAsync(id);
 
-            var result = await _unitOfWork.Complete();
+            var result = await _unitOfWork.Complete(cancellationToken);
 
             if (result <= 0) return BadRequest(new ApiResponse(400));
 

@@ -11,6 +11,6 @@ namespace Domain.Interfaces
     {
         IGenericRepository<TEntity> Repository<TEntity>() where TEntity : class, new();
 
-        Task<int> Complete();
+        Task<int> Complete(CancellationToken cancellationToken = default(CancellationToken));
     }
 }

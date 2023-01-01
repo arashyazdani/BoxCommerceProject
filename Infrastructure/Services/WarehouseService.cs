@@ -18,7 +18,7 @@ namespace Infrastructure.Services
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<GetObjectFromServicesSpecification> CreateWarehouse(Warehouse createWarehouseParams)
+        public async Task<GetObjectFromServicesSpecification> CreateWarehouse(Warehouse createWarehouseParams, CancellationToken cancellationToken = default(CancellationToken))
         {
             var returnObject = new GetObjectFromServicesSpecification();
 
@@ -28,7 +28,7 @@ namespace Infrastructure.Services
 
             var spec = new GetWarehousesSpecification(specParams);
 
-            var warehouseExist = await _unitOfWork.Repository<Warehouse>().GetEntityWithSpec(spec);
+            var warehouseExist = await _unitOfWork.Repository<Warehouse>().GetEntityWithSpec(spec, cancellationToken);
 
             if (warehouseExist != null)
             {
@@ -38,9 +38,9 @@ namespace Infrastructure.Services
                 return returnObject;
             }
 
-            await _unitOfWork.Repository<Warehouse>().InsertAsync(createWarehouseParams);
+            await _unitOfWork.Repository<Warehouse>().InsertAsync(createWarehouseParams, cancellationToken);
 
-            var result = await _unitOfWork.Complete();
+            var result = await _unitOfWork.Complete(cancellationToken);
 
             if (result <= 0)
             {
@@ -60,7 +60,7 @@ namespace Infrastructure.Services
             return returnObject;
         }
 
-        public async Task<GetObjectFromServicesSpecification> UpdateWarehouse(Warehouse updateWarehouseParams)
+        public async Task<GetObjectFromServicesSpecification> UpdateWarehouse(Warehouse updateWarehouseParams, CancellationToken cancellationToken = default(CancellationToken))
         {
             var returnObject = new GetObjectFromServicesSpecification();
 
@@ -71,7 +71,7 @@ namespace Infrastructure.Services
 
             var spec = new GetWarehousesSpecification(specParams);
 
-            var warehouseExist = await _unitOfWork.Repository<Warehouse>().GetEntityWithSpec(spec);
+            var warehouseExist = await _unitOfWork.Repository<Warehouse>().GetEntityWithSpec(spec, cancellationToken);
 
             if (warehouseExist != null && warehouseExist.Id != updateWarehouseParams.Id)
             {
@@ -81,7 +81,7 @@ namespace Infrastructure.Services
 
                 return returnObject;
             }
-            var result = await _unitOfWork.Complete();
+            var result = await _unitOfWork.Complete(cancellationToken);
 
             if (result <= 0 && updateWarehouseParams.UpdatedDate == currentTimestamp)
             {

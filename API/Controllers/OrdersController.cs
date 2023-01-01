@@ -23,13 +23,13 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Order>> CreateOrder(OrderDTO orderDto)
+        public async Task<ActionResult<Order>> CreateOrder(OrderDTO orderDto, CancellationToken cancellationToken = default(CancellationToken))
         {
             var email = HttpContext.User.RetrieveEmailFromPrincipal();
 
             var address = _mapper.Map<AddressDTO, OrderAddress>(orderDto.ShipToAddress);
 
-            var order = await _orderService.CreateOrderAsync(email, orderDto.DeliveryMethodId, orderDto.BasketId, address);
+            var order = await _orderService.CreateOrderAsync(email, orderDto.DeliveryMethodId, orderDto.BasketId, address, cancellationToken);
 
             if (order == null) return BadRequest(new ApiResponse(400, "Problem creating order"));
 
@@ -37,21 +37,21 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<OrderDTO>>> GetOrdersForUser()
+        public async Task<ActionResult<IReadOnlyList<OrderDTO>>> GetOrdersForUser(CancellationToken cancellationToken = default(CancellationToken))
         {
             var email = HttpContext.User.RetrieveEmailFromPrincipal();
 
-            var orders = await _orderService.GetOrdersForUserAsync(email);
+            var orders = await _orderService.GetOrdersForUserAsync(email, cancellationToken);
 
             return Ok(_mapper.Map<IReadOnlyList<Order>, IReadOnlyList<OrderToReturnDTO>>(orders));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<OrderToReturnDTO>> GetOrderByIdForUser(int id)
+        public async Task<ActionResult<OrderToReturnDTO>> GetOrderByIdForUser(int id, CancellationToken cancellationToken = default(CancellationToken))
         {
             var email = HttpContext.User.RetrieveEmailFromPrincipal();
 
-            var order = await _orderService.GetOrderByIdAsync(id, email);
+            var order = await _orderService.GetOrderByIdAsync(id, email, cancellationToken);
 
             if (order == null) return NotFound(new ApiResponse(404));
 
@@ -59,9 +59,9 @@ namespace API.Controllers
         }
 
         [HttpGet("deliveryMethods")]
-        public async Task<ActionResult<IReadOnlyList<DeliveryMethod>>> GetDeliveryMethods()
+        public async Task<ActionResult<IReadOnlyList<DeliveryMethod>>> GetDeliveryMethods(CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Ok(await _orderService.GetDeliveryMethodsAsync());
+            return Ok(await _orderService.GetDeliveryMethodsAsync(cancellationToken));
         }
     }
 }

@@ -43,7 +43,7 @@ namespace API.Tests.Controllers
             // Arrange
 
             _unitOfWork.Setup(x => x.Repository<Category>()
-                    .GetEntityWithSpec(It.IsAny<ISpecification<Category>>()))
+                    .GetEntityWithSpec(It.IsAny<ISpecification<Category>>(),It.IsAny<CancellationToken>()))
                 .ReturnsAsync(newCategory)
                 .Verifiable();
 
@@ -71,7 +71,7 @@ namespace API.Tests.Controllers
             //Arrange
 
             _unitOfWork.Setup(x => x.Repository<Category>()
-                    .ListWithSpecAsync(It.IsAny<ISpecification<Category>>()))
+                    .ListWithSpecAsync(It.IsAny<ISpecification<Category>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(categoryList)
                 .Verifiable();
 
@@ -103,7 +103,7 @@ namespace API.Tests.Controllers
             Category newCategory = FakeCategories<Category>.FakeCategoryData(null, new Category());
 
             var spec = new GetCategoriesWithParentsSpecification(1);
-            _unitOfWork.Setup(x => x.Repository<Category>().GetEntityWithSpec(spec)).ReturnsAsync(newCategory)
+            _unitOfWork.Setup(x => x.Repository<Category>().GetEntityWithSpec(spec, It.IsAny<CancellationToken>())).ReturnsAsync(newCategory)
                 .Verifiable();
 
             //Act
@@ -126,10 +126,10 @@ namespace API.Tests.Controllers
         {
             // Arrange
 
-            _unitOfWork.Setup(x => x.Repository<Category>().InsertAsync(It.IsAny<Category>()))
+            _unitOfWork.Setup(x => x.Repository<Category>().InsertAsync(It.IsAny<Category>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(newCategory)).Verifiable();
 
-            if(expectedActionResultType!=typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+            if(expectedActionResultType!=typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
             _mapper.Setup(x => x.Map<Category, CategoryToReturnDto>(It.IsAny<Category>())).Returns(categoryToReturnDto);
 
@@ -138,7 +138,7 @@ namespace API.Tests.Controllers
             _mapper.Setup(x => x.Map<CreateCategoryParams, Category>(It.IsAny<CreateCategoryParams>())).Returns(categoryEntity);
             
             _categoryService.Setup(x => 
-                    x.CreateCategory(It.IsAny<Category>()))
+                    x.CreateCategory(It.IsAny<Category>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(createCategoryObject)
                 .Verifiable();
 
@@ -172,15 +172,15 @@ namespace API.Tests.Controllers
             // Arrange
 
             if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Category>()
-                    .GetEntityWithSpec(It.IsAny<ISpecification<Category>>()))
+                    .GetEntityWithSpec(It.IsAny<ISpecification<Category>>(), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(categoryEntity)
                     .Verifiable();
             _unitOfWork.Setup(x => x.Repository<Category>().Update(It.IsAny<Category>())).Verifiable();
 
-            if(expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+            if(expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
             _categoryService.Setup(x =>
-                    x.UpdateCategory(It.IsAny<Category>()))
+                    x.UpdateCategory(It.IsAny<Category>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(updateCategoryObject)
                 .Verifiable();
 
@@ -205,20 +205,20 @@ namespace API.Tests.Controllers
 
             jsonUpdateCategory.Replace(x => x.ParentCategoryId, 1);
 
-            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Category>().GetEntityWithSpec(It.IsAny<ISpecification<Category>>())).ReturnsAsync(categoryEntity).Verifiable();
+            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Category>().GetEntityWithSpec(It.IsAny<ISpecification<Category>>(), It.IsAny<CancellationToken>())).ReturnsAsync(categoryEntity).Verifiable();
 
-            _unitOfWork.Setup(x => x.Repository<Category>().GetByIdAsync(It.IsAny<int>())).ReturnsAsync(categoryEntity).Verifiable();
+            _unitOfWork.Setup(x => x.Repository<Category>().GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(categoryEntity).Verifiable();
 
             _unitOfWork.Setup(x => x.Repository<Category>().Update(It.IsAny<Category>())).Verifiable();
 
-            if (expectedActionResultType != typeof(StatusCodeResult) && expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+            if (expectedActionResultType != typeof(StatusCodeResult) && expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
             _mapper.Setup(x => x.Map<UpdateCategoryParams>(It.IsAny<Category>())).Returns(updateCategory);
 
             _mapper.Setup(x => x.Map<UpdateCategoryParams, Category>(It.IsAny<UpdateCategoryParams>())).Returns(categoryEntity);
 
             _categoryService.Setup(x =>
-                    x.UpdateCategory(It.IsAny<Category>()))
+                    x.UpdateCategory(It.IsAny<Category>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(updateCategoryObject)
                 .Verifiable();
 
@@ -246,11 +246,11 @@ namespace API.Tests.Controllers
         public async Task DeleteCategory_Test_Ok_And_NotFound_And_NoContent_ObjectResult(int id, Category categoryEntity, Type expectedActionResultType)
         {
             // Arrange
-            if(expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Category>().GetEntityWithSpec(It.IsAny<ISpecification<Category>>())).ReturnsAsync(categoryEntity).Verifiable();
+            if(expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Category>().GetEntityWithSpec(It.IsAny<ISpecification<Category>>(), It.IsAny<CancellationToken>())).ReturnsAsync(categoryEntity).Verifiable();
 
             _unitOfWork.Setup(x => x.Repository<Category>().DeleteAsync(It.IsAny<Category>())).Verifiable();
 
-            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
             var controller = new CategoriesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _categoryService.Object);
 

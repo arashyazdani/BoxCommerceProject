@@ -10,7 +10,7 @@ namespace Domain.Interfaces
 {
     public interface IVehicleService
     {
-        Task<GetObjectFromServicesSpecification> CreateVehicle(Vehicle createVehicleParams);
-        Task<GetObjectFromServicesSpecification> UpdateVehicle(Vehicle updateVehicleParams);
+        Task<GetObjectFromServicesSpecification> CreateVehicle(Vehicle createVehicleParams, CancellationToken cancellationToken = default(CancellationToken));
+        Task<GetObjectFromServicesSpecification> UpdateVehicle(Vehicle updateVehicleParams, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

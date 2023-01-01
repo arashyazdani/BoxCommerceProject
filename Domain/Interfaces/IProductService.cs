@@ -11,7 +11,7 @@ namespace Domain.Interfaces
 {
     public interface IProductService
     {
-        Task<GetObjectFromServicesSpecification> CreateProduct(Product createProductParams);
-        Task<GetObjectFromServicesSpecification> UpdateProduct(Product updateProductParams);
+        Task<GetObjectFromServicesSpecification> CreateProduct(Product createProductParams, CancellationToken cancellationToken = default(CancellationToken));
+        Task<GetObjectFromServicesSpecification> UpdateProduct(Product updateProductParams, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

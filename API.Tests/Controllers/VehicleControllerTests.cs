@@ -44,7 +44,7 @@ namespace API.Tests.Controllers
             // Arrange
 
             _unitOfWork.Setup(x => x.Repository<Vehicle>()
-                    .GetEntityWithSpec(It.IsAny<ISpecification<Vehicle>>()))
+                    .GetEntityWithSpec(It.IsAny<ISpecification<Vehicle>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(newVehicle)
                 .Verifiable();
 
@@ -72,7 +72,7 @@ namespace API.Tests.Controllers
             //Arrange
 
             _unitOfWork.Setup(x => x.Repository<Vehicle>()
-            .ListWithSpecAsync(It.IsAny<ISpecification<Vehicle>>()))
+            .ListWithSpecAsync(It.IsAny<ISpecification<Vehicle>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(vehicleList)
                 .Verifiable();
 
@@ -103,10 +103,10 @@ namespace API.Tests.Controllers
         {
             // Arrange
 
-            _unitOfWork.Setup(x => x.Repository<Vehicle>().InsertAsync(It.IsAny<Vehicle>()))
+            _unitOfWork.Setup(x => x.Repository<Vehicle>().InsertAsync(It.IsAny<Vehicle>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(newVehicle)).Verifiable();
 
-            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
             _mapper.Setup(x => x.Map<Vehicle, VehicleToReturnDto>(It.IsAny<Vehicle>())).Returns(vehicleToReturnDto);
 
@@ -115,7 +115,7 @@ namespace API.Tests.Controllers
             _mapper.Setup(x => x.Map<CreateVehicleParams, Vehicle>(It.IsAny<CreateVehicleParams>())).Returns(vehicleEntity);
 
             _vehicleService.Setup(x =>
-                    x.CreateVehicle(It.IsAny<Vehicle>()))
+                    x.CreateVehicle(It.IsAny<Vehicle>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(createVehicleObject)
                 .Verifiable();
 
@@ -148,15 +148,15 @@ namespace API.Tests.Controllers
             // Arrange
 
             if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Vehicle>()
-                    .GetEntityWithSpec(It.IsAny<ISpecification<Vehicle>>()))
+                    .GetEntityWithSpec(It.IsAny<ISpecification<Vehicle>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(vehicleEntity)
                 .Verifiable();
             _unitOfWork.Setup(x => x.Repository<Vehicle>().Update(It.IsAny<Vehicle>())).Verifiable();
 
-            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
             _vehicleService.Setup(x =>
-                    x.UpdateVehicle(It.IsAny<Vehicle>()))
+                    x.UpdateVehicle(It.IsAny<Vehicle>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(updateVehicleObject)
                 .Verifiable();
 
@@ -178,20 +178,20 @@ namespace API.Tests.Controllers
             // Arrange
             var jsonUpdateVehicle = new JsonPatchDocument<UpdateVehicleParams>();
 
-            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Vehicle>().GetEntityWithSpec(It.IsAny<ISpecification<Vehicle>>())).ReturnsAsync(vehicleEntity).Verifiable();
+            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Vehicle>().GetEntityWithSpec(It.IsAny<ISpecification<Vehicle>>(), It.IsAny<CancellationToken>())).ReturnsAsync(vehicleEntity).Verifiable();
 
-            _unitOfWork.Setup(x => x.Repository<Vehicle>().GetByIdAsync(It.IsAny<int>())).ReturnsAsync(vehicleEntity).Verifiable();
+            _unitOfWork.Setup(x => x.Repository<Vehicle>().GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(vehicleEntity).Verifiable();
 
             _unitOfWork.Setup(x => x.Repository<Vehicle>().Update(It.IsAny<Vehicle>())).Verifiable();
 
-            if (expectedActionResultType != typeof(StatusCodeResult) && expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+            if (expectedActionResultType != typeof(StatusCodeResult) && expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
             _mapper.Setup(x => x.Map<UpdateVehicleParams>(It.IsAny<Vehicle>())).Returns(updateVehicle);
 
             _mapper.Setup(x => x.Map<UpdateVehicleParams, Vehicle>(It.IsAny<UpdateVehicleParams>())).Returns(vehicleEntity);
 
             _vehicleService.Setup(x =>
-                    x.UpdateVehicle(It.IsAny<Vehicle>()))
+                    x.UpdateVehicle(It.IsAny<Vehicle>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(updateVehicleObject)
                 .Verifiable();
 
@@ -219,11 +219,11 @@ namespace API.Tests.Controllers
         public async Task DeleteVehicle_Test_Ok_And_NotFound_And_NoContent_ObjectResult(int id, Vehicle vehicleEntity, Type expectedActionResultType)
         {
             // Arrange
-            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Vehicle>().GetEntityWithSpec(It.IsAny<ISpecification<Vehicle>>())).ReturnsAsync(vehicleEntity).Verifiable();
+            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Vehicle>().GetEntityWithSpec(It.IsAny<ISpecification<Vehicle>>(), It.IsAny<CancellationToken>())).ReturnsAsync(vehicleEntity).Verifiable();
 
             _unitOfWork.Setup(x => x.Repository<Vehicle>().DeleteAsync(It.IsAny<Vehicle>())).Verifiable();
 
-            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
             var controller = new VehiclesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _vehicleService.Object);
 

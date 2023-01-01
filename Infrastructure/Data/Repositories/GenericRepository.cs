@@ -18,34 +18,34 @@ namespace Infrastructure.Data.Repositories
         {
             _context = context;
         }
-        public async Task<T> GetByIdAsync(object id)
+        public async Task<T> GetByIdAsync(object id, CancellationToken cancellationToken)
         {
-            return await _context.Set<T>().FindAsync(id);
+            return await _context.Set<T>().FindAsync(id, cancellationToken);
         }
 
-        public async Task<T> SearchAsync(Expression<Func<T, bool>> predicate)
+        public async Task<T> SearchAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken)
         {
-            return await _context.Set<T>().FirstOrDefaultAsync(predicate);
+            return await _context.Set<T>().FirstOrDefaultAsync(predicate, cancellationToken);
         }
 
-        public async Task<IReadOnlyList<T>> ListAllAsync()
+        public async Task<IReadOnlyList<T>> ListAllAsync(CancellationToken cancellationToken)
         {
-            return await _context.Set<T>().ToListAsync();
+            return await _context.Set<T>().ToListAsync(cancellationToken);
         }
 
-        public async Task<T> GetEntityWithSpec(ISpecification<T> spec)
+        public async Task<T> GetEntityWithSpec(ISpecification<T> spec, CancellationToken cancellationToken)
         {
-            return await ApplySpecification(spec).FirstOrDefaultAsync();
+            return await ApplySpecification(spec).FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<IReadOnlyList<T>> ListWithSpecAsync(ISpecification<T> spec)
+        public async Task<IReadOnlyList<T>> ListWithSpecAsync(ISpecification<T> spec, CancellationToken cancellationToken)
         {
-            return await ApplySpecification(spec).ToListAsync();
+            return await ApplySpecification(spec).ToListAsync(cancellationToken);
         }
 
-        public async Task InsertAsync(T entity)
+        public async Task InsertAsync(T entity, CancellationToken cancellationToken)
         {
-            await _context.Set<T>().AddAsync(entity);
+            await _context.Set<T>().AddAsync(entity, cancellationToken);
         }
 
         public void Update(T entity)
@@ -76,9 +76,9 @@ namespace Infrastructure.Data.Repositories
             _context.Set<T>().RemoveRange(entities);
         }
 
-        public async Task<int> CountAsync(ISpecification<T> spec)
+        public async Task<int> CountAsync(ISpecification<T> spec, CancellationToken cancellationToken)
         {
-            return await ApplySpecification(spec).CountAsync();
+            return await ApplySpecification(spec).CountAsync(cancellationToken);
         }
 
         public IQueryable<IReadOnlyList<T>> GroupBy(Expression<Func<T, int>> spec)

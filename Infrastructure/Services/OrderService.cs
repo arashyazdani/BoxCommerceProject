@@ -22,7 +22,7 @@ namespace Infrastructure.Services
             _unitOfWork = unitOfWork;
             _paymentService = paymentService;
         }
-        public async Task<Order> CreateOrderAsync(string buyerEmail, int deliveryMethodId, string basketId, OrderAddress shippingAddress)
+        public async Task<Order> CreateOrderAsync(string buyerEmail, int deliveryMethodId, string basketId, OrderAddress shippingAddress, CancellationToken cancellationToken)
         {
             // get basket from the repo
             var basket = await _basketRepo.GetBasketAsync(basketId);
@@ -30,17 +30,17 @@ namespace Infrastructure.Services
             var items = new List<OrderItem>();
             foreach (var item in basket.Items)
             {
-                var productItem = await _unitOfWork.Repository<Product>().GetByIdAsync(item.Id);
+                var productItem = await _unitOfWork.Repository<Product>().GetByIdAsync(item.Id, cancellationToken);
                 var itemOrdered = new ProductItemOrdered(productItem.Id, productItem.Name);
                 var orderItem = new OrderItem(itemOrdered, productItem.Price);
                 items.Add(orderItem);
             }
 
             // get delivery method from repo
-            var deliveryMethod = await _unitOfWork.Repository<DeliveryMethod>().GetByIdAsync(deliveryMethodId);
+            var deliveryMethod = await _unitOfWork.Repository<DeliveryMethod>().GetByIdAsync(deliveryMethodId, cancellationToken);
 
             // get vehicle information
-            var vehicle = await _unitOfWork.Repository<Vehicle>().GetByIdAsync(basket.VehicleId);
+            var vehicle = await _unitOfWork.Repository<Vehicle>().GetByIdAsync(basket.VehicleId, cancellationToken);
 
             if (vehicle == null)
             {
@@ -52,41 +52,41 @@ namespace Infrastructure.Services
 
             // check to see if order exists
             var spec = new OrderByPaymentIntentIdSpecification(basket.PaymentIntentId);
-            var existingOrder = await _unitOfWork.Repository<Order>().GetEntityWithSpec(spec);
+            var existingOrder = await _unitOfWork.Repository<Order>().GetEntityWithSpec(spec, cancellationToken);
 
             if (existingOrder != null)
             {
                 _unitOfWork.Repository<Order>().Delete(existingOrder);
-                await _paymentService.CreateOrUpdatePaymentIntent(basket.PaymentIntentId);
+                await _paymentService.CreateOrUpdatePaymentIntent(basket.PaymentIntentId, cancellationToken);
             }
 
             // create order
             var order = new Order(items, buyerEmail, shippingAddress, deliveryMethod, subtotal, basket.PaymentIntentId, vehicle.Name, vehicle.Id, vehicle.PictureUrl);
-            await _unitOfWork.Repository<Order>().InsertAsync(order);
+            await _unitOfWork.Repository<Order>().InsertAsync(order, cancellationToken);
 
             // save to db
-            var result = await _unitOfWork.Complete();
+            var result = await _unitOfWork.Complete(cancellationToken);
             if (result <= 0) return null;
 
             // return order
             return order;
         }
 
-        public async Task<IReadOnlyList<Order>> GetOrdersForUserAsync(string buyerEmail)
+        public async Task<IReadOnlyList<Order>> GetOrdersForUserAsync(string buyerEmail, CancellationToken cancellationToken)
         {
             var spec = new OrdersWithItemsAndOrderingSpecification(buyerEmail);
-            return await _unitOfWork.Repository<Order>().ListWithSpecAsync(spec);
+            return await _unitOfWork.Repository<Order>().ListWithSpecAsync(spec, cancellationToken);
         }
 
-        public async Task<Order> GetOrderByIdAsync(int id, string buyerEmail)
+        public async Task<Order> GetOrderByIdAsync(int id, string buyerEmail, CancellationToken cancellationToken)
         {
             var spec = new OrdersWithItemsAndOrderingSpecification(id, buyerEmail);
-            return await _unitOfWork.Repository<Order>().GetEntityWithSpec(spec);
+            return await _unitOfWork.Repository<Order>().GetEntityWithSpec(spec, cancellationToken);
         }
 
-        public async Task<IReadOnlyList<DeliveryMethod>> GetDeliveryMethodsAsync()
+        public async Task<IReadOnlyList<DeliveryMethod>> GetDeliveryMethodsAsync(CancellationToken cancellationToken)
         {
-            return await _unitOfWork.Repository<DeliveryMethod>().ListAllAsync();
+            return await _unitOfWork.Repository<DeliveryMethod>().ListAllAsync(cancellationToken);
         }
     }
 }

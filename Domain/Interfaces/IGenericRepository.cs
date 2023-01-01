@@ -10,17 +10,17 @@ namespace Domain.Interfaces
 {
     public interface IGenericRepository<T> where T : class, new()
     {
-        Task<T> GetByIdAsync(object id);
+        Task<T> GetByIdAsync(object id, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task<T> SearchAsync(Expression<Func<T, bool>> predicate);
+        Task<T> SearchAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task<IReadOnlyList<T>> ListAllAsync();
+        Task<IReadOnlyList<T>> ListAllAsync(CancellationToken cancellationToken = default(CancellationToken));
 
-        Task<T> GetEntityWithSpec(ISpecification<T> spec);
+        Task<T> GetEntityWithSpec(ISpecification<T> spec, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task<IReadOnlyList<T>> ListWithSpecAsync(ISpecification<T> spec);
+        Task<IReadOnlyList<T>> ListWithSpecAsync(ISpecification<T> spec, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task InsertAsync(T entity);
+        Task InsertAsync(T entity, CancellationToken cancellationToken = default(CancellationToken));
 
         void Update(T entity);
 
@@ -34,7 +34,7 @@ namespace Domain.Interfaces
 
         IQueryable<IReadOnlyList<T>> GroupBy(Expression<Func<T, int>> spec);
 
-        Task<int> CountAsync(ISpecification<T> spec);
+        Task<int> CountAsync(ISpecification<T> spec, CancellationToken cancellationToken = default(CancellationToken));
 
     }
 }

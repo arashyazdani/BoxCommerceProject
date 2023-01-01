@@ -24,9 +24,9 @@ namespace API.Controllers
 
         [Authorize]
         [HttpPost("{basketId}")]
-        public async Task<ActionResult<CustomerBasket>> CreateOrUpdatePaymentIntent(string basketId)
+        public async Task<ActionResult<CustomerBasket>> CreateOrUpdatePaymentIntent(string basketId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var basket = await _paymentService.CreateOrUpdatePaymentIntent(basketId);
+            var basket = await _paymentService.CreateOrUpdatePaymentIntent(basketId, cancellationToken);
 
             if (basket == null) return BadRequest(new ApiResponse(400, "Problem with your basket"));
 

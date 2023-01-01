@@ -8,6 +8,8 @@ namespace Domain.Specifications.VehicleSpecifications
 {
     public class GetVehicleSpecificationWithPartsParams : BaseGetSpecificationParams
     {
-        public int? VehicleId { get; set; }
+        public int? ProductId { get; set; }
+        public string? ProductName { get; set; }
+        public bool IsDiscontinued { get; set; } = false;
     }
 }

@@ -19,9 +19,9 @@ namespace Infrastructure.Data
             _context = context;
         }
 
-        public async Task<int> Complete()
+        public async Task<int> Complete(CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync(cancellationToken);
         }
 
         public void Dispose()

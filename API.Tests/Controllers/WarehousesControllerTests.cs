@@ -44,7 +44,7 @@ namespace API.Tests.Controllers
             // Arrange
 
             _unitOfWork.Setup(x => x.Repository<Warehouse>()
-                    .GetEntityWithSpec(It.IsAny<ISpecification<Warehouse>>()))
+                    .GetEntityWithSpec(It.IsAny<ISpecification<Warehouse>>(), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(newWarehouse)
                     .Verifiable();
 
@@ -72,7 +72,7 @@ namespace API.Tests.Controllers
             //Arrange
 
             _unitOfWork.Setup(x => x.Repository<Warehouse>()
-                    .ListWithSpecAsync(It.IsAny<ISpecification<Warehouse>>()))
+                    .ListWithSpecAsync(It.IsAny<ISpecification<Warehouse>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(warehouseList)
                 .Verifiable();
 
@@ -103,10 +103,10 @@ namespace API.Tests.Controllers
         {
             // Arrange
 
-            _unitOfWork.Setup(x => x.Repository<Warehouse>().InsertAsync(It.IsAny<Warehouse>()))
+            _unitOfWork.Setup(x => x.Repository<Warehouse>().InsertAsync(It.IsAny<Warehouse>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(newWarehouse)).Verifiable();
 
-            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
             _mapper.Setup(x => x.Map<Warehouse, WarehouseToReturnDto>(It.IsAny<Warehouse>())).Returns(warehouseToReturnDto);
 
@@ -115,7 +115,7 @@ namespace API.Tests.Controllers
             _mapper.Setup(x => x.Map<CreateWarehouseParams, Warehouse>(It.IsAny<CreateWarehouseParams>())).Returns(warehouseEntity);
 
             _warehouseService.Setup(x =>
-                    x.CreateWarehouse(It.IsAny<Warehouse>()))
+                    x.CreateWarehouse(It.IsAny<Warehouse>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(createWarehouseObject)
                 .Verifiable();
 
@@ -148,15 +148,15 @@ namespace API.Tests.Controllers
             // Arrange
 
             if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Warehouse>()
-                    .GetEntityWithSpec(It.IsAny<ISpecification<Warehouse>>()))
+                    .GetEntityWithSpec(It.IsAny<ISpecification<Warehouse>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(warehouseEntity)
                 .Verifiable();
             _unitOfWork.Setup(x => x.Repository<Warehouse>().Update(It.IsAny<Warehouse>())).Verifiable();
 
-            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
             _warehouseService.Setup(x =>
-                    x.UpdateWarehouse(It.IsAny<Warehouse>()))
+                    x.UpdateWarehouse(It.IsAny<Warehouse>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(updateWarehouseObject)
                 .Verifiable();
 
@@ -178,20 +178,20 @@ namespace API.Tests.Controllers
             // Arrange
             var jsonUpdateWarehouse = new JsonPatchDocument<UpdateWarehouseParams>();
 
-            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Warehouse>().GetEntityWithSpec(It.IsAny<ISpecification<Warehouse>>())).ReturnsAsync(warehouseEntity).Verifiable();
+            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Warehouse>().GetEntityWithSpec(It.IsAny<ISpecification<Warehouse>>(), It.IsAny<CancellationToken>())).ReturnsAsync(warehouseEntity).Verifiable();
 
-            _unitOfWork.Setup(x => x.Repository<Warehouse>().GetByIdAsync(It.IsAny<int>())).ReturnsAsync(warehouseEntity).Verifiable();
+            _unitOfWork.Setup(x => x.Repository<Warehouse>().GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(warehouseEntity).Verifiable();
 
             _unitOfWork.Setup(x => x.Repository<Warehouse>().Update(It.IsAny<Warehouse>())).Verifiable();
 
-            if (expectedActionResultType != typeof(StatusCodeResult) && expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+            if (expectedActionResultType != typeof(StatusCodeResult) && expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
             _mapper.Setup(x => x.Map<UpdateWarehouseParams>(It.IsAny<Warehouse>())).Returns(updateWarehouse);
 
             _mapper.Setup(x => x.Map<UpdateWarehouseParams, Warehouse>(It.IsAny<UpdateWarehouseParams>())).Returns(warehouseEntity);
 
             _warehouseService.Setup(x =>
-                    x.UpdateWarehouse(It.IsAny<Warehouse>()))
+                    x.UpdateWarehouse(It.IsAny<Warehouse>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(updateWarehouseObject)
                 .Verifiable();
 
@@ -219,11 +219,11 @@ namespace API.Tests.Controllers
         public async Task DeleteWarehouse_Test_Ok_And_NotFound_And_NoContent_ObjectResult(int id, Warehouse warehouseEntity, Type expectedActionResultType)
         {
             // Arrange
-            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Warehouse>().GetEntityWithSpec(It.IsAny<ISpecification<Warehouse>>())).ReturnsAsync(warehouseEntity).Verifiable();
+            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Warehouse>().GetEntityWithSpec(It.IsAny<ISpecification<Warehouse>>(), It.IsAny<CancellationToken>())).ReturnsAsync(warehouseEntity).Verifiable();
 
             _unitOfWork.Setup(x => x.Repository<Warehouse>().DeleteAsync(It.IsAny<Warehouse>())).Verifiable();
 
-            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete()).ReturnsAsync(1).Verifiable();
+            if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
             var controller = new WarehousesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _warehouseService.Object);
 
