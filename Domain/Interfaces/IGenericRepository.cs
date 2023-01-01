@@ -32,6 +32,8 @@ namespace Domain.Interfaces
 
         void RemoveRange(IEnumerable<T> entities);
 
+        IQueryable<IReadOnlyList<T>> GroupBy(Expression<Func<T, int>> spec);
+
         Task<int> CountAsync(ISpecification<T> spec);
 
     }

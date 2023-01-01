@@ -7,6 +7,8 @@ namespace Domain.Entities
     {
         public int? ParentCategoryId { get; set; }
         public virtual Category Parent { get; set; }
-        public virtual IList<Category> Children { get; set; }
+        public virtual ICollection<Category> Children { get; set; }
+
+        public virtual ICollection<Product> Products { get; set; }
     }
 }

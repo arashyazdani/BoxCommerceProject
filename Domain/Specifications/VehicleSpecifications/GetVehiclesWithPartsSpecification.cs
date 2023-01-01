@@ -1,18 +1,19 @@
-﻿using System;
+﻿using Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Domain.Entities;
 
 namespace Domain.Specifications.VehicleSpecifications
 {
-    public class GetVehiclesSpecification : BaseSpecification<Vehicle>
+    public class GetVehiclesWithPartsSpecification : BaseSpecification<Vehicle>
     {
-        public GetVehiclesSpecification(GetVehicleSpecificationParams vehicleParams) : base(x =>
+        public GetVehiclesWithPartsSpecification(GetVehicleSpecificationParams vehicleParams) : base(x =>
             (string.IsNullOrEmpty(vehicleParams.Search) || x.Name.ToLower().Contains(vehicleParams.Search)))
         {
-            AddOrderBy(x => x.Name);
+            AddInclude($"{nameof(Vehicle.VehiclesParts)}");
+            AddInclude($"{nameof(Vehicle.VehiclesParts)}.{nameof(VehiclesPart.Product)}");
             ApplyPaging(vehicleParams.PageSize * (vehicleParams.PageIndex - 1), vehicleParams.PageSize);
 
             if (!string.IsNullOrEmpty(vehicleParams.Sort))
@@ -49,11 +50,12 @@ namespace Domain.Specifications.VehicleSpecifications
                 }
             }
         }
+        
 
-        public GetVehiclesSpecification(int id) : base(x => x.Id == id)
+        public GetVehiclesWithPartsSpecification(int id) : base(x => x.Id == id)
         {
-            AddInclude(x=>x.VehiclesParts);
+            AddInclude($"{nameof(Vehicle.VehiclesParts)}");
+            AddInclude($"{nameof(Vehicle.VehiclesParts)}.{nameof(VehiclesPart.Product)}");
         }
-
     }
 }

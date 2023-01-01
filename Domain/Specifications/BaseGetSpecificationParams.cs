@@ -10,14 +10,14 @@ namespace Domain.Specifications
 {
     public abstract class BaseGetSpecificationParams
     {
-        private const int MaxPageSize = 50;
+        private const int MaxPageSize = 100;
 
-        [Range(1, 1000000,ErrorMessage = "PageIndex must be between 1 to 1,000,000")]
+        [Range(1, 10000,ErrorMessage = "PageIndex must be between 1 to 10,000")]
         public int PageIndex { get; set; } = 1;
 
         private int _pageSize = 6;
 
-        [Range(1, 50, ErrorMessage = "PageSize must be between 1 to 50")]
+        [Range(1, 100, ErrorMessage = "PageSize must be between 1 to 100")]
         public int PageSize
         {
             get => _pageSize;

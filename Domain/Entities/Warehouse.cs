@@ -7,5 +7,7 @@ namespace Domain.Entities
     {
         public string? Address { get; set; }
 
+        public virtual ICollection<VehiclesInventory> VehiclesInventories { get; set; }
+        public virtual ICollection<ProductsInventory> ProductsInventories { get; set; }
     }
 }

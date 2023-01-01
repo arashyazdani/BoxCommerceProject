@@ -1,20 +1,18 @@
-﻿using API.DTOs;
-using AutoMapper;
+﻿using AutoMapper;
 using AutoMapper.Execution;
-using Domain.Entities;
+using Stripe;
 
 namespace API.Helpers
 {
-    public class VehicleImageUrlResolver : IValueResolver<Vehicle, VehicleToReturnDto,string?>
+    public class PictureUrlResolver : IValueResolver<object, object, string?>
     {
         private readonly IConfiguration _config;
 
-        public VehicleImageUrlResolver(IConfiguration config)
+        public PictureUrlResolver(IConfiguration config)
         {
             _config = config;
         }
-
-        public string? Resolve(Vehicle source, VehicleToReturnDto destination, string? destMember, ResolutionContext context)
+        public string? Resolve(dynamic source, dynamic destination, string? destMember, ResolutionContext context)
         {
             if (!string.IsNullOrEmpty(source.PictureUrl))
             {

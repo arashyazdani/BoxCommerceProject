@@ -15,8 +15,6 @@ namespace Infrastructure.Data.Config
         {
             // By using newsequentialid() in SQL Server we have a unique and sequence Id and our index is better than using newid().
             builder.Property(x=>x.Id).HasDefaultValueSql("newsequentialid()");
-            builder.HasOne(z => z.Product).WithMany().HasForeignKey(x => x.ProductId);
-            builder.HasOne(z => z.Warehouse).WithMany().HasForeignKey(x => x.WarehouseId);
         }
     }
 }

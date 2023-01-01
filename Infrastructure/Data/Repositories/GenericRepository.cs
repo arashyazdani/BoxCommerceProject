@@ -81,6 +81,18 @@ namespace Infrastructure.Data.Repositories
             return await ApplySpecification(spec).CountAsync();
         }
 
+        public IQueryable<IReadOnlyList<T>> GroupBy(Expression<Func<T, int>> spec)
+        {
+            try
+            {
+                return (IQueryable<IReadOnlyList<T>>)_context.Set<T>().GroupBy(spec);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         private IQueryable<T> ApplySpecification(ISpecification<T> spec)
         {
             return SpecificationEvaluator<T>.GetQuery(_context.Set<T>().AsQueryable(), spec);

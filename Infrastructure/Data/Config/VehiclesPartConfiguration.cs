@@ -14,8 +14,6 @@ namespace Infrastructure.Data.Config
         public void Configure(EntityTypeBuilder<VehiclesPart> builder)
         {
             builder.HasKey(x => new { x.ProductId, x.VehicleId });
-            builder.HasOne(z => z.Product).WithMany().HasForeignKey(z => z.ProductId);
-            builder.HasOne(z => z.Vehicle).WithMany().HasForeignKey(z => z.VehicleId);
         }
     }
 }

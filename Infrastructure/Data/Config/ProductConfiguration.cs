@@ -19,7 +19,6 @@ namespace Infrastructure.Data.Config
             builder.Property(x=>x.Price).HasColumnType("decimal(18,2)");
             builder.Property(x => x.IsDiscontinued).HasDefaultValue(false);
             builder.Property(x => x.Quantity).IsRequired();
-            builder.HasOne(z => z.Category).WithMany().HasForeignKey(z => z.CategoryId);
         }
     }
 }

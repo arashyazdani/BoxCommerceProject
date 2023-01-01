@@ -62,7 +62,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasIndex("ParentCategoryId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.OrderAggregate.DeliveryMethod", b =>
@@ -98,7 +98,7 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("ShortName")
                         .IsUnique();
 
-                    b.ToTable("DeliveryMethods");
+                    b.ToTable("DeliveryMethods", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.OrderAggregate.Order", b =>
@@ -151,7 +151,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasIndex("DeliveryMethodId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.OrderAggregate.OrderItem", b =>
@@ -178,7 +178,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Product", b =>
@@ -232,7 +232,7 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.ProductsInventory", b =>
@@ -272,7 +272,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasIndex("WarehouseId");
 
-                    b.ToTable("ProductsInventories");
+                    b.ToTable("ProductsInventories", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Vehicle", b =>
@@ -319,7 +319,7 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Vehicles");
+                    b.ToTable("Vehicles", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.VehiclesInventory", b =>
@@ -368,7 +368,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasIndex("WarehouseId");
 
-                    b.ToTable("VehiclesInventories");
+                    b.ToTable("VehiclesInventories", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.VehiclesPart", b =>
@@ -389,7 +389,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("VehiclesParts");
+                    b.ToTable("VehiclesParts", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Warehouse", b =>
@@ -431,7 +431,7 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Warehouses");
+                    b.ToTable("Warehouses", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Category", b =>
@@ -451,7 +451,7 @@ namespace Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("Domain.Entities.OrderAggregate.OrderAddress", "ShipToAddress", b1 =>
+                    b.OwnsOne("Domain.Entities.OrderAggregate.Order.ShipToAddress#Domain.Entities.OrderAggregate.OrderAddress", "ShipToAddress", b1 =>
                         {
                             b1.Property<int>("OrderId")
                                 .HasColumnType("int");
@@ -482,7 +482,7 @@ namespace Infrastructure.Data.Migrations
 
                             b1.HasKey("OrderId");
 
-                            b1.ToTable("Orders");
+                            b1.ToTable("Orders", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderId");
@@ -501,7 +501,7 @@ namespace Infrastructure.Data.Migrations
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.OwnsOne("Domain.Entities.OrderAggregate.ProductItemOrdered", "ItemOrdered", b1 =>
+                    b.OwnsOne("Domain.Entities.OrderAggregate.OrderItem.ItemOrdered#Domain.Entities.OrderAggregate.ProductItemOrdered", "ItemOrdered", b1 =>
                         {
                             b1.Property<int>("OrderItemId")
                                 .HasColumnType("int");
@@ -515,7 +515,7 @@ namespace Infrastructure.Data.Migrations
 
                             b1.HasKey("OrderItemId");
 
-                            b1.ToTable("OrderItems");
+                            b1.ToTable("OrderItems", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderItemId");
