@@ -1,5 +1,4 @@
-﻿using System.Dynamic;
-using API.Errors;
+﻿using API.Errors;
 using AutoMapper;
 using Domain.Interfaces;
 using Moq;
@@ -11,12 +10,9 @@ using Shouldly;
 using Domain.Specifications;
 using API.Tests.DataAttributes.CategoryAttributes;
 using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using API.Tests.FakeData;
 using Domain.Specifications.CategorySpecifications;
-using Infrastructure.Services;
-using Domain.Specifications.WarehouseSpecifications;
 
 namespace API.Tests.Controllers
 {

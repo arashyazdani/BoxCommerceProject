@@ -1,11 +1,6 @@
 ﻿using AutoMapper;
 using Domain.Interfaces;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using API.Controllers;
 using API.DTOs;
 using API.Errors;
@@ -15,7 +10,6 @@ using Domain.Specifications;
 using Shouldly;
 using API.Tests.FakeData;
 using Domain.Specifications.VehicleSpecifications;
-using Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
@@ -66,6 +60,34 @@ namespace API.Tests.Controllers
         }
 
         [Theory]
+        [GetVehicleWithVehiclePartsTests]
+        public async Task GetVehicleWithVehiclePartsById_Test_OK_And_NotFound_ObjectResult_And_ExceptionFormat(int id, Vehicle newVehicle, Type expectedActionResultType)
+        {
+            // Arrange
+
+            _unitOfWork.Setup(x => x.Repository<Vehicle>()
+                    .GetEntityWithSpec(It.IsAny<ISpecification<Vehicle>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(newVehicle)
+                .Verifiable();
+
+            var controller = new VehiclesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _vehicleService.Object);
+
+            // Act and Assert
+
+            if (typeof(FormatException) == expectedActionResultType)
+            {
+                await Assert.ThrowsAsync<FormatException>(() => controller.GetVehicleById(int.Parse("Not Integer")));
+            }
+            else
+            {
+                var result = await controller.GetVehicleWithVehiclePartsById(id);
+
+                result.Result.ShouldBeOfType(expectedActionResultType);
+            }
+
+        }
+
+        [Theory]
         [GetVehicleListTestsAttribute]
         public async Task GetVehicles_Test_OK_And_NotFound_ObjectResult_And_FormatException(List<Vehicle> vehicleList, Type expectedActionResultType)
         {
@@ -89,6 +111,50 @@ namespace API.Tests.Controllers
                 var specParams = new GetVehicleSpecificationParams();
 
                 var result = await controller.GetVehicles(specParams);
+
+                // Assert
+
+                result.Result.ShouldBeOfType(expectedActionResultType);
+            }
+
+        }
+
+        [Theory]
+        [GetVehiclesWithPartsListTestsAttribute]
+        public async Task GetVehicleWithVehicleParts_Test_OK_And_NotFound_ObjectResult_And_FormatException(List<Vehicle> vehicleList, Type expectedActionResultType)
+        {
+            //Arrange
+            var specParams = new GetVehicleSpecificationWithPartsParams();
+
+            if (typeof(NotFoundObjectResult) == expectedActionResultType)
+            {
+                specParams.ProductId =  20;
+                var spec = new GetVehiclesWithPartsSpecification(specParams);
+                _unitOfWork.Setup(x => x.Repository<Vehicle>()
+                        .ListWithSpecAsync(spec, It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(vehicleList)
+                    .Verifiable();
+            }
+            else
+            {
+                _unitOfWork.Setup(x => x.Repository<Vehicle>()
+                        .ListWithSpecAsync(It.IsAny<ISpecification<Vehicle>>(), It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(vehicleList)
+                    .Verifiable();
+            }
+
+            var controller = new VehiclesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _vehicleService.Object);
+
+            // Act and Assert
+            if (typeof(FormatException) == expectedActionResultType)
+            {
+                Assert.Throws<FormatException>(FakeCommonData<GetVehicleSpecificationParams>.CreateFormatException);
+            }
+            else
+            {
+                // Act
+
+                var result = await controller.GetVehicleWithVehicleParts(specParams);
 
                 // Assert
 

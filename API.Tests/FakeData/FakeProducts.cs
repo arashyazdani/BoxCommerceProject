@@ -43,6 +43,7 @@ namespace API.Tests.FakeData
                 .RuleFor(p => p.Price, f => decimal.Parse(f.Commerce.Price(1000, 170000)))
                 .RuleFor(p => p.Quantity, f => f.Commerce.Random.Int(0, 200))
                 .RuleFor(p => p.Enabled, f => true)
+                .RuleFor(p=>p.VehiclesParts, f=> FakeVehicles<VehiclesPart>.FakeVehiclePartList!.Generate(3))
                 .RuleFor(p => p.IsDiscontinued, f => f.Commerce.Random.Bool());
 
         
