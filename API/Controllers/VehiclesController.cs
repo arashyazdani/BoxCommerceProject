@@ -24,7 +24,8 @@ namespace API.Controllers
         private readonly IResponseCacheService _responseCache;
         private readonly IVehicleService _vehicleService;
 
-        public VehiclesController(IUnitOfWork unitOfWork, IMapper mapper, IResponseCacheService responseCache, IVehicleService vehicleService)
+        public VehiclesController(IUnitOfWork unitOfWork, IMapper mapper, IResponseCacheService responseCache,
+            IVehicleService vehicleService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -33,7 +34,8 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}", Name = "GetVehicle")]
-        public async Task<ActionResult<VehicleToReturnDto>> GetVehicleById(int id, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<ActionResult<VehicleToReturnDto>> GetVehicleById(int id,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             var spec = new GetVehiclesSpecification(id);
 
@@ -48,9 +50,10 @@ namespace API.Controllers
 
         [Cached(600)]
         [HttpGet]
-        public async Task<ActionResult<Pagination<VehicleToReturnDto>>> GetVehicles([FromQuery] GetVehicleSpecificationParams specParams, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<ActionResult<Pagination<VehicleToReturnDto>>> GetVehicles(
+            [FromQuery] GetVehicleSpecificationParams specParams,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-
             var spec = new GetVehiclesSpecification(specParams);
 
             var countSpec = new GetVehiclesForCountSpecification(specParams);
@@ -67,14 +70,13 @@ namespace API.Controllers
                 new Pagination<VehicleToReturnDto>(specParams.PageIndex, specParams.PageSize, totalItems, data);
 
             return new OkObjectResult(new ApiResponse(200, "Ok", returnVehicles));
-
         }
 
         [Cached(600)]
         [HttpGet("{id}/vehicleparts", Name = "GetVehicleWithVehiclePartsByID")]
-        public async Task<ActionResult<VehicleWithVehiclePartsToReturnDto>> GetVehicleWithVehiclePartsById(int id, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<ActionResult<VehicleWithVehiclePartsToReturnDto>> GetVehicleWithVehiclePartsById(int id,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-
             var spec = new GetVehiclesWithPartsSpecification(id);
 
             var vehicle = await _unitOfWork.Repository<Vehicle>().GetEntityWithSpec(spec, cancellationToken);
@@ -88,9 +90,10 @@ namespace API.Controllers
 
         [Cached(600)]
         [HttpGet("vehicleparts", Name = "GetVehicleWithVehicleParts")]
-        public async Task<ActionResult<Pagination<VehicleWithVehiclePartsToReturnDto>>> GetVehicleWithVehicleParts([FromQuery] GetVehicleSpecificationWithPartsParams specParams, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<ActionResult<Pagination<VehicleWithVehiclePartsToReturnDto>>> GetVehicleWithVehicleParts(
+            [FromQuery] GetVehicleSpecificationWithPartsParams specParams,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            
             var spec = new GetVehiclesWithPartsSpecification(specParams);
 
             var countSpec = new GetVehiclesWithPartsForCountSpecification(specParams);
@@ -104,16 +107,17 @@ namespace API.Controllers
             var data = _mapper.Map<IReadOnlyList<Vehicle>, IReadOnlyList<VehicleWithVehiclePartsToReturnDto>>(vehicles);
 
             var returnVehicles =
-                new Pagination<VehicleWithVehiclePartsToReturnDto>(specParams.PageIndex, specParams.PageSize, totalItems, data);
+                new Pagination<VehicleWithVehiclePartsToReturnDto>(specParams.PageIndex, specParams.PageSize,
+                    totalItems, data);
 
             return new OkObjectResult(new ApiResponse(200, "Ok", returnVehicles));
-
         }
 
         [HttpPost]
-        public async Task<ActionResult<VehicleToReturnDto>> CreateVehicle([FromQuery] CreateVehicleParams createVehicleParams, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<ActionResult<VehicleToReturnDto>> CreateVehicle(
+            [FromQuery] CreateVehicleParams createVehicleParams,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-
             var vehicleEntity = _mapper.Map<CreateVehicleParams, Vehicle>(createVehicleParams);
 
             var insertResult = await _vehicleService.CreateVehicle(vehicleEntity, cancellationToken);
@@ -129,12 +133,13 @@ namespace API.Controllers
 
             var returnDto = _mapper.Map<Vehicle, VehicleToReturnDto>(insertResult.ResultObject);
 
-            return new CreatedAtRouteResult("GetVehicle", new { id = vehicleEntity.Id }, new ApiResponse(201, "Vehicle has been created successfully.", returnDto));
-
+            return new CreatedAtRouteResult("GetVehicle", new { id = vehicleEntity.Id },
+                new ApiResponse(201, "Vehicle has been created successfully.", returnDto));
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateVehicle([FromQuery] UpdateVehicleParams updateVehicleParams, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<ActionResult> UpdateVehicle([FromQuery] UpdateVehicleParams updateVehicleParams,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             var specVehicle = new GetVehiclesSpecification(updateVehicleParams.Id);
 
@@ -161,13 +166,13 @@ namespace API.Controllers
             await _responseCache.DeleteRangeOfKeysAsync("vehicles");
 
             return NoContent();
-
         }
 
         [HttpPatch("id")]
-        public async Task<ActionResult> PartiallyUpdateVehicle(int id, JsonPatchDocument<UpdateVehicleParams> updateVehicleParams, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<ActionResult> PartiallyUpdateVehicle(int id,
+            JsonPatchDocument<UpdateVehicleParams> updateVehicleParams,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-
             var specVehicle = new GetVehiclesSpecification(id);
 
             var vehicle = await _unitOfWork.Repository<Vehicle>().GetEntityWithSpec(specVehicle, cancellationToken);
@@ -205,13 +210,12 @@ namespace API.Controllers
             await _responseCache.DeleteRangeOfKeysAsync("vehicles");
 
             return NoContent();
-
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteVehicleById(int id, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<ActionResult> DeleteVehicleById(int id,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-
             var spec = new GetVehiclesSpecification(id);
 
             var vehicle = await _unitOfWork.Repository<Vehicle>().GetEntityWithSpec(spec, cancellationToken);
@@ -227,10 +231,49 @@ namespace API.Controllers
             await _responseCache.DeleteRangeOfKeysAsync("vehicles");
 
             return NoContent();
-
         }
 
-        public override ActionResult ValidationProblem([ActionResultObjectValue] ModelStateDictionary modelStateDictionary)
+        [HttpPut("/vehiclesparts")]
+        public async Task<ActionResult> AddOrUpdateVehiclesParts([FromQuery] AddOrUpdateVehiclesPartsSpecificationParams specificationParams,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var vehicleParts = await _vehicleService.AddOrUpdateVehiclesParts(specificationParams, cancellationToken);
+
+            switch (vehicleParts.StatusCode)
+            {
+                case 404:
+                    return NotFound(new ApiResponse(vehicleParts.StatusCode, vehicleParts.Message));
+
+                case 400:
+                    return BadRequest(new ApiResponse(vehicleParts.StatusCode));
+
+                case 409:
+                    return Conflict(new ApiResponse(vehicleParts.StatusCode, vehicleParts.Message));
+
+                case 304:
+                    return new StatusCodeResult(304);
+
+                case 204:
+
+                    await _responseCache.DeleteRangeOfKeysAsync("vehicles");
+
+                    return NoContent();
+            }
+
+            Vehicle vehicle = new Vehicle();
+
+            if (vehicleParts.ResultObject!.GetType() == typeof(Vehicle)) vehicle = (Vehicle)vehicleParts.ResultObject;
+
+            var returnDto = _mapper.Map<Vehicle, VehicleToReturnDto>(vehicle);
+
+            await _responseCache.DeleteRangeOfKeysAsync("vehicles");
+
+            return new CreatedAtRouteResult("GetVehicleWithVehiclePartsByID", new { id = specificationParams.VehicleId },
+                new ApiResponse(201, "Vehicle has been created successfully.", returnDto));
+        }
+
+        public override ActionResult ValidationProblem(
+            [ActionResultObjectValue] ModelStateDictionary modelStateDictionary)
         {
             var options = HttpContext.RequestServices
                 .GetRequiredService<IOptions<ApiBehaviorOptions>>();

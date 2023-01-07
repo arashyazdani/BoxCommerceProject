@@ -5,6 +5,7 @@ namespace Domain.Entities
 {
     public class VehiclesPart : Auditable
     {
+        public int Id { get; set; }
         public virtual Product Product { get; set; }
         public int ProductId { get; set; }
         public virtual Vehicle Vehicle { get; set; }

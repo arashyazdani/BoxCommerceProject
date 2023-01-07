@@ -27,15 +27,21 @@ namespace Infrastructure.Services
         {
             var returnObject = new GetObjectFromServicesSpecification();
 
+            Category parentCategoryExists = new Category();
             if (createCategoryParams.ParentCategoryId != null)
             {
-                var categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)createCategoryParams.ParentCategoryId, cancellationToken);
-                if (categoryExists == null)
+                var parentSpec = new GetCategoriesWithParentsSpecification((int)createCategoryParams.ParentCategoryId);
+
+                parentCategoryExists = await _unitOfWork.Repository<Category>().GetEntityWithSpec(parentSpec, cancellationToken);
+
+                //categoryExists = await _unitOfWork.Repository<Category>().GetByIdAsync((int)createCategoryParams.ParentCategoryId, cancellationToken);
+                if (parentCategoryExists == null)
                 {
                     returnObject.StatusCode = 404;
                     returnObject.Message = "The ParentCategoryId is not found.";
                     return returnObject;
                 }
+                createCategoryParams.ParentPath = parentCategoryExists.ParentPath + createCategoryParams.ParentCategoryId + "/";
             }
 
             var specParams = new GetCategorySpecificationParams();
@@ -93,6 +99,7 @@ namespace Infrastructure.Services
 
                     return returnObject;
                 }
+                updateCategoryParams.ParentPath = updateCategoryParams.ParentPath + updateCategoryParams.ParentCategoryId + "/";
             }
 
             var specParams = new GetCategorySpecificationParams();

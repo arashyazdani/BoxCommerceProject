@@ -20,32 +20,36 @@
    "Details": "All car Options Packs",
    "Enabled": true
  },
- {
-   "ParentCategoryId": 2,
-   "Priority": 1,
-   "Name": "Naturally aspirated engine",
-   "Details": "",
-   "Enabled": true
- },
- {
-   "ParentCategoryId": 2,
-   "Priority": 2,
-   "Name": "Turbocharged engine",
-   "Details": "",
-   "Enabled": true
- },
- {
-   "ParentCategoryId": 2,
-   "Priority": 3,
-   "Name": "CRDi engine",
-   "Details": "",
-   "Enabled": true
- },
- {
-   "ParentCategoryId": 2,
-   "Priority": 4,
-   "Name": "MPFI engine",
-   "Details": "",
-   "Enabled": true
- }
+  {
+    "ParentCategoryId": 2,
+    "Priority": 1,
+    "Name": "Naturally aspirated engine",
+    "Details": "",
+    "ParentPath": "2/",
+    "Enabled": true
+  },
+  {
+    "ParentCategoryId": 2,
+    "Priority": 2,
+    "Name": "Turbocharged engine",
+    "Details": "",
+    "ParentPath": "2/",
+    "Enabled": true
+  },
+  {
+    "ParentCategoryId": 2,
+    "Priority": 3,
+    "Name": "CRDi engine",
+    "Details": "",
+    "ParentPath": "2/",
+    "Enabled": true
+  },
+  {
+    "ParentCategoryId": 2,
+    "Priority": 4,
+    "Name": "MPFI engine",
+    "Details": "",
+    "ParentPath": "2/",
+    "Enabled": true
+  }
 ]

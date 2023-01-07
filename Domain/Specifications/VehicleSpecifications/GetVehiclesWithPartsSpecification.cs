@@ -173,6 +173,7 @@ namespace Domain.Specifications.VehicleSpecifications
         {
             AddInclude($"{nameof(Vehicle.VehiclesParts)}");
             AddInclude($"{nameof(Vehicle.VehiclesParts)}.{nameof(VehiclesPart.Product)}");
+            AddInclude($"{nameof(Vehicle.VehiclesParts)}.{nameof(VehiclesPart.Product)}.{nameof(Product.Category)}");
         }
     }
 }

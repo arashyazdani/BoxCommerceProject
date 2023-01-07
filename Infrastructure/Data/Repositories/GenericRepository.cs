@@ -23,9 +23,9 @@ namespace Infrastructure.Data.Repositories
             return await _context.Set<T>().FindAsync(id, cancellationToken);
         }
 
-        public async Task<T> SearchAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken)
+        public async Task<IList<T>> SearchAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken)
         {
-            return await _context.Set<T>().FirstOrDefaultAsync(predicate, cancellationToken);
+            return await  _context.Set<T>().Where(predicate).ToListAsync(cancellationToken);
         }
 
         public async Task<IReadOnlyList<T>> ListAllAsync(CancellationToken cancellationToken)

@@ -13,7 +13,7 @@ namespace Infrastructure.Data.Config
     {
         public void Configure(EntityTypeBuilder<VehiclesPart> builder)
         {
-            builder.HasKey(x => new { x.ProductId, x.VehicleId });
+            builder.HasIndex(x => new { x.ProductId, x.VehicleId });
         }
     }
 }

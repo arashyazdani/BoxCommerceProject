@@ -191,6 +191,8 @@ namespace API.Controllers
 
             if (category == null) return NotFound(new ApiResponse(404));
 
+            if (category.ParentCategoryId == null) return StatusCode(403, new ApiResponse(403, $"You can not delete the '{category.Name}'."));
+
             await _unitOfWork.Repository<Category>().DeleteAsync(id);
 
             var result = await _unitOfWork.Complete(cancellationToken);

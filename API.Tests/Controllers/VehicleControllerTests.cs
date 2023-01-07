@@ -286,6 +286,7 @@ namespace API.Tests.Controllers
         {
             // Arrange
             if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Vehicle>().GetEntityWithSpec(It.IsAny<ISpecification<Vehicle>>(), It.IsAny<CancellationToken>())).ReturnsAsync(vehicleEntity).Verifiable();
+            //_vehicleService.Setup(x=>x.CheckItemsExistAsync(It.IsAny<int>(),))
 
             _unitOfWork.Setup(x => x.Repository<Vehicle>().DeleteAsync(It.IsAny<Vehicle>())).Verifiable();
 
@@ -298,6 +299,12 @@ namespace API.Tests.Controllers
 
             // Assert
             result.ShouldBeOfType(expectedActionResultType);
+
+        }
+
+        [Fact]
+        public async Task AddOrUpdateVehiclesParts_Should_Be_OKObjectResult()
+        {
 
         }
     }
