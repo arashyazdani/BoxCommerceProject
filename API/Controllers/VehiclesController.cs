@@ -233,7 +233,7 @@ namespace API.Controllers
             return NoContent();
         }
 
-        [HttpPut("/vehiclesparts")]
+        [HttpPut("vehiclesparts")]
         public async Task<ActionResult> AddOrUpdateVehiclesParts([FromQuery] AddOrUpdateVehiclesPartsSpecificationParams specificationParams,
             CancellationToken cancellationToken = default(CancellationToken))
         {
