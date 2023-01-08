@@ -165,7 +165,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [CreateVehicleTests]
-        public async Task CreateVehicle_Test_Ok_And_NotFound_And_NoContent_And_Conflict_ObjectResult_And_FormatException(CreateVehicleParams newVehicle, Vehicle vehicleEntity, VehicleToReturnDto vehicleToReturnDto, Type expectedActionResultType, GetObjectFromServicesSpecification createVehicleObject)
+        public async Task CreateVehicle_Test_Created_And_NotFound_And_BadRequest_And_Conflict_ObjectResult_And_FormatException(CreateVehicleParams newVehicle, Vehicle vehicleEntity, VehicleToReturnDto vehicleToReturnDto, Type expectedActionResultType, GetObjectFromServicesSpecification createVehicleObject)
         {
             // Arrange
 
@@ -209,7 +209,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [UpdateVehicleTests]
-        public async Task UpdateVehicle_Test_Ok_And_NotFound_And_NoContent_And_NotModified_ObjectResult(UpdateVehicleParams updateVehicle, Vehicle vehicleEntity, Type expectedActionResultType, GetObjectFromServicesSpecification updateVehicleObject)
+        public async Task UpdateVehicle_Test_BadRequest_And_NotFound_And_NoContent_And_NotModified_ObjectResult(UpdateVehicleParams updateVehicle, Vehicle vehicleEntity, Type expectedActionResultType, GetObjectFromServicesSpecification updateVehicleObject)
         {
             // Arrange
 
@@ -239,7 +239,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [UpdateVehicleTests]
-        public async Task PartiallyUpdateVehicle_Test_Ok_And_NotFound_And_NoContent_NotModified_ObjectResult(UpdateVehicleParams updateVehicle, Vehicle vehicleEntity, Type expectedActionResultType, GetObjectFromServicesSpecification updateVehicleObject)
+        public async Task PartiallyUpdateVehicle_Test_BadRequest_And_Conflict_And_NotFound_And_NoContent_NotModified_ObjectResult(UpdateVehicleParams updateVehicle, Vehicle vehicleEntity, Type expectedActionResultType, GetObjectFromServicesSpecification updateVehicleObject)
         {
             // Arrange
             var jsonUpdateVehicle = new JsonPatchDocument<UpdateVehicleParams>();
@@ -282,7 +282,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [DeleteVehicleTests]
-        public async Task DeleteVehicle_Test_Ok_And_NotFound_And_NoContent_ObjectResult(int id, Vehicle vehicleEntity, Type expectedActionResultType)
+        public async Task DeleteVehicle_Test_NotFound_And_NoContent_And_BadRequest_ObjectResult(int id, Vehicle vehicleEntity, Type expectedActionResultType)
         {
             // Arrange
             if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Vehicle>().GetEntityWithSpec(It.IsAny<ISpecification<Vehicle>>(), It.IsAny<CancellationToken>())).ReturnsAsync(vehicleEntity).Verifiable();
@@ -302,10 +302,29 @@ namespace API.Tests.Controllers
 
         }
 
-        [Fact]
-        public async Task AddOrUpdateVehiclesParts_Should_Be_OKObjectResult()
+        [Theory]
+        [AddOrUpdateVehiclesPartsTestsAttrinutes]
+        public async Task AddOrUpdateVehiclesParts_Should_Be_OKObjectResult(AddOrUpdateVehiclesPartsSpecificationParams specificationParams, GetObjectFromServicesSpecification updateVehicleObject, Type expectedActionResultType)
         {
+            //Arrange
 
+            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Vehicle>()
+                    .GetEntityWithSpec(It.IsAny<ISpecification<Vehicle>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(It.IsAny<Vehicle>())
+                .Verifiable();
+
+            _vehicleService.Setup(x=>x.AddOrUpdateVehiclesParts(It.IsAny<AddOrUpdateVehiclesPartsSpecificationParams>(),It.IsAny<CancellationToken>())).ReturnsAsync(updateVehicleObject).Verifiable();
+
+            var controller = new VehiclesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _vehicleService.Object);
+
+
+            // Act
+            var result = await controller.AddOrUpdateVehiclesParts(specificationParams);
+
+
+            // Assert
+
+            result.ShouldBeOfType(expectedActionResultType);
         }
     }
 }

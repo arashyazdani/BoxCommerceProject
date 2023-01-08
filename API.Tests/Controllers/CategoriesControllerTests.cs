@@ -239,7 +239,7 @@ namespace API.Tests.Controllers
 
         [Theory]
         [DeleteCategoryTest]
-        public async Task DeleteCategory_Test_Ok_And_NotFound_And_NoContent_ObjectResult(int id, Category categoryEntity, Type expectedActionResultType)
+        public async Task DeleteCategory_Test_Ok_And_NotFound_And_NoContent_And_Forbidden_ObjectResult(int id, Category categoryEntity, Type expectedActionResultType)
         {
             // Arrange
             if(expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Category>().GetEntityWithSpec(It.IsAny<ISpecification<Category>>(), It.IsAny<CancellationToken>())).ReturnsAsync(categoryEntity).Verifiable();
@@ -254,7 +254,16 @@ namespace API.Tests.Controllers
             var result = await controller.DeleteCategoryById(id);
 
             // Assert
-            result.ShouldBeOfType(expectedActionResultType);
+
+            if (typeof(ObjectResult)==expectedActionResultType)
+            {
+                ObjectResult objectResult = (ObjectResult)result;
+                objectResult.StatusCode.ShouldBe(403);
+            }
+            else
+            {
+                result.ShouldBeOfType(expectedActionResultType);
+            }
 
         }
 

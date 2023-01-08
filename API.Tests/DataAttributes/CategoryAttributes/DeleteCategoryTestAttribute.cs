@@ -19,7 +19,7 @@ namespace API.Tests.DataAttributes.CategoryAttributes
             yield return new object[]
             {
                 1, 
-                FakeCategories<Category>.FakeCategoryData(null, new Category()), 
+                FakeCategories<Category>.FakeCategoryData(1, new Category()), 
                 typeof(NoContentResult)
             };
 
@@ -33,8 +33,15 @@ namespace API.Tests.DataAttributes.CategoryAttributes
             yield return new object[]
             {
                 1, 
-                FakeCategories<Category>.FakeCategoryData(null, new Category()), 
+                FakeCategories<Category>.FakeCategoryData(-1, new Category()), 
                 typeof(BadRequestObjectResult)
+            };
+
+            yield return new object[]
+            {
+                1,
+                FakeCategories<Category>.FakeCategoryData(null, new Category()),
+                typeof(ObjectResult)
             };
         }
     }

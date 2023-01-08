@@ -103,6 +103,16 @@ namespace API.Tests.FakeData
             return fakeVehiclesList;
         }
 
+        public static AddOrUpdateVehiclesPartsSpecificationParams FakeVehiclesPartsParams()
+        {
+            AddOrUpdateVehiclesPartsSpecificationParams fakeParams = new AddOrUpdateVehiclesPartsSpecificationParams
+            {
+                VehicleId = 1,
+                ProductId = 1
+            };
+            return fakeParams;
+        }
+
         public static Faker<Vehicle> FakeVehicleList { get; } =
             new Faker<Vehicle>()
                 .RuleFor(p => p.Id, f => _id++)
