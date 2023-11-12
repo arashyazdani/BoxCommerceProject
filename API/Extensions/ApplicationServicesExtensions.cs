@@ -78,7 +78,7 @@ namespace API.Extensions
                 //await FactoryContextSeed.SeedAsync(context, loggerFactory);
                 var seedData = new FactoryContextSeed(context, loggerFactory);
                 var logger = loggerFactory.CreateLogger<Program>();
-                if (await seedData.SeedAsync()) logger.LogInformation("Seeding data has been done successfully");
+                if (seedData.Seed()) logger.LogInformation("Seeding data has been done successfully");
 
                 await identityContext.Database.MigrateAsync();
                 await FactoryIdentityContextSeed.SeedUsersAsync(userManager, loggerFactory);

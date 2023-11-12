@@ -26,29 +26,29 @@ namespace API.Tests.Controllers
                 new Mock<IUserConfirmation<AppUser>>().Object)
         { }
 
-        public override Task<SignInResult> PasswordSignInAsync(AppUser user, string password, bool isPersistent, bool lockoutOnFailure)
-        {
-            return this.ReturnResult(this._simulateSuccess);
-        }
+        //public override Task<SignInResult> PasswordSignInAsync(AppUser user, string password, bool isPersistent, bool lockoutOnFailure)
+        //{
+        //    return this.ReturnResult(this._simulateSuccess);
+        //}
 
-        public override Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure)
-        {
-            return this.ReturnResult(this._simulateSuccess);
-        }
+        //public override Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure)
+        //{
+        //    return this.ReturnResult(this._simulateSuccess);
+        //}
 
-        public override Task<SignInResult> CheckPasswordSignInAsync(AppUser user, string password, bool lockoutOnFailure)
-        {
-            return this.ReturnResult(this._simulateSuccess);
-        }
+        //public override Task<SignInResult> CheckPasswordSignInAsync(AppUser user, string password, bool lockoutOnFailure)
+        //{
+        //    return this.ReturnResult(this._simulateSuccess);
+        //}
 
-        private Task<SignInResult> ReturnResult(bool isSuccess = true)
-        {
-            SignInResult result = SignInResult.Success;
+        //private Task<SignInResult> ReturnResult(bool isSuccess = true)
+        //{
+        //    SignInResult result = SignInResult.Success;
 
-            if (!isSuccess)
-                result = SignInResult.Failed;
+        //    if (!isSuccess)
+        //        result = SignInResult.Failed;
 
-            return Task.FromResult(result);
-        }
+        //    return Task.FromResult(result);
+        //}
     }
 }

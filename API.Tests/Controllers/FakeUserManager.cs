@@ -25,29 +25,29 @@ namespace API.Tests.Controllers
                 new Mock<ILogger<UserManager<AppUser>>>().Object)
         { }
 
-        public override Task<IdentityResult> CreateAsync(AppUser user, string password)
-        {
-            return Task.FromResult(IdentityResult.Success);
-        }
+        //public override Task<IdentityResult> CreateAsync(AppUser user, string password)
+        //{
+        //    return Task.FromResult(IdentityResult.Success);
+        //}
 
-        public override Task<IdentityResult> AddToRoleAsync(AppUser user, string role)
-        {
-            return Task.FromResult(IdentityResult.Success);
-        }
+        //public override Task<IdentityResult> AddToRoleAsync(AppUser user, string role)
+        //{
+        //    return Task.FromResult(IdentityResult.Success);
+        //}
 
-        public override Task<string> GenerateEmailConfirmationTokenAsync(AppUser user)
-        {
-            return Task.FromResult(Guid.NewGuid().ToString());
-        }
+        //public override Task<string> GenerateEmailConfirmationTokenAsync(AppUser user)
+        //{
+        //    return Task.FromResult(Guid.NewGuid().ToString());
+        //}
 
-        public override Task<IdentityResult> ConfirmEmailAsync(AppUser user, string token)
-        {
-            return Task.FromResult(IdentityResult.Success);
-        }
+        //public override Task<IdentityResult> ConfirmEmailAsync(AppUser user, string token)
+        //{
+        //    return Task.FromResult(IdentityResult.Success);
+        //}
 
-        public override Task<AppUser> FindByEmailAsync(string email)
-        {
-            return base.FindByEmailAsync(email);
-        }
+        //public override Task<AppUser> FindByEmailAsync(string email)
+        //{
+        //    return base.FindByEmailAsync(email);
+        //}
     }
 }

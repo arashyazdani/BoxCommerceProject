@@ -131,6 +131,7 @@ namespace Domain.Specifications.VehicleSpecifications
         {
             AddInclude($"{nameof(Vehicle.VehiclesParts)}");
             AddInclude($"{nameof(Vehicle.VehiclesParts)}.{nameof(VehiclesPart.Product)}");
+            AddInclude($"{nameof(Vehicle.VehiclesParts)}.{nameof(VehiclesPart.Product)}.{nameof(Product.Category)}");
             ApplyPaging(vehicleParams.PageSize * (vehicleParams.PageIndex - 1), vehicleParams.PageSize);
 
             if (!string.IsNullOrEmpty(vehicleParams.Sort))

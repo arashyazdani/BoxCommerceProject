@@ -16,13 +16,13 @@ using static System.Net.Mime.MediaTypeNames;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultSqlConnection");
-
-var identityConnectionString = builder.Configuration.GetConnectionString("IdentitySqlConnection");
-
-var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
-
 ConfigurationManager configuration = builder.Configuration;
+
+var connectionString = configuration.GetConnectionString("DefaultSqlConnection");
+
+var identityConnectionString = configuration.GetConnectionString("IdentitySqlConnection");
+
+var redisConnectionString = configuration.GetConnectionString("Redis");
 
 IWebHostEnvironment environment = builder.Environment;
 

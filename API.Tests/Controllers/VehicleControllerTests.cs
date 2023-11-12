@@ -13,6 +13,7 @@ using Domain.Specifications.VehicleSpecifications;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.Linq.Expressions;
 
 namespace API.Tests.Controllers
 {
@@ -303,17 +304,34 @@ namespace API.Tests.Controllers
         }
 
         [Theory]
-        [AddOrUpdateVehiclesPartsTestsAttrinutes]
-        public async Task AddOrUpdateVehiclesParts_Should_Be_OKObjectResult(AddOrUpdateVehiclesPartsSpecificationParams specificationParams, GetObjectFromServicesSpecification updateVehicleObject, Type expectedActionResultType)
+        [AddOrUpdateVehiclesPartsTestsAttributes]
+        public async Task AddOrUpdateVehiclesParts_Test_BadRequest_And_Conflict_And_NotFound_And_NoContent_NotModified_ObjectResult(
+            string testType,
+            AddOrUpdateVehiclesPartsSpecificationParams specificationParams, 
+            GetObjectFromServicesSpecification updateVehicleObject, 
+            Type expectedActionResultType, 
+            Product product, 
+            Vehicle vehicleWithVehiclesParts, 
+            List<VehiclesPart> vehiclesPart)
         {
             //Arrange
 
-            if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Vehicle>()
+            _unitOfWork.Setup(x => x.Repository<Vehicle>()
                     .GetEntityWithSpec(It.IsAny<ISpecification<Vehicle>>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(It.IsAny<Vehicle>())
+                .ReturnsAsync(vehicleWithVehiclesParts)
+                .Verifiable();
+            _unitOfWork.Setup(x => x.Repository<Product>()
+                    .GetEntityWithSpec(It.IsAny<ISpecification<Product>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(product)
                 .Verifiable();
 
-            _vehicleService.Setup(x=>x.AddOrUpdateVehiclesParts(It.IsAny<AddOrUpdateVehiclesPartsSpecificationParams>(),It.IsAny<CancellationToken>())).ReturnsAsync(updateVehicleObject).Verifiable();
+            _vehicleService
+                .Setup(x => x.AddOrUpdateVehiclesParts(It.IsAny<AddOrUpdateVehiclesPartsSpecificationParams>(),
+                    It.IsAny<CancellationToken>())).ReturnsAsync(updateVehicleObject).Verifiable();
+            
+            _unitOfWork.Setup(x=>x.Repository<VehiclesPart>().SearchAsync(It.IsAny<Expression<Func<VehiclesPart, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(vehiclesPart).Verifiable();
+
+            if (expectedActionResultType != typeof(StatusCodeResult) && expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
             var controller = new VehiclesController(_unitOfWork.Object, _mapper.Object, _responseCache.Object, _vehicleService.Object);
 
@@ -325,6 +343,7 @@ namespace API.Tests.Controllers
             // Assert
 
             result.ShouldBeOfType(expectedActionResultType);
+            if (expectedActionResultType == typeof(StatusCodeResult)) updateVehicleObject.StatusCode.ShouldBe(304);
         }
     }
 }

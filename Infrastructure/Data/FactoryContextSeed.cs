@@ -18,17 +18,17 @@ public class FactoryContextSeed
         _loggerFactory = loggerFactory;
     }
 
-    public async Task<bool> SeedAsync()
+    public bool Seed()
     {
         try
         {
             var logger = _loggerFactory.CreateLogger<FactoryContext>();
-            if (await SeedData<Category>(@"/Data/SeedData/Categories.json")) logger.LogInformation("Categories data has been added successfully.");
-            if (await SeedData<Product>(@"/Data/SeedData/Products.json")) logger.LogInformation("Products data has been added successfully.");
-            if (await SeedData<Warehouse>(@"/Data/SeedData/Warehouses.json")) logger.LogInformation("Warehouses data has been added successfully.");
-            if (await SeedData<Vehicle>(@"/Data/SeedData/Vehicles.json")) logger.LogInformation("Vehicles data has been added successfully.");
-            if (await SeedData<VehiclesPart>(@"/Data/SeedData/VehiclesParts.json")) logger.LogInformation("VehiclesParts data has been added successfully.");
-            if (await SeedData<DeliveryMethod>(@"/Data/SeedData/DeliveryMethods.json")) logger.LogInformation("DeliveryMethods data has been added successfully.");
+            if ( SeedData<Category>(@"/Data/SeedData/Categories.json")) logger.LogInformation("Categories data has been added successfully.");
+            if ( SeedData<Product>(@"/Data/SeedData/Products.json")) logger.LogInformation("Products data has been added successfully.");
+            if ( SeedData<Warehouse>(@"/Data/SeedData/Warehouses.json")) logger.LogInformation("Warehouses data has been added successfully.");
+            if ( SeedData<Vehicle>(@"/Data/SeedData/Vehicles.json")) logger.LogInformation("Vehicles data has been added successfully.");
+            if ( SeedData<VehiclesPart>(@"/Data/SeedData/VehiclesParts.json")) logger.LogInformation("VehiclesParts data has been added successfully.");
+            if ( SeedData<DeliveryMethod>(@"/Data/SeedData/DeliveryMethods.json")) logger.LogInformation("DeliveryMethods data has been added successfully.");
             return true;
         }
         catch (Exception ex)
@@ -40,21 +40,21 @@ public class FactoryContextSeed
     }
 
 
-    public async Task<bool> SeedData<TEntity>(string fileName) where TEntity : class
+    public bool SeedData<TEntity>(string fileName) where TEntity : class
     {
         try
         {
             var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + fileName;
-            await using var json = File.OpenRead(path);
+             using var json = File.OpenRead(path);
 
             if (!_context.Set<TEntity>().Any())
             {
                 var jsonData = JsonSerializer.Deserialize<List<TEntity>>(json);
                 if (jsonData != null)
                 {
-                    foreach (var item in jsonData) await _context.Set<TEntity>().AddAsync(item);
+                    foreach (var item in jsonData)  _context.Set<TEntity>().Add(item);
 
-                    await _context.SaveChangesAsync();
+                     _context.SaveChanges();
                     return true;
                 }
             }

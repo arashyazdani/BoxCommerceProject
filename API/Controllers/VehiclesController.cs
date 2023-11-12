@@ -247,9 +247,6 @@ namespace API.Controllers
                 case 400:
                     return BadRequest(new ApiResponse(vehicleParts.StatusCode));
 
-                case 409:
-                    return Conflict(new ApiResponse(vehicleParts.StatusCode, vehicleParts.Message));
-
                 case 304:
                     return new StatusCodeResult(304);
 
