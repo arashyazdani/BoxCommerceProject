@@ -218,7 +218,7 @@ namespace API.Tests.Controllers
                     .GetEntityWithSpec(It.IsAny<ISpecification<Vehicle>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(vehicleEntity)
                 .Verifiable();
-            _unitOfWork.Setup(x => x.Repository<Vehicle>().Update(It.IsAny<Vehicle>())).Verifiable();
+            _unitOfWork.Setup(x => x.Repository<Vehicle>().Update(It.IsAny<Vehicle>(), It.IsAny<CancellationToken>())).Verifiable();
 
             if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
@@ -249,7 +249,7 @@ namespace API.Tests.Controllers
 
             _unitOfWork.Setup(x => x.Repository<Vehicle>().GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(vehicleEntity).Verifiable();
 
-            _unitOfWork.Setup(x => x.Repository<Vehicle>().Update(It.IsAny<Vehicle>())).Verifiable();
+            _unitOfWork.Setup(x => x.Repository<Vehicle>().Update(It.IsAny<Vehicle>(), It.IsAny<CancellationToken>())).Verifiable();
 
             if (expectedActionResultType != typeof(StatusCodeResult) && expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
@@ -289,7 +289,7 @@ namespace API.Tests.Controllers
             if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Vehicle>().GetEntityWithSpec(It.IsAny<ISpecification<Vehicle>>(), It.IsAny<CancellationToken>())).ReturnsAsync(vehicleEntity).Verifiable();
             //_vehicleService.Setup(x=>x.CheckItemsExistAsync(It.IsAny<int>(),))
 
-            _unitOfWork.Setup(x => x.Repository<Vehicle>().DeleteAsync(It.IsAny<Vehicle>())).Verifiable();
+            _unitOfWork.Setup(x => x.Repository<Vehicle>().DeleteAsync(It.IsAny<Vehicle>(), It.IsAny<CancellationToken>())).Verifiable();
 
             if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 

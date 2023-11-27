@@ -170,7 +170,7 @@ namespace API.Tests.Controllers
                     .GetEntityWithSpec(It.IsAny<ISpecification<Product>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(productEntity)
                 .Verifiable();
-            _unitOfWork.Setup(x => x.Repository<Product>().Update(It.IsAny<Product>())).Verifiable();
+            _unitOfWork.Setup(x => x.Repository<Product>().Update(It.IsAny<Product>(), It.IsAny<CancellationToken>())).Verifiable();
 
             if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
@@ -202,7 +202,7 @@ namespace API.Tests.Controllers
 
             _unitOfWork.Setup(x => x.Repository<Product>().GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(productEntity).Verifiable();
 
-            _unitOfWork.Setup(x => x.Repository<Product>().Update(It.IsAny<Product>())).Verifiable();
+            _unitOfWork.Setup(x => x.Repository<Product>().Update(It.IsAny<Product>(), It.IsAny<CancellationToken>())).Verifiable();
 
             if (expectedActionResultType != typeof(StatusCodeResult) && expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
@@ -241,7 +241,7 @@ namespace API.Tests.Controllers
             // Arrange
             if (expectedActionResultType != typeof(NotFoundObjectResult)) _unitOfWork.Setup(x => x.Repository<Product>().GetEntityWithSpec(It.IsAny<ISpecification<Product>>(), It.IsAny<CancellationToken>())).ReturnsAsync(productEntity).Verifiable();
 
-            _unitOfWork.Setup(x => x.Repository<Product>().DeleteAsync(It.IsAny<Product>())).Verifiable();
+            _unitOfWork.Setup(x => x.Repository<Product>().DeleteAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>())).Verifiable();
 
             if (expectedActionResultType != typeof(BadRequestObjectResult)) _unitOfWork.Setup(x => x.Complete(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
 
