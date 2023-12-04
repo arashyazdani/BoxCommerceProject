@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Domain.Interfaces;
 using Domain.Specifications;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Infrastructure.Data.Repositories
 {
@@ -34,16 +35,26 @@ namespace Infrastructure.Data.Repositories
             return await _context.Set<T>().FindAsync(new object?[] { id, cancellationToken }, cancellationToken: cancellationToken);
         }
 
-        public async Task<IList<T>> SearchAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken)
+        public async Task<IList<T>> SearchAsync(
+            Expression<Func<T, bool>> wherePredicate,
+            Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
+            CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (predicate == null)
+            if (wherePredicate == null)
             {
-                throw new ArgumentNullException(nameof(predicate), "Predicate cannot be null.");
+                throw new ArgumentNullException(nameof(wherePredicate), "Where predicate cannot be null.");
             }
 
-            return await  _context.Set<T>().Where(predicate).ToListAsync(cancellationToken);
+            IQueryable<T> query = _context.Set<T>();
+
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            return await query.Where(wherePredicate).ToListAsync(cancellationToken);
         }
 
         public async Task<IReadOnlyList<T>> ListAllAsync(CancellationToken cancellationToken)

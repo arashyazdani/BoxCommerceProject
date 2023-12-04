@@ -1,4 +1,5 @@
 ﻿using Domain.Specifications;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,10 @@ namespace Domain.Interfaces
     {
         Task<T?> GetByIdAsync(object id, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task<IList<T>> SearchAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IList<T>> SearchAsync(
+            Expression<Func<T, bool>> wherePredicate,
+            Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
+            CancellationToken cancellationToken = default);
 
         Task<IReadOnlyList<T>> ListAllAsync(CancellationToken cancellationToken = default(CancellationToken));
 
